@@ -1,12 +1,53 @@
-# MUST Power Desk v0.1.1
+# MUST Power Desk | Read-Only Solar Inverter Dashboard
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white)
 ![Modbus](https://img.shields.io/badge/Modbus-RTU%20read--only-00A8A8?style=flat-square)
 ![Status](https://img.shields.io/badge/status-local%20production%20service-FF6B6B?style=flat-square)
 
-MUST Power Desk is a local, read-only web dashboard for MUST inverter families that expose the supported Modbus RTU register map. It polls telemetry through a USB serial adapter, stores one sample per minute in SQLite, aggregates history from 1-minute to monthly resolution, and streams live updates over Server-Sent Events.
+MUST Power Desk is a self-hosted, local-first solar inverter monitoring dashboard for MUST inverter families that expose the supported Modbus RTU register map. It reads live PV, battery, grid, AC output, load, temperature, and accumulated-energy telemetry through a USB serial adapter, stores time-series history in SQLite, and streams live updates over Server-Sent Events (SSE). The responsive UI supports Ukrainian and English (`UKR | ENG`).
+
+It is built for home energy monitoring, solar PV visibility, off-grid and backup-power diagnostics, and safe observation of MUST inverter systems. The application is strictly read-only: it has no inverter write commands, remote controls, or configuration mutations.
 
 The live-validated device for this release is a **MUST PV18-3224 VPM II**, identified by the firmware as **PV1800**.
+
+## Dashboard Screenshots
+
+The gallery shows the live-validated MUST PV18-3224 VPM II / PV1800 dashboard. Values shown are example telemetry from a local test system; no control action is available from the UI.
+
+<table>
+  <tr>
+    <td colspan="2" align="center">
+      <a href="screenshots/Screenshot_MUST_Power_Desk-1.png"><img src="screenshots/Screenshot_MUST_Power_Desk-1.png" alt="MUST Power Desk full dashboard with live telemetry, energy flow, history chart, and inverter status" width="100%"></a><br>
+      <sub><strong>Overview:</strong> live telemetry, energy flow, history, and system status</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <a href="screenshots/Screenshot_MUST_Power_Desk-2.png"><img src="screenshots/Screenshot_MUST_Power_Desk-2.png" alt="MUST Power Desk energy flow cards for PV input, load, grid flow, and battery voltage" width="100%"></a><br>
+      <sub><strong>Energy flow:</strong> PV input, load, grid, and battery cards</sub>
+    </td>
+    <td align="center" width="50%">
+      <a href="screenshots/Screenshot_MUST_Power_Desk-3.png"><img src="screenshots/Screenshot_MUST_Power_Desk-3.png" alt="MUST Power Desk system behavior history chart and inverter status panel" width="100%"></a><br>
+      <sub><strong>History and status:</strong> charted behavior with inverter health</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <a href="screenshots/Screenshot_MUST_Power_Desk-4.png"><img src="screenshots/Screenshot_MUST_Power_Desk-4.png" alt="MUST Power Desk telemetry details for AC output, DC bus, temperatures, and accumulated energy" width="100%"></a><br>
+      <sub><strong>Telemetry:</strong> AC, DC, temperature, and accumulated readings</sub>
+    </td>
+    <td align="center" width="50%">
+      <a href="screenshots/Screenshot_MUST_Power_Desk-5.png"><img src="screenshots/Screenshot_MUST_Power_Desk-5.png" alt="MUST Power Desk read-only inverter configuration and diagnostics panels" width="100%"></a><br>
+      <sub><strong>Configuration and diagnostics:</strong> read-only parameters and health data</sub>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center">
+      <a href="screenshots/Screenshot_MUST_Power_Desk-6.png"><img src="screenshots/Screenshot_MUST_Power_Desk-6.png" alt="MUST Power Desk hero header with live telemetry for a MUST PV18-3224 VPM II inverter" width="100%"></a><br>
+      <sub><strong>Live dashboard header:</strong> local-first MUST inverter monitoring</sub>
+    </td>
+  </tr>
+</table>
 
 ## Highlights
 
