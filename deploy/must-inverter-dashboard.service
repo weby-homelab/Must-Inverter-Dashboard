@@ -1,0 +1,48 @@
+[Unit]
+Description=MUST PV18 inverter read-only dashboard
+After=local-fs.target
+Wants=local-fs.target
+
+[Service]
+Type=simple
+# The project lives below /root. The one required device permission is supplied
+# through dialout; the application exposes no inverter write operation.
+User=weby
+Group=weby
+SupplementaryGroups=dialout
+WorkingDirectory=/root/weby/projects/Must-Inverter-Dashboard
+EnvironmentFile=-/etc/must-inverter-dashboard.env
+Environment=PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+ExecStart=/usr/bin/python3 /root/weby/projects/Must-Inverter-Dashboard/main.py
+Restart=always
+RestartSec=5
+UMask=0027
+
+NoNewPrivileges=true
+CapabilityBoundingSet=
+AmbientCapabilities=
+PrivateTmp=true
+PrivateDevices=false
+DevicePolicy=closed
+# Keep the currently attached adapter available, and allow USB serial minors
+# so a reconnect that changes ttyUSB numbering does not break the service.
+DeviceAllow=/dev/ttyUSB0 rw
+DeviceAllow=char-ttyUSB rw
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/root/weby/projects/Must-Inverter-Dashboard/data
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+ProtectHostname=true
+ProtectClock=true
+RestrictSUIDSGID=true
+RestrictNamespaces=true
+LockPersonality=true
+RestrictRealtime=true
+SystemCallArchitectures=native
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+[Install]
+WantedBy=multi-user.target
