@@ -5,15 +5,15 @@ Wants=local-fs.target
 
 [Service]
 Type=simple
-# The project lives below /root. The one required device permission is supplied
-# through dialout; the application exposes no inverter write operation.
-User=weby
-Group=weby
+# The one required device permission is supplied through dialout; the
+# application exposes no inverter write operation.
+User=mustdash
+Group=mustdash
 SupplementaryGroups=dialout
-WorkingDirectory=/root/weby/projects/Must-Inverter-Dashboard
+WorkingDirectory=/opt/must-inverter-dashboard
 EnvironmentFile=-/etc/must-inverter-dashboard.env
 Environment=PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
-ExecStart=/usr/bin/python3 /root/weby/projects/Must-Inverter-Dashboard/main.py
+ExecStart=/opt/must-inverter-dashboard/.venv/bin/python /opt/must-inverter-dashboard/main.py
 Restart=always
 RestartSec=5
 UMask=0027
@@ -30,7 +30,7 @@ DeviceAllow=/dev/ttyUSB0 rw
 DeviceAllow=char-ttyUSB rw
 ProtectSystem=strict
 ProtectHome=read-only
-ReadWritePaths=/root/weby/projects/Must-Inverter-Dashboard/data
+ReadWritePaths=/opt/must-inverter-dashboard/data
 ProtectKernelTunables=true
 ProtectKernelModules=true
 ProtectKernelLogs=true
