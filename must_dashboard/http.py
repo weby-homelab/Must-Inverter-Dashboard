@@ -263,8 +263,10 @@ def _range_start(range_value: str, end_ts: int, storage: Storage) -> int:
 
 
 def _auto_period(seconds: int) -> str:
+    if seconds <= 6 * 3600:
+        return "minute"
     if seconds <= 3 * 86400:
-        return "hour"
+        return "30m"
     if seconds <= 45 * 86400:
         return "day"
     if seconds <= 180 * 86400:

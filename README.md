@@ -1,4 +1,4 @@
-# MUST Power Desk
+# MUST Power Desk v0.1.1
 
 Локальний read-only веб-дашборд для MUST PV18-3224 VPM II / PV1800. Сервіс читає перевірені Modbus RTU holding registers через USB CH340, зберігає samples у SQLite та віддає live-оновлення через Server-Sent Events.
 
@@ -33,6 +33,8 @@ python3 -m pip install -r requirements.txt
 - retention: 730 днів;
 - database: `data/inverter.sqlite3`.
 
+Dashboard підтримує history resolutions `minute` (1 хв), `30m` (30 хв), `hour`, `day`, `week`, `month` і `raw`. Для добового графіка за замовчуванням використовується 30-хвилинна resolution; 1-хвилинна доступна через selector/API.
+
 В інвертор не відправляються write-команди. Застосунок читає такі діапазони:
 
 | Section | Start | Count | Призначення |
@@ -48,12 +50,20 @@ python3 -m pip install -r requirements.txt
 - `GET /api/current` — останній snapshot та health.
 - `GET /api/health` — стан poller, помилки та статистика SQLite.
 - `GET /healthz` — readiness endpoint: `503`, якщо інвертор offline або sample застарів.
+- `GET /api/history?range=24h&period=minute` — хвилинна history.
+- `GET /api/history?range=24h&period=30m` — 30-хвилинна history.
 - `GET /api/history?range=24h&period=hour` — history buckets.
 - `GET /api/history?range=30d&period=day` — денна агрегація.
 - `GET /api/history?range=1y&period=month` — місячна агрегація.
 - `GET /api/history?range=24h&period=raw` — raw samples, до 20 000 останніх точок.
 - `GET /api/export.csv?range=30d&period=day` — CSV export.
 - `GET /api/events` — SSE live events.
+
+## v0.1.1
+
+- Додано resolutions `minute` і `30m`.
+- Додано перемикач мови `UKR | ENG` із збереженням вибору в браузері.
+- Розширено локалізацію current, history, diagnostics і configuration UI.
 
 ## systemd
 

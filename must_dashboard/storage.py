@@ -159,12 +159,18 @@ class Storage:
         period: str,
         max_raw_points: int = 20000,
     ) -> dict[str, Any]:
+        period = {"1m": "minute", "30min": "30m"}.get(period, period)
         if period == "raw":
             return self._raw_history(start_ts, end_ts, max_raw_points)
-        if period not in {"hour", "day", "week", "month"}:
-            raise ValueError("period must be raw, hour, day, week, or month")
+        if period not in {"minute", "30m", "hour", "day", "week", "month"}:
+            raise ValueError("period must be raw, minute, 30m, hour, day, week, or month")
 
         bucket_expression = {
+            "minute": "strftime('%Y-%m-%dT%H:%M:00Z', captured_at)",
+            "30m": (
+                "strftime('%Y-%m-%dT%H:', captured_at) || "
+                "printf('%02d:00Z', (CAST(strftime('%M', captured_at) AS INTEGER) / 30) * 30)"
+            ),
             "hour": "strftime('%Y-%m-%dT%H:00:00Z', captured_at)",
             "day": "strftime('%Y-%m-%dT00:00:00Z', captured_at)",
             "week": (

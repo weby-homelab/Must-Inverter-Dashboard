@@ -8,6 +8,7 @@ import time
 from datetime import datetime, timezone
 from typing import Any
 
+from . import __version__
 from .config import Settings
 from .modbus import ModbusError, ModbusRTU
 from .storage import Storage
@@ -63,6 +64,7 @@ class InverterPoller:
         self._last_config_at = 0.0
         self._last_prune_at = 0.0
         self._health: dict[str, Any] = {
+            "version": __version__,
             "status": "starting",
             "last_attempt_at": None,
             "last_success_at": self._latest.get("captured_at") if self._latest else None,

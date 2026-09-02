@@ -66,6 +66,29 @@ class StorageTests(unittest.TestCase):
             self.assertTrue(history["truncated"])
             self.assertEqual([point["load_power_w"] for point in history["points"]], [200, 300])
 
+    def test_minute_and_half_hour_buckets(self):
+        with tempfile.TemporaryDirectory() as directory:
+            store = Storage(Path(directory) / "samples.sqlite3")
+            for timestamp, load in (
+                ("2026-09-02T10:00:05Z", 100),
+                ("2026-09-02T10:00:55Z", 200),
+                ("2026-09-02T10:01:00Z", 300),
+                ("2026-09-02T10:30:00Z", 400),
+            ):
+                store.insert_sample(snapshot(timestamp, load))
+            minute = store.history(1788340000, 1788350000, "minute")
+            half_hour = store.history(1788340000, 1788350000, "30m")
+            self.assertEqual([point["captured_at"] for point in minute["points"]], [
+                "2026-09-02T10:00:00Z",
+                "2026-09-02T10:01:00Z",
+                "2026-09-02T10:30:00Z",
+            ])
+            self.assertEqual([point["captured_at"] for point in half_hour["points"]], [
+                "2026-09-02T10:00:00Z",
+                "2026-09-02T10:30:00Z",
+            ])
+            self.assertEqual(minute["points"][0]["load_power_w"], 150)
+
 
 if __name__ == "__main__":
     unittest.main()

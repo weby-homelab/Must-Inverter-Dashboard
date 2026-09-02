@@ -20,11 +20,14 @@
         <span>MUST <b>POWER DESK</b></span>
       </a>
       <div class="topbar-actions">
+        <div class="language-switcher" role="group" data-i18n-aria-label="language.label">
+          <button type="button" data-lang="uk" aria-pressed="true">UKR</button><span>|</span><button type="button" data-lang="en" aria-pressed="false">ENG</button>
+        </div>
         <div class="connection-badge" id="connectionBadge" data-state="starting" aria-live="polite">
           <span class="status-dot"></span>
-          <span id="connectionLabel">Запуск сервісу</span>
+          <span id="connectionLabel" data-i18n="system.starting">Запуск сервісу</span>
         </div>
-        <button class="icon-button" id="refreshButton" type="button" title="Оновити дані" aria-label="Оновити дані">
+        <button class="icon-button" id="refreshButton" type="button" data-i18n-title="common.refresh" data-i18n-aria-label="common.refresh" title="Оновити дані" aria-label="Оновити дані">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.9-3M4 5v4h4M4 13a8 8 0 0 0 14.9 3M20 19v-4h-4"/></svg>
         </button>
       </div>
@@ -33,18 +36,18 @@
     <main>
       <section class="hero reveal">
         <div class="hero-copy">
-          <p class="eyebrow"><span class="eyebrow-line"></span> PV18-3224 VPM II <span class="eyebrow-separator">/</span> LIVE TELEMETRY</p>
-          <h1>Енергія<br><em>під контролем.</em></h1>
-          <p class="hero-description">Локальний read-only моніторинг інвертора. Жодних команд керування, лише точні дані з вашого USB Modbus-каналу.</p>
+          <p class="eyebrow"><span class="eyebrow-line"></span> <span data-i18n="hero.device">PV18-3224 VPM II</span> <span class="eyebrow-separator">/</span> <span data-i18n="hero.live">LIVE TELEMETRY</span></p>
+          <h1><span data-i18n="hero.title">Енергія</span><br><em data-i18n="hero.title2">під контролем.</em></h1>
+          <p class="hero-description" data-i18n="hero.description">Локальний read-only моніторинг інвертора. Жодних команд керування, лише точні дані з вашого USB Modbus-каналу.</p>
           <div class="hero-meta">
-            <span><span class="meta-label">Останній знімок</span> <strong id="lastUpdated">очікування...</strong></span>
-            <span><span class="meta-label">Джерело</span> <strong id="sourcePort">USB serial</strong></span>
+            <span><span class="meta-label" data-i18n="hero.last">Останній знімок</span> <strong id="lastUpdated" data-i18n="common.waiting">очікування...</strong></span>
+            <span><span class="meta-label" data-i18n="hero.source">Джерело</span> <strong id="sourcePort">USB serial</strong></span>
           </div>
         </div>
         <div class="hero-orbit" aria-hidden="true">
           <div class="orbit-ring orbit-ring-one"></div>
           <div class="orbit-ring orbit-ring-two"></div>
-          <div class="orbit-core"><span class="core-pulse"></span><span>3200<br><small>VA NOMINAL</small></span></div>
+          <div class="orbit-core"><span class="core-pulse"></span><span>3200<br><small data-i18n="hero.nominal">VA NOMINAL</small></span></div>
           <span class="orbit-label orbit-label-one">PV</span>
           <span class="orbit-label orbit-label-two">AC</span>
           <span class="orbit-label orbit-label-three">BATT</span>
@@ -53,39 +56,39 @@
 
       <section class="section-heading reveal">
         <div>
-          <p class="section-kicker">01 / ЗАРАЗ</p>
-          <h2>Потік енергії</h2>
+          <p class="section-kicker" data-i18n="section.now">01 / ЗАРАЗ</p>
+          <h2 data-i18n="section.flow">Потік енергії</h2>
         </div>
-        <p class="section-note" id="snapshotNote">Дані оновлюються автоматично кожні 15 секунд</p>
+        <p class="section-note" id="snapshotNote" data-i18n="snapshot.note">Дані оновлюються автоматично кожні 15 секунд</p>
       </section>
 
       <section class="flow-grid reveal">
         <article class="metric-card metric-pv">
-          <div class="metric-top"><span class="metric-icon">↗</span><span class="metric-label">PV input</span><span class="live-mark">LIVE</span></div>
+          <div class="metric-top"><span class="metric-icon">↗</span><span class="metric-label" data-i18n="metric.pv.label">PV input</span><span class="live-mark" data-i18n="metric.live">LIVE</span></div>
           <div class="metric-value" id="pvPower">--</div>
-          <div class="metric-unit">сонячна генерація</div>
+          <div class="metric-unit" data-i18n="metric.pv.unit">сонячна генерація</div>
           <div class="metric-detail"><span id="pvVoltage">-- V</span><span id="pvCurrent">-- A</span></div>
           <div class="metric-accent"></div>
         </article>
         <article class="metric-card metric-load">
-          <div class="metric-top"><span class="metric-icon">◒</span><span class="metric-label">Load</span><span class="live-mark">LIVE</span></div>
+          <div class="metric-top"><span class="metric-icon">◒</span><span class="metric-label" data-i18n="metric.load.label">Навантаження</span><span class="live-mark" data-i18n="metric.live">LIVE</span></div>
           <div class="metric-value" id="loadPower">--</div>
-          <div class="metric-unit">поточне навантаження</div>
+          <div class="metric-unit" data-i18n="metric.load.unit">поточне навантаження</div>
           <div class="metric-detail"><span id="loadPercent">--%</span><span id="loadCurrent">-- A</span></div>
           <div class="load-track"><span id="loadBar"></span></div>
         </article>
         <article class="metric-card metric-grid">
-          <div class="metric-top"><span class="metric-icon">⌁</span><span class="metric-label">Grid</span><span class="live-mark">LIVE</span></div>
+          <div class="metric-top"><span class="metric-icon">⌁</span><span class="metric-label" data-i18n="metric.grid.label">Grid</span><span class="live-mark" data-i18n="metric.live">LIVE</span></div>
           <div class="metric-value" id="gridPower">--</div>
-          <div class="metric-unit">потік мережі</div>
+          <div class="metric-unit" data-i18n="metric.grid.unit">потік мережі</div>
           <div class="metric-detail"><span id="gridVoltage">-- V</span><span id="gridFrequency">-- Hz</span></div>
           <div class="metric-accent"></div>
         </article>
         <article class="metric-card metric-battery">
-          <div class="metric-top"><span class="metric-icon">▰</span><span class="metric-label">Battery</span><span class="live-mark">LIVE</span></div>
+          <div class="metric-top"><span class="metric-icon">▰</span><span class="metric-label" data-i18n="metric.battery.label">Battery</span><span class="live-mark" data-i18n="metric.live">LIVE</span></div>
           <div class="metric-value" id="batteryVoltage">--</div>
-          <div class="metric-unit">напруга батареї</div>
-          <div class="metric-detail"><span id="batteryPower">-- W</span><span id="batteryState">стан --</span></div>
+          <div class="metric-unit" data-i18n="metric.battery.unit">напруга батареї</div>
+          <div class="metric-detail"><span id="batteryPower">-- W</span><span id="batteryState"><span data-i18n="common.state">стан</span> --</span></div>
           <div class="battery-track" title="Позиція напруги у робочому діапазоні, не оцінка SOC"><span id="batteryBar"></span></div>
         </article>
       </section>
@@ -93,96 +96,98 @@
       <section class="dashboard-columns reveal">
         <article class="panel chart-panel">
           <div class="panel-heading chart-heading">
-            <div><p class="section-kicker">02 / ІСТОРІЯ</p><h2>Поведінка системи</h2></div>
-            <div class="chart-controls" role="group" aria-label="Період історії">
-              <button type="button" class="range-button is-active" data-range="24h">24 год</button>
-              <button type="button" class="range-button" data-range="7d">7 днів</button>
-              <button type="button" class="range-button" data-range="30d">30 днів</button>
-              <button type="button" class="range-button" data-range="1y">1 рік</button>
-              <button type="button" class="range-button" data-range="all">Усе</button>
+            <div><p class="section-kicker" data-i18n="history.kicker">02 / ІСТОРІЯ</p><h2 data-i18n="history.title">Поведінка системи</h2></div>
+            <div class="chart-controls" role="group" data-i18n-aria-label="history.range_aria" aria-label="Період історії">
+              <button type="button" class="range-button is-active" data-range="24h" data-i18n="range.24h">24 год</button>
+              <button type="button" class="range-button" data-range="7d" data-i18n="range.7d">7 днів</button>
+              <button type="button" class="range-button" data-range="30d" data-i18n="range.30d">30 днів</button>
+              <button type="button" class="range-button" data-range="1y" data-i18n="range.1y">1 рік</button>
+              <button type="button" class="range-button" data-range="all" data-i18n="range.all">Усе</button>
             </div>
           </div>
           <div class="chart-toolbar">
-            <label>Показник
+            <label><span data-i18n="history.metric">Показник</span>
               <select id="metricSelect">
-                <optgroup label="Power flow">
-                  <option value="load_power_w">Навантаження, W</option>
-                  <option value="pv_power_w">PV генерація, W</option>
-                  <option value="grid_power_w">Потік мережі, W</option>
-                  <option value="battery_power_w">Потужність батареї, W</option>
-                  <option value="load_percent">Навантаження, %</option>
+                <optgroup label="Power flow" data-i18n-label="metric.group_power">
+                  <option value="load_power_w" data-i18n="metric.option_load_power">Навантаження, W</option>
+                  <option value="pv_power_w" data-i18n="metric.option_pv_power">PV генерація, W</option>
+                  <option value="grid_power_w" data-i18n="metric.option_grid_power">Потік мережі, W</option>
+                  <option value="battery_power_w" data-i18n="metric.option_battery_power">Потужність батареї, W</option>
+                  <option value="load_percent" data-i18n="metric.option_load_percent">Навантаження, %</option>
                 </optgroup>
-                <optgroup label="Voltage">
-                  <option value="battery_voltage_v">Батарея, V</option>
-                  <option value="pv_voltage_v">PV voltage, V</option>
-                  <option value="inverter_voltage_v">AC output, V</option>
-                  <option value="grid_voltage_v">Grid, V</option>
-                  <option value="bus_voltage_v">DC bus, V</option>
+                <optgroup label="Voltage" data-i18n-label="metric.group_voltage">
+                  <option value="battery_voltage_v" data-i18n="metric.option_battery_voltage">Батарея, V</option>
+                  <option value="pv_voltage_v" data-i18n="metric.option_pv_voltage">PV voltage, V</option>
+                  <option value="inverter_voltage_v" data-i18n="metric.option_inverter_voltage">AC output, V</option>
+                  <option value="grid_voltage_v" data-i18n="metric.option_grid_voltage">Grid, V</option>
+                  <option value="bus_voltage_v" data-i18n="metric.option_bus_voltage">DC bus, V</option>
                 </optgroup>
-                <optgroup label="Current / frequency">
-                  <option value="pv_current_a">PV current, A</option>
-                  <option value="inverter_current_a">AC output current, A</option>
-                  <option value="grid_current_a">Grid current, A</option>
-                  <option value="load_current_a">Load current, A</option>
-                  <option value="inverter_frequency_hz">Inverter frequency, Hz</option>
-                  <option value="grid_frequency_hz">Grid frequency, Hz</option>
+                <optgroup label="Current / frequency" data-i18n-label="metric.group_current">
+                  <option value="pv_current_a" data-i18n="metric.option_pv_current">PV current, A</option>
+                  <option value="inverter_current_a" data-i18n="metric.option_inverter_current">AC output current, A</option>
+                  <option value="grid_current_a" data-i18n="metric.option_grid_current">Grid current, A</option>
+                  <option value="load_current_a" data-i18n="metric.option_load_current">Load current, A</option>
+                  <option value="inverter_frequency_hz" data-i18n="metric.option_inverter_frequency">Inverter frequency, Hz</option>
+                  <option value="grid_frequency_hz" data-i18n="metric.option_grid_frequency">Grid frequency, Hz</option>
                 </optgroup>
-                <optgroup label="Temperature">
-                  <option value="ac_radiator_temperature_c">AC radiator, °C</option>
-                  <option value="transformer_temperature_c">Transformer, °C</option>
-                  <option value="dc_radiator_temperature_c">DC radiator, °C</option>
+                <optgroup label="Temperature" data-i18n-label="metric.group_temperature">
+                  <option value="ac_radiator_temperature_c" data-i18n="metric.option_ac_temp">AC radiator, °C</option>
+                  <option value="transformer_temperature_c" data-i18n="metric.option_transformer_temp">Transformer, °C</option>
+                  <option value="dc_radiator_temperature_c" data-i18n="metric.option_dc_temp">DC radiator, °C</option>
                 </optgroup>
               </select>
             </label>
-            <label>Роздільність
+            <label><span data-i18n="history.resolution">Роздільність</span>
               <select id="periodSelect">
-                <option value="hour">Година</option>
-                <option value="day">День</option>
-                <option value="week">Тиждень</option>
-                <option value="month">Місяць</option>
-                <option value="raw">Raw samples</option>
+                <option value="minute" data-i18n="period.minute">1 хв</option>
+                <option value="30m" selected data-i18n="period.30m">30 хв</option>
+                <option value="hour" data-i18n="period.hour">Година</option>
+                <option value="day" data-i18n="period.day">День</option>
+                <option value="week" data-i18n="period.week">Тиждень</option>
+                <option value="month" data-i18n="period.month">Місяць</option>
+                <option value="raw" data-i18n="period.raw">Raw samples</option>
               </select>
             </label>
-            <a class="export-link" id="exportLink" href="/api/export.csv?range=24h&period=hour">CSV export <span>↓</span></a>
+            <a class="export-link" id="exportLink" href="/api/export.csv?range=24h&amp;period=30m"><span data-i18n="history.export">CSV export</span> <span>↓</span></a>
           </div>
           <div class="chart-wrap">
-            <canvas id="historyChart" aria-label="Графік історичних показників"></canvas>
-            <div class="chart-empty" id="chartEmpty">Історія з'явиться після перших збережених samples</div>
+            <canvas id="historyChart" data-i18n-aria-label="history.chart_aria" aria-label="Графік історичних показників"></canvas>
+            <div class="chart-empty" id="chartEmpty" data-i18n="history.empty">Історія з'явиться після перших збережених samples</div>
           </div>
-          <div class="chart-footer"><span id="historySummary">Немає збережених даних</span><span class="chart-legend"><i></i><span id="legendLabel">Навантаження</span></span></div>
+          <div class="chart-footer"><span id="historySummary" data-i18n="history.no_data">Немає збережених даних</span><span class="chart-legend"><i></i><span id="legendLabel">Навантаження</span></span></div>
         </article>
 
         <aside class="panel status-panel">
-          <div class="panel-heading"><div><p class="section-kicker">03 / СТАН</p><h2>Система</h2></div><span class="status-code" id="workState">--</span></div>
-          <div class="system-state" id="systemState" data-state="starting"><span class="state-orb"></span><div><strong id="systemStateTitle">Очікування</strong><span id="systemStateText">Підключення до інвертора</span></div></div>
+          <div class="panel-heading"><div><p class="section-kicker" data-i18n="status.kicker">03 / СТАН</p><h2 data-i18n="status.title">Система</h2></div><span class="status-code" id="workState">--</span></div>
+          <div class="system-state" id="systemState" data-state="starting"><span class="state-orb"></span><div><strong id="systemStateTitle" data-i18n="system.waiting">Очікування</strong><span id="systemStateText" data-i18n="system.connecting">Підключення до інвертора</span></div></div>
           <div class="status-list">
-            <div><span>Модель</span><strong id="identityModel">--</strong></div>
-            <div><span>Номінал</span><strong id="ratedPower">--</strong></div>
-            <div><span>Serial number</span><strong class="mono" id="identitySerial">--</strong></div>
-            <div><span>Firmware</span><strong class="mono" id="identityFirmware">--</strong></div>
-            <div><span>Останній poll</span><strong id="pollLatency">--</strong></div>
+            <div><span data-i18n="status.model">Модель</span><strong id="identityModel">--</strong></div>
+            <div><span data-i18n="status.nominal">Номінал</span><strong id="ratedPower">--</strong></div>
+            <div><span data-i18n="status.serial">Serial number</span><strong class="mono" id="identitySerial">--</strong></div>
+            <div><span data-i18n="status.firmware">Firmware</span><strong class="mono" id="identityFirmware">--</strong></div>
+            <div><span data-i18n="status.poll">Останній poll</span><strong id="pollLatency">--</strong></div>
           </div>
-          <div class="health-strip"><span class="health-icon">✓</span><span id="healthMessage">Read-only канал активний</span></div>
+          <div class="health-strip"><span class="health-icon">✓</span><span id="healthMessage" data-i18n="health.active">Read-only канал активний</span></div>
         </aside>
       </section>
 
       <section class="section-heading telemetry-heading reveal">
-        <div><p class="section-kicker">04 / TELEMETRY</p><h2>Деталі сигналу</h2></div>
+        <div><p class="section-kicker" data-i18n="telemetry.kicker">04 / TELEMETRY</p><h2 data-i18n="telemetry.title">Деталі сигналу</h2></div>
       </section>
       <section class="telemetry-grid reveal">
-        <article class="panel telemetry-card"><div class="telemetry-title"><span class="telemetry-glyph">AC</span><span>AC output</span></div><div class="telemetry-main" id="inverterVoltage">-- V</div><dl><div><dt>Струм</dt><dd id="inverterCurrent">-- A</dd></div><div><dt>Частота</dt><dd id="inverterFrequency">-- Hz</dd></div><div><dt>Reactive</dt><dd id="inverterReactive">-- var</dd></div></dl></article>
-        <article class="panel telemetry-card"><div class="telemetry-title"><span class="telemetry-glyph">DC</span><span>DC / bus</span></div><div class="telemetry-main" id="busVoltage">-- V</div><dl><div><dt>Battery current</dt><dd id="batteryCurrent">-- raw</dd></div><div><dt>PV voltage</dt><dd id="pvVoltageDetail">-- V</dd></div><div><dt>PV current</dt><dd id="pvCurrentDetail">-- A</dd></div></dl></article>
-        <article class="panel telemetry-card"><div class="telemetry-title"><span class="telemetry-glyph">°C</span><span>Temperatures</span></div><div class="temperature-main"><div><strong id="tempAc">--</strong><span>AC radiator</span></div><div><strong id="tempDc">--</strong><span>DC radiator</span></div></div><dl><div><dt>Transformer</dt><dd id="tempTransformer">-- °C</dd></div><div><dt>Charger radiator</dt><dd id="tempCharger">-- °C</dd></div></dl></article>
-        <article class="panel telemetry-card"><div class="telemetry-title"><span class="telemetry-glyph">Σ</span><span>Accumulated</span></div><div class="telemetry-main" id="accumulatedLoad">-- kWh</div><dl><div><dt>Charged</dt><dd id="accumulatedCharge">-- kWh</dd></div><div><dt>Discharged</dt><dd id="accumulatedDischarge">-- kWh</dd></div><div><dt>Charger uptime</dt><dd id="chargerUptime">--</dd></div></dl></article>
+        <article class="panel telemetry-card"><div class="telemetry-title"><span class="telemetry-glyph">AC</span><span data-i18n="telemetry.ac">AC output</span></div><div class="telemetry-main" id="inverterVoltage">-- V</div><dl><div><dt data-i18n="telemetry.current">Струм</dt><dd id="inverterCurrent">-- A</dd></div><div><dt data-i18n="telemetry.frequency">Частота</dt><dd id="inverterFrequency">-- Hz</dd></div><div><dt data-i18n="telemetry.reactive">Reactive</dt><dd id="inverterReactive">-- var</dd></div></dl></article>
+        <article class="panel telemetry-card"><div class="telemetry-title"><span class="telemetry-glyph">DC</span><span data-i18n="telemetry.dc">DC / bus</span></div><div class="telemetry-main" id="busVoltage">-- V</div><dl><div><dt data-i18n="telemetry.battery_current">Battery current</dt><dd id="batteryCurrent">-- raw</dd></div><div><dt data-i18n="telemetry.pv_voltage">PV voltage</dt><dd id="pvVoltageDetail">-- V</dd></div><div><dt data-i18n="telemetry.pv_current">PV current</dt><dd id="pvCurrentDetail">-- A</dd></div></dl></article>
+        <article class="panel telemetry-card"><div class="telemetry-title"><span class="telemetry-glyph">°C</span><span data-i18n="telemetry.temperatures">Temperatures</span></div><div class="temperature-main"><div><strong id="tempAc">--</strong><span data-i18n="telemetry.ac_radiator">AC radiator</span></div><div><strong id="tempDc">--</strong><span data-i18n="telemetry.dc_radiator">DC radiator</span></div></div><dl><div><dt data-i18n="telemetry.transformer">Transformer</dt><dd id="tempTransformer">-- °C</dd></div><div><dt data-i18n="telemetry.charger_radiator">Charger radiator</dt><dd id="tempCharger">-- °C</dd></div></dl></article>
+        <article class="panel telemetry-card"><div class="telemetry-title"><span class="telemetry-glyph">Σ</span><span data-i18n="telemetry.accumulated">Accumulated</span></div><div class="telemetry-main" id="accumulatedLoad">-- kWh</div><dl><div><dt data-i18n="telemetry.charged">Charged</dt><dd id="accumulatedCharge">-- kWh</dd></div><div><dt data-i18n="telemetry.discharged">Discharged</dt><dd id="accumulatedDischarge">-- kWh</dd></div><div><dt data-i18n="telemetry.uptime">Charger uptime</dt><dd id="chargerUptime">--</dd></div></dl></article>
       </section>
 
       <section class="lower-grid reveal">
-        <article class="panel config-panel"><div class="panel-heading"><div><p class="section-kicker">05 / CONFIG</p><h2>Параметри</h2></div><span class="read-only-tag">READ ONLY</span></div><div class="config-columns"><div><h3>Зарядний контур</h3><div id="chargerConfig" class="key-value-list"></div></div><div><h3>Інверторний контур</h3><div id="inverterConfig" class="key-value-list"></div></div></div></article>
-        <article class="panel diagnostics-panel"><div class="panel-heading"><div><p class="section-kicker">06 / DIAGNOSTICS</p><h2>Діагностика</h2></div><span class="diagnostic-badge" id="diagnosticBadge">NOMINAL</span></div><div id="diagnosticsList" class="diagnostic-list"></div><details class="raw-details"><summary>Raw register frames <span>розгорнути</span></summary><div id="rawRegisters"></div></details></article>
+        <article class="panel config-panel"><div class="panel-heading"><div><p class="section-kicker" data-i18n="config.kicker">05 / CONFIG</p><h2 data-i18n="config.title">Параметри</h2></div><span class="read-only-tag" data-i18n="config.readonly">READ ONLY</span></div><div class="config-columns"><div><h3 data-i18n="config.charger">Зарядний контур</h3><div id="chargerConfig" class="key-value-list"></div></div><div><h3 data-i18n="config.inverter">Інверторний контур</h3><div id="inverterConfig" class="key-value-list"></div></div></div></article>
+        <article class="panel diagnostics-panel"><div class="panel-heading"><div><p class="section-kicker" data-i18n="diagnostics.kicker">06 / DIAGNOSTICS</p><h2 data-i18n="diagnostics.title">Діагностика</h2></div><span class="diagnostic-badge" id="diagnosticBadge" data-i18n="diagnostics.nominal">NOMINAL</span></div><div id="diagnosticsList" class="diagnostic-list"></div><details class="raw-details"><summary><span data-i18n="diagnostics.raw">Raw register frames</span> <span class="raw-expand" data-i18n="diagnostics.expand">розгорнути</span></summary><div id="rawRegisters"></div></details></article>
       </section>
     </main>
 
-    <footer class="footer"><span>MUST POWER DESK <b>0.1.0</b></span><span>Local service · read-only Modbus RTU · UTC storage</span></footer>
+    <footer class="footer"><span>MUST POWER DESK <b>v0.1.1</b></span><span data-i18n="footer">Local service · read-only Modbus RTU · UTC storage</span></footer>
   </div>
 </body>
 </html>
