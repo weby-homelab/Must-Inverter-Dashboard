@@ -1,10 +1,326 @@
 (() => {
   "use strict";
 
+  const translations = {
+    uk: {
+      "page.title": "MUST Power Desk",
+      "page.description": "Локальний read-only моніторинг MUST PV18-3224 VPM II",
+      "language.label": "Мова",
+      "common.refresh": "Оновити дані",
+      "common.waiting": "очікування...",
+      "common.source_usb": "USB serial",
+      "common.error": "Помилка",
+      "common.code": "код",
+      "common.none": "немає",
+      "common.registers": "регістрів",
+      "common.state": "стан",
+      "common.not_available": "--",
+      "hero.device": "PV18-3224 VPM II",
+      "hero.live": "LIVE TELEMETRY",
+      "hero.title": "Енергія",
+      "hero.title2": "під контролем.",
+      "hero.description": "Локальний read-only моніторинг інвертора. Жодних команд керування, лише точні дані з вашого USB Modbus-каналу.",
+      "hero.last": "Останній знімок",
+      "hero.source": "Джерело",
+      "hero.nominal": "VA NOMINAL",
+      "snapshot.note": "Дані оновлюються автоматично кожні 15 секунд",
+      "section.now": "01 / ЗАРАЗ",
+      "section.flow": "Потік енергії",
+      "metric.pv.label": "PV input",
+      "metric.pv.unit": "сонячна генерація",
+      "metric.load.label": "Навантаження",
+      "metric.load.unit": "поточне навантаження",
+      "metric.grid.label": "Grid",
+      "metric.grid.unit": "потік мережі",
+      "metric.battery.label": "Battery",
+      "metric.battery.unit": "напруга батареї",
+      "metric.live": "LIVE",
+      "metric.group_power": "Потік потужності",
+      "metric.group_voltage": "Напруга",
+      "metric.group_current": "Струм / частота",
+      "metric.group_temperature": "Температура",
+      "metric.option_load_power": "Навантаження, W",
+      "metric.option_pv_power": "PV генерація, W",
+      "metric.option_grid_power": "Потік мережі, W",
+      "metric.option_battery_power": "Потужність батареї, W",
+      "metric.option_load_percent": "Навантаження, %",
+      "metric.option_battery_voltage": "Батарея, V",
+      "metric.option_pv_voltage": "PV voltage, V",
+      "metric.option_inverter_voltage": "AC output, V",
+      "metric.option_grid_voltage": "Grid, V",
+      "metric.option_bus_voltage": "DC bus, V",
+      "metric.option_pv_current": "PV current, A",
+      "metric.option_inverter_current": "AC output current, A",
+      "metric.option_grid_current": "Grid current, A",
+      "metric.option_load_current": "Load current, A",
+      "metric.option_inverter_frequency": "Inverter frequency, Hz",
+      "metric.option_grid_frequency": "Grid frequency, Hz",
+      "metric.option_ac_temp": "AC radiator, °C",
+      "metric.option_transformer_temp": "Transformer, °C",
+      "metric.option_dc_temp": "DC radiator, °C",
+      "history.kicker": "02 / ІСТОРІЯ",
+      "history.title": "Поведінка системи",
+      "history.range_aria": "Період історії",
+      "history.chart_aria": "Графік історичних показників",
+      "range.24h": "24 год",
+      "range.7d": "7 днів",
+      "range.30d": "30 днів",
+      "range.1y": "1 рік",
+      "range.all": "Усе",
+      "history.metric": "Показник",
+      "history.resolution": "Роздільність",
+      "period.minute": "1 хв",
+      "period.30m": "30 хв",
+      "period.hour": "Година",
+      "period.day": "День",
+      "period.week": "Тиждень",
+      "period.month": "Місяць",
+      "period.raw": "Raw samples",
+      "history.export": "CSV export",
+      "history.empty": "Історія з'явиться після перших збережених samples",
+      "history.no_data": "Немає збережених даних",
+      "history.points_one": "точка",
+      "history.points_many": "точок",
+      "history.shown_limit": "показано ліміт raw points",
+      "status.kicker": "03 / СТАН",
+      "status.title": "Система",
+      "status.model": "Модель",
+      "status.nominal": "Номінал",
+      "status.serial": "Serial number",
+      "status.firmware": "Firmware",
+      "status.poll": "Останній poll",
+      "system.waiting": "Очікування",
+      "system.connecting": "Підключення до інвертора",
+      "system.connected": "Підключено",
+      "system.ok": "Система в нормі",
+      "system.channel_ok": "Канал відповідає",
+      "system.partial": "Часткові дані",
+      "system.degraded": "Деградований режим",
+      "system.partial_detail": "Окремі блоки не відповідають",
+      "system.offline": "Немає зв'язку",
+      "system.offline_detail": "Очікування відповіді від порту",
+      "system.starting": "Запуск сервісу",
+      "system.starting_detail": "Перший poll ще не завершено",
+      "system.stale": "Дані застаріли",
+      "system.stale_detail": "Останній sample надто старий",
+      "health.active": "Read-only канал активний",
+      "health.stale_age": "Останній sample",
+      "telemetry.kicker": "04 / TELEMETRY",
+      "telemetry.title": "Деталі сигналу",
+      "telemetry.ac": "AC output",
+      "telemetry.dc": "DC / bus",
+      "telemetry.temperatures": "Температури",
+      "telemetry.accumulated": "Накопичені показники",
+      "telemetry.current": "Струм",
+      "telemetry.frequency": "Частота",
+      "telemetry.reactive": "Reactive",
+      "telemetry.battery_current": "Battery current",
+      "telemetry.pv_voltage": "PV voltage",
+      "telemetry.pv_current": "PV current",
+      "telemetry.ac_radiator": "AC radiator",
+      "telemetry.dc_radiator": "DC radiator",
+      "telemetry.transformer": "Transformer",
+      "telemetry.charger_radiator": "Charger radiator",
+      "telemetry.charged": "Charged",
+      "telemetry.discharged": "Discharged",
+      "telemetry.uptime": "Charger uptime",
+      "config.kicker": "05 / CONFIG",
+      "config.title": "Параметри",
+      "config.readonly": "READ ONLY",
+      "config.charger": "Зарядний контур",
+      "config.inverter": "Інверторний контур",
+      "config.charger_work": "Charger",
+      "config.absorb_voltage": "Absorb voltage",
+      "config.float_voltage": "Float voltage",
+      "config.battery_low": "Battery low",
+      "config.battery_high": "Battery high",
+      "config.max_current": "Max current",
+      "config.capacity": "Battery capacity",
+      "config.equalization": "Equalization",
+      "config.offgrid": "Off-grid",
+      "config.output": "Output",
+      "config.frequency": "Frequency",
+      "config.search_mode": "Search mode",
+      "config.energy_mode": "Energy mode",
+      "config.max_discharge": "Max discharge",
+      "config.grid_charge": "Grid charge",
+      "config.source_priority": "Source priority",
+      "diagnostics.kicker": "06 / DIAGNOSTICS",
+      "diagnostics.title": "Діагностика",
+      "diagnostics.nominal": "NOMINAL",
+      "diagnostics.channel": "Serial channel",
+      "diagnostics.latency": "Response latency",
+      "diagnostics.charger_error": "Charger error code",
+      "diagnostics.charger_warning": "Charger warning code",
+      "diagnostics.frames": "Frames",
+      "diagnostics.section_errors": "Section errors",
+      "diagnostics.raw": "Raw register frames",
+      "diagnostics.expand": "розгорнути",
+      "footer": "Local service · read-only Modbus RTU · UTC storage",
+    },
+    en: {
+      "page.title": "MUST Power Desk",
+      "page.description": "Local read-only monitoring for the MUST PV18-3224 VPM II",
+      "language.label": "Language",
+      "common.refresh": "Refresh data",
+      "common.waiting": "waiting...",
+      "common.source_usb": "USB serial",
+      "common.error": "Error",
+      "common.code": "code",
+      "common.none": "none",
+      "common.registers": "registers",
+      "common.state": "state",
+      "common.not_available": "--",
+      "hero.device": "PV18-3224 VPM II",
+      "hero.live": "LIVE TELEMETRY",
+      "hero.title": "Energy",
+      "hero.title2": "under control.",
+      "hero.description": "Local read-only inverter monitoring. No control commands, only precise data from your USB Modbus channel.",
+      "hero.last": "Last snapshot",
+      "hero.source": "Source",
+      "hero.nominal": "VA NOMINAL",
+      "snapshot.note": "Data refresh automatically every 15 seconds",
+      "section.now": "01 / NOW",
+      "section.flow": "Energy flow",
+      "metric.pv.label": "PV input",
+      "metric.pv.unit": "solar generation",
+      "metric.load.label": "Load",
+      "metric.load.unit": "current demand",
+      "metric.grid.label": "Grid",
+      "metric.grid.unit": "grid flow",
+      "metric.battery.label": "Battery",
+      "metric.battery.unit": "battery voltage",
+      "metric.live": "LIVE",
+      "metric.group_power": "Power flow",
+      "metric.group_voltage": "Voltage",
+      "metric.group_current": "Current / frequency",
+      "metric.group_temperature": "Temperature",
+      "metric.option_load_power": "Load, W",
+      "metric.option_pv_power": "PV generation, W",
+      "metric.option_grid_power": "Grid flow, W",
+      "metric.option_battery_power": "Battery power, W",
+      "metric.option_load_percent": "Load, %",
+      "metric.option_battery_voltage": "Battery, V",
+      "metric.option_pv_voltage": "PV voltage, V",
+      "metric.option_inverter_voltage": "AC output, V",
+      "metric.option_grid_voltage": "Grid, V",
+      "metric.option_bus_voltage": "DC bus, V",
+      "metric.option_pv_current": "PV current, A",
+      "metric.option_inverter_current": "AC output current, A",
+      "metric.option_grid_current": "Grid current, A",
+      "metric.option_load_current": "Load current, A",
+      "metric.option_inverter_frequency": "Inverter frequency, Hz",
+      "metric.option_grid_frequency": "Grid frequency, Hz",
+      "metric.option_ac_temp": "AC radiator, °C",
+      "metric.option_transformer_temp": "Transformer, °C",
+      "metric.option_dc_temp": "DC radiator, °C",
+      "history.kicker": "02 / HISTORY",
+      "history.title": "System behavior",
+      "history.range_aria": "History range",
+      "history.chart_aria": "Historical metrics chart",
+      "range.24h": "24 hrs",
+      "range.7d": "7 days",
+      "range.30d": "30 days",
+      "range.1y": "1 year",
+      "range.all": "All",
+      "history.metric": "Metric",
+      "history.resolution": "Resolution",
+      "period.minute": "1 min",
+      "period.30m": "30 min",
+      "period.hour": "Hour",
+      "period.day": "Day",
+      "period.week": "Week",
+      "period.month": "Month",
+      "period.raw": "Raw samples",
+      "history.export": "CSV export",
+      "history.empty": "History will appear after the first saved samples",
+      "history.no_data": "No saved data",
+      "history.points_one": "point",
+      "history.points_many": "points",
+      "history.shown_limit": "raw point limit shown",
+      "status.kicker": "03 / STATUS",
+      "status.title": "System",
+      "status.model": "Model",
+      "status.nominal": "Rated",
+      "status.serial": "Serial number",
+      "status.firmware": "Firmware",
+      "status.poll": "Last poll",
+      "system.waiting": "Waiting",
+      "system.connecting": "Connecting to inverter",
+      "system.connected": "Connected",
+      "system.ok": "System nominal",
+      "system.channel_ok": "Channel responding",
+      "system.partial": "Partial data",
+      "system.degraded": "Degraded mode",
+      "system.partial_detail": "Some sections are not responding",
+      "system.offline": "No connection",
+      "system.offline_detail": "Waiting for a port response",
+      "system.starting": "Starting service",
+      "system.starting_detail": "First poll is not complete",
+      "system.stale": "Data is stale",
+      "system.stale_detail": "The last sample is too old",
+      "health.active": "Read-only channel active",
+      "health.stale_age": "Last sample",
+      "telemetry.kicker": "04 / TELEMETRY",
+      "telemetry.title": "Signal details",
+      "telemetry.ac": "AC output",
+      "telemetry.dc": "DC / bus",
+      "telemetry.temperatures": "Temperatures",
+      "telemetry.accumulated": "Accumulated",
+      "telemetry.current": "Current",
+      "telemetry.frequency": "Frequency",
+      "telemetry.reactive": "Reactive",
+      "telemetry.battery_current": "Battery current",
+      "telemetry.pv_voltage": "PV voltage",
+      "telemetry.pv_current": "PV current",
+      "telemetry.ac_radiator": "AC radiator",
+      "telemetry.dc_radiator": "DC radiator",
+      "telemetry.transformer": "Transformer",
+      "telemetry.charger_radiator": "Charger radiator",
+      "telemetry.charged": "Charged",
+      "telemetry.discharged": "Discharged",
+      "telemetry.uptime": "Charger uptime",
+      "config.kicker": "05 / CONFIG",
+      "config.title": "Configuration",
+      "config.readonly": "READ ONLY",
+      "config.charger": "Charger circuit",
+      "config.inverter": "Inverter circuit",
+      "config.charger_work": "Charger",
+      "config.absorb_voltage": "Absorb voltage",
+      "config.float_voltage": "Float voltage",
+      "config.battery_low": "Battery low",
+      "config.battery_high": "Battery high",
+      "config.max_current": "Max current",
+      "config.capacity": "Battery capacity",
+      "config.equalization": "Equalization",
+      "config.offgrid": "Off-grid",
+      "config.output": "Output",
+      "config.frequency": "Frequency",
+      "config.search_mode": "Search mode",
+      "config.energy_mode": "Energy mode",
+      "config.max_discharge": "Max discharge",
+      "config.grid_charge": "Grid charge",
+      "config.source_priority": "Source priority",
+      "diagnostics.kicker": "06 / DIAGNOSTICS",
+      "diagnostics.title": "Diagnostics",
+      "diagnostics.nominal": "NOMINAL",
+      "diagnostics.channel": "Serial channel",
+      "diagnostics.latency": "Response latency",
+      "diagnostics.charger_error": "Charger error code",
+      "diagnostics.charger_warning": "Charger warning code",
+      "diagnostics.frames": "Frames",
+      "diagnostics.section_errors": "Section errors",
+      "diagnostics.raw": "Raw register frames",
+      "diagnostics.expand": "expand",
+      "footer": "Local service · read-only Modbus RTU · UTC storage",
+    },
+  };
+
   const state = {
     range: "24h",
-    period: "hour",
+    period: "30m",
     metric: "load_power_w",
+    language: readLanguage(),
     current: null,
     health: null,
     history: null,
@@ -12,34 +328,67 @@
   };
 
   const metricMeta = {
-    load_power_w: { label: "Навантаження", unit: "W", color: "#efb35b", decimals: 0 },
-    pv_power_w: { label: "PV генерація", unit: "W", color: "#56d8db", decimals: 0 },
-    grid_power_w: { label: "Потік мережі", unit: "W", color: "#91a8ff", decimals: 0 },
-    battery_power_w: { label: "Потужність батареї", unit: "W", color: "#71d39a", decimals: 0 },
-    pv_voltage_v: { label: "PV voltage", unit: "V", color: "#56d8db", decimals: 1 },
-    battery_voltage_v: { label: "Батарея", unit: "V", color: "#71d39a", decimals: 2 },
-    inverter_voltage_v: { label: "AC output", unit: "V", color: "#91a8ff", decimals: 1 },
-    grid_voltage_v: { label: "Grid voltage", unit: "V", color: "#91a8ff", decimals: 1 },
-    bus_voltage_v: { label: "DC bus", unit: "V", color: "#c18bff", decimals: 1 },
-    pv_current_a: { label: "PV current", unit: "A", color: "#56d8db", decimals: 1 },
-    inverter_current_a: { label: "AC output current", unit: "A", color: "#91a8ff", decimals: 1 },
-    grid_current_a: { label: "Grid current", unit: "A", color: "#91a8ff", decimals: 1 },
-    load_current_a: { label: "Load current", unit: "A", color: "#efb35b", decimals: 1 },
-    inverter_frequency_hz: { label: "Inverter frequency", unit: "Hz", color: "#c18bff", decimals: 2 },
-    grid_frequency_hz: { label: "Grid frequency", unit: "Hz", color: "#c18bff", decimals: 2 },
-    load_percent: { label: "Навантаження", unit: "%", color: "#efb35b", decimals: 0 },
-    ac_radiator_temperature_c: { label: "AC radiator", unit: "°C", color: "#efb35b", decimals: 0 },
-    transformer_temperature_c: { label: "Transformer", unit: "°C", color: "#efb35b", decimals: 0 },
-    dc_radiator_temperature_c: { label: "DC radiator", unit: "°C", color: "#efb35b", decimals: 0 },
+    load_power_w: { labelKey: "metric.load.label", unit: "W", color: "#efb35b", decimals: 0 },
+    pv_power_w: { labelKey: "metric.pv.label", unit: "W", color: "#56d8db", decimals: 0 },
+    grid_power_w: { labelKey: "metric.grid.label", unit: "W", color: "#91a8ff", decimals: 0 },
+    battery_power_w: { labelKey: "metric.battery.label", unit: "W", color: "#71d39a", decimals: 0 },
+    pv_voltage_v: { labelKey: "telemetry.pv_voltage", unit: "V", color: "#56d8db", decimals: 1 },
+    battery_voltage_v: { labelKey: "metric.battery.label", unit: "V", color: "#71d39a", decimals: 2 },
+    inverter_voltage_v: { labelKey: "telemetry.ac", unit: "V", color: "#91a8ff", decimals: 1 },
+    grid_voltage_v: { labelKey: "metric.grid.label", unit: "V", color: "#91a8ff", decimals: 1 },
+    bus_voltage_v: { labelKey: "telemetry.dc", unit: "V", color: "#c18bff", decimals: 1 },
+    pv_current_a: { labelKey: "telemetry.pv_current", unit: "A", color: "#56d8db", decimals: 1 },
+    inverter_current_a: { labelKey: "telemetry.ac", unit: "A", color: "#91a8ff", decimals: 1 },
+    grid_current_a: { labelKey: "metric.grid.label", unit: "A", color: "#91a8ff", decimals: 1 },
+    load_current_a: { labelKey: "metric.load.label", unit: "A", color: "#efb35b", decimals: 1 },
+    inverter_frequency_hz: { labelKey: "telemetry.frequency", unit: "Hz", color: "#c18bff", decimals: 2 },
+    grid_frequency_hz: { labelKey: "telemetry.frequency", unit: "Hz", color: "#c18bff", decimals: 2 },
+    load_percent: { labelKey: "metric.load.label", unit: "%", color: "#efb35b", decimals: 0 },
+    ac_radiator_temperature_c: { labelKey: "telemetry.ac_radiator", unit: "°C", color: "#efb35b", decimals: 0 },
+    transformer_temperature_c: { labelKey: "telemetry.transformer", unit: "°C", color: "#efb35b", decimals: 0 },
+    dc_radiator_temperature_c: { labelKey: "telemetry.dc_radiator", unit: "°C", color: "#efb35b", decimals: 0 },
   };
 
   const $ = (id) => document.getElementById(id);
   const setText = (id, value) => { const node = $(id); if (node) node.textContent = value; };
   const safeNumber = (value) => typeof value === "number" && Number.isFinite(value);
 
+  function readLanguage() {
+    try {
+      return localStorage.getItem("must-power-desk-language") === "en" ? "en" : "uk";
+    } catch (error) {
+      return "uk";
+    }
+  }
+
+  function t(key) {
+    return translations[state.language][key] || translations.uk[key] || key;
+  }
+
+  function applyLanguage() {
+    document.documentElement.lang = state.language === "en" ? "en" : "uk";
+    document.title = t("page.title");
+    const description = document.querySelector('meta[name="description"]');
+    if (description) description.content = t("page.description");
+    document.querySelectorAll("[data-i18n]").forEach((node) => { node.textContent = t(node.dataset.i18n); });
+    document.querySelectorAll("[data-i18n-label]").forEach((node) => { node.label = t(node.dataset.i18nLabel); });
+    document.querySelectorAll("[data-i18n-title]").forEach((node) => { node.title = t(node.dataset.i18nTitle); });
+    document.querySelectorAll("[data-i18n-aria-label]").forEach((node) => { node.setAttribute("aria-label", t(node.dataset.i18nAriaLabel)); });
+    document.querySelectorAll("[data-lang]").forEach((button) => {
+      const active = button.dataset.lang === state.language;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+    if (state.health) renderHealth(state.health);
+    if (state.current) renderCurrent(state.current);
+    if (state.history) renderHistory(state.history);
+  }
+
+  function locale() { return state.language === "en" ? "en-GB" : "uk-UA"; }
+
   function number(value, decimals = 0) {
     if (!safeNumber(value)) return "--";
-    return new Intl.NumberFormat("uk-UA", { maximumFractionDigits: decimals, minimumFractionDigits: decimals }).format(value);
+    return new Intl.NumberFormat(locale(), { maximumFractionDigits: decimals, minimumFractionDigits: decimals }).format(value);
   }
 
   function power(value) {
@@ -53,28 +402,27 @@
   }
 
   function timeLabel(iso) {
-    if (!iso) return "очікування...";
+    if (!iso) return t("common.waiting");
     const date = new Date(iso);
     if (Number.isNaN(date.getTime())) return "--";
-    return new Intl.DateTimeFormat("uk-UA", { dateStyle: "short", timeStyle: "medium" }).format(date);
+    return new Intl.DateTimeFormat(locale(), { dateStyle: "short", timeStyle: "medium" }).format(date);
   }
 
   function shortTime(iso, period = state.period) {
     const date = new Date(iso);
     if (Number.isNaN(date.getTime())) return "";
-    if (period === "month" || period === "week") return new Intl.DateTimeFormat("uk-UA", { month: "short", day: "numeric" }).format(date);
-    if (period === "day") return new Intl.DateTimeFormat("uk-UA", { month: "short", day: "numeric" }).format(date);
-    return new Intl.DateTimeFormat("uk-UA", { hour: "2-digit", minute: "2-digit" }).format(date);
+    if (period === "month" || period === "week" || period === "day") return new Intl.DateTimeFormat(locale(), { month: "short", day: "numeric" }).format(date);
+    return new Intl.DateTimeFormat(locale(), { hour: "2-digit", minute: "2-digit" }).format(date);
   }
 
   function statusMeta(status) {
     return {
-      online: ["Підключено", "Система в нормі", "Канал відповідає"],
-      degraded: ["Часткові дані", "Деградований режим", "Окремі блоки не відповідають"],
-      offline: ["Немає зв'язку", "Offline", "Очікування відповіді від порту"],
-      starting: ["Запуск сервісу", "Запуск", "Перший poll ще не завершено"],
-      stale: ["Дані застаріли", "Stale", "Останній sample надто старий"],
-    }[status] || ["Невідомо", "Невідомий стан", "Перевірте health endpoint"];
+      online: [t("system.connected"), t("system.ok"), t("system.channel_ok")],
+      degraded: [t("system.partial"), t("system.degraded"), t("system.partial_detail")],
+      offline: [t("system.offline"), t("system.offline"), t("system.offline_detail")],
+      starting: [t("system.starting"), t("system.waiting"), t("system.starting_detail")],
+      stale: [t("system.stale"), t("system.stale"), t("system.stale_detail")],
+    }[status] || [t("common.not_available"), t("common.not_available"), t("common.not_available")];
   }
 
   async function getJson(url) {
@@ -97,12 +445,13 @@
     setText("systemStateTitle", title);
     setText("systemStateText", detail);
     setText("pollLatency", safeNumber(health.latency_ms) ? `${number(health.latency_ms, 0)} ms` : "--");
-    const error = health.last_error ? `Помилка: ${health.last_error}` : "Read-only канал активний";
-    setText("healthMessage", status === "online" ? "Read-only канал активний" : error);
+    const error = health.last_error ? `${t("common.error")}: ${health.last_error}` : t("health.active");
+    const staleAge = safeNumber(health.sample_age_seconds) ? ` · ${number(health.sample_age_seconds, 0)} s` : "";
+    setText("healthMessage", status === "online" ? t("health.active") : status === "stale" ? `${t("health.stale_age")}${staleAge}` : error);
     const diagnostic = $("diagnosticBadge");
     if (diagnostic) {
       diagnostic.dataset.state = status;
-      diagnostic.textContent = status === "online" ? "NOMINAL" : status.toUpperCase();
+      diagnostic.textContent = status === "online" ? t("diagnostics.nominal") : status.toUpperCase();
     }
   }
 
@@ -114,7 +463,7 @@
     const inverter = (snapshot.status && snapshot.status.inverter) || {};
     const charger = (snapshot.status && snapshot.status.charger) || {};
     setText("lastUpdated", timeLabel(snapshot.captured_at));
-    setText("sourcePort", snapshot.source ? `${snapshot.source.port} · ID ${snapshot.source.slave_id}` : "USB serial");
+    setText("sourcePort", snapshot.source ? `${snapshot.source.port} · ID ${snapshot.source.slave_id}` : t("common.source_usb"));
     setText("pvPower", power(metrics.pv_power_w));
     setText("pvVoltage", valueWithUnit(metrics.pv_voltage_v, "V", 1));
     setText("pvCurrent", valueWithUnit(metrics.pv_current_a, "A", 1));
@@ -126,7 +475,7 @@
     setText("gridFrequency", valueWithUnit(metrics.grid_frequency_hz, "Hz", 2));
     setText("batteryVoltage", valueWithUnit(metrics.battery_voltage_v, "V", 2));
     setText("batteryPower", valueWithUnit(metrics.battery_power_w, "W", 0));
-    setText("batteryState", `стан ${stateLabel(inverter.work_state_code)}`);
+    setText("batteryState", `${t("common.state")} ${stateLabel(inverter.work_state_code)}`);
     const loadBar = $("loadBar");
     if (loadBar) loadBar.style.width = `${Math.max(0, Math.min(100, metrics.load_percent || 0))}%`;
     const batteryBar = $("batteryBar");
@@ -159,8 +508,14 @@
   }
 
   function stateLabel(code) {
-    if (code == null) return "--";
-    return ({ 0: "standby", 1: "charging", 2: "inverting", 3: "fault" })[code] || `code ${code}`;
+    if (code == null) return t("common.not_available");
+    const labels = {
+      0: state.language === "en" ? "standby" : "очікування",
+      1: state.language === "en" ? "charging" : "заряджання",
+      2: state.language === "en" ? "inverting" : "інвертування",
+      3: state.language === "en" ? "fault" : "помилка",
+    };
+    return labels[code] || `${t("common.code")} ${code}`;
   }
 
   function batteryVoltagePosition(voltage, configuration) {
@@ -179,24 +534,24 @@
     const charger = configuration && configuration.charger;
     const inverter = configuration && configuration.inverter;
     const chargerRows = [
-      ["Charger", yesNo(charger && charger.charger_work_enabled)],
-      ["Absorb voltage", valueWithUnit(charger && charger.absorb_voltage_v, "V", 1)],
-      ["Float voltage", valueWithUnit(charger && charger.float_voltage_v, "V", 1)],
-      ["Battery low", valueWithUnit(charger && charger.battery_low_voltage_v, "V", 1)],
-      ["Battery high", valueWithUnit(charger && charger.battery_high_voltage_v, "V", 1)],
-      ["Max current", valueWithUnit(charger && charger.max_charger_current_a, "A", 1)],
-      ["Battery capacity", valueWithUnit(charger && charger.battery_capacity_ah, "Ah", 0)],
-      ["Equalization", yesNo(charger && charger.equalization_enabled)],
+      [t("config.charger_work"), yesNo(charger && charger.charger_work_enabled)],
+      [t("config.absorb_voltage"), valueWithUnit(charger && charger.absorb_voltage_v, "V", 1)],
+      [t("config.float_voltage"), valueWithUnit(charger && charger.float_voltage_v, "V", 1)],
+      [t("config.battery_low"), valueWithUnit(charger && charger.battery_low_voltage_v, "V", 1)],
+      [t("config.battery_high"), valueWithUnit(charger && charger.battery_high_voltage_v, "V", 1)],
+      [t("config.max_current"), valueWithUnit(charger && charger.max_charger_current_a, "A", 1)],
+      [t("config.capacity"), valueWithUnit(charger && charger.battery_capacity_ah, "Ah", 0)],
+      [t("config.equalization"), yesNo(charger && charger.equalization_enabled)],
     ];
     const inverterRows = [
-      ["Off-grid", yesNo(inverter && inverter.offgrid_work_enabled)],
-      ["Output", valueWithUnit(inverter && inverter.output_voltage_v, "V", 1)],
-      ["Frequency", valueWithUnit(inverter && inverter.output_frequency_hz, "Hz", 2)],
-      ["Search mode", yesNo(inverter && inverter.search_mode_enabled)],
-      ["Energy mode", code(inverter && inverter.energy_use_mode_code)],
-      ["Max discharge", valueWithUnit(inverter && inverter.max_discharger_current_a, "A", 1)],
-      ["Grid charge", valueWithUnit(inverter && inverter.grid_max_charger_current_a, "A", 1)],
-      ["Source priority", code(inverter && inverter.charger_source_priority_code)],
+      [t("config.offgrid"), yesNo(inverter && inverter.offgrid_work_enabled)],
+      [t("config.output"), valueWithUnit(inverter && inverter.output_voltage_v, "V", 1)],
+      [t("config.frequency"), valueWithUnit(inverter && inverter.output_frequency_hz, "Hz", 2)],
+      [t("config.search_mode"), yesNo(inverter && inverter.search_mode_enabled)],
+      [t("config.energy_mode"), code(inverter && inverter.energy_use_mode_code)],
+      [t("config.max_discharge"), valueWithUnit(inverter && inverter.max_discharger_current_a, "A", 1)],
+      [t("config.grid_charge"), valueWithUnit(inverter && inverter.grid_max_charger_current_a, "A", 1)],
+      [t("config.source_priority"), code(inverter && inverter.charger_source_priority_code)],
     ];
     renderKeyValues("chargerConfig", chargerRows);
     renderKeyValues("inverterConfig", inverterRows);
@@ -204,10 +559,10 @@
 
   function yesNo(value) {
     if (typeof value !== "boolean") return "--";
-    return value ? "Так" : "Ні";
+    return value ? (state.language === "en" ? "Yes" : "Так") : (state.language === "en" ? "No" : "Ні");
   }
 
-  function code(value) { return value == null ? "--" : `code ${value}`; }
+  function code(value) { return value == null ? t("common.not_available") : `${t("common.code")} ${value}`; }
 
   function renderKeyValues(id, rows) {
     const root = $(id);
@@ -232,12 +587,12 @@
     const errors = connection.section_errors || {};
     const raw = snapshot.raw || {};
     const rows = [
-      ["Serial channel", connection.status || "unknown"],
-      ["Response latency", valueWithUnit(connection.latency_ms, "ms", 0)],
-      ["Charger error code", code(snapshot.status && snapshot.status.charger && snapshot.status.charger.error_code)],
-      ["Charger warning code", code(snapshot.status && snapshot.status.charger && snapshot.status.charger.warning_code)],
-      ["Frames", `${Object.keys(raw).length} / ${Object.keys(raw).length + Object.keys(errors).length}`],
-      ["Section errors", Object.keys(errors).length ? Object.keys(errors).join(", ") : "none"],
+      [t("diagnostics.channel"), connection.status || t("common.not_available")],
+      [t("diagnostics.latency"), valueWithUnit(connection.latency_ms, "ms", 0)],
+      [t("diagnostics.charger_error"), code(snapshot.status && snapshot.status.charger && snapshot.status.charger.error_code)],
+      [t("diagnostics.charger_warning"), code(snapshot.status && snapshot.status.charger && snapshot.status.charger.warning_code)],
+      [t("diagnostics.frames"), `${Object.keys(raw).length} / ${Object.keys(raw).length + Object.keys(errors).length}`],
+      [t("diagnostics.section_errors"), Object.keys(errors).length ? Object.keys(errors).join(", ") : t("common.none")],
     ];
     root.replaceChildren();
     rows.forEach(([label, value]) => {
@@ -259,7 +614,7 @@
       const wrapper = document.createElement("div");
       wrapper.className = "raw-section";
       const title = document.createElement("h4");
-      title.textContent = `${section} · ${registers.length} registers`;
+      title.textContent = `${section} · ${registers.length} ${t("common.registers")}`;
       const table = document.createElement("table");
       table.className = "raw-table";
       const body = document.createElement("tbody");
@@ -302,16 +657,18 @@
     } catch (error) {
       if (requestId !== state.historyRequest) return;
       state.history = null;
-      setText("historySummary", `Не вдалося завантажити історію: ${error.message}`);
+      setText("historySummary", `${t("common.error")}: ${error.message}`);
       renderChart();
     }
   }
 
   function renderHistory(history) {
     const count = history.points ? history.points.length : 0;
-    const suffix = history.truncated ? " · показано ліміт raw points" : "";
-    setText("historySummary", `${count} ${count === 1 ? "точка" : "точок"} · ${history.period}${suffix}`);
-    setText("legendLabel", (metricMeta[state.metric] || metricMeta.load_power_w).label);
+    const suffix = history.truncated ? ` · ${t("history.shown_limit")}` : "";
+    const pointWord = count === 1 ? t("history.points_one") : t("history.points_many");
+    const periodLabel = t(`period.${history.period || state.period}`);
+    setText("historySummary", `${count} ${pointWord} · ${periodLabel}${suffix}`);
+    setText("legendLabel", t((metricMeta[state.metric] || metricMeta.load_power_w).labelKey));
     renderChart();
   }
 
@@ -412,7 +769,12 @@
   }
 
   function bindControls() {
-    const defaultPeriods = { "24h": "hour", "7d": "day", "30d": "day", "1y": "month", all: "month" };
+    document.querySelectorAll("[data-lang]").forEach((button) => button.addEventListener("click", () => {
+      state.language = button.dataset.lang === "en" ? "en" : "uk";
+      try { localStorage.setItem("must-power-desk-language", state.language); } catch (error) { /* storage can be unavailable */ }
+      applyLanguage();
+    }));
+    const defaultPeriods = { "24h": "30m", "7d": "day", "30d": "day", "1y": "month", all: "month" };
     document.querySelectorAll("[data-range]").forEach((button) => button.addEventListener("click", () => {
       document.querySelectorAll("[data-range]").forEach((item) => item.classList.remove("is-active"));
       button.classList.add("is-active");
@@ -431,6 +793,7 @@
   }
 
   async function boot() {
+    applyLanguage();
     bindControls();
     await Promise.all([loadCurrent(), loadHistory()]);
     connectEvents();

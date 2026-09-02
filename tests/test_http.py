@@ -6,7 +6,7 @@ import urllib.request
 from pathlib import Path
 
 from must_dashboard.config import Settings
-from must_dashboard.http import AppContext, DashboardServer
+from must_dashboard.http import AppContext, DashboardServer, _auto_period
 from must_dashboard.poller import EventHub
 from must_dashboard.storage import Storage
 
@@ -24,6 +24,11 @@ class FakePoller:
 
 
 class HttpTests(unittest.TestCase):
+    def test_auto_period_uses_fine_resolution_for_short_ranges(self):
+        self.assertEqual(_auto_period(3600), "minute")
+        self.assertEqual(_auto_period(24 * 3600), "30m")
+        self.assertEqual(_auto_period(7 * 86400), "day")
+
     def test_healthz_reports_readiness_and_security_headers(self):
         with tempfile.TemporaryDirectory() as directory:
             base_dir = Path(__file__).resolve().parents[1]
