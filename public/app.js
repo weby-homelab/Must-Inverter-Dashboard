@@ -23,7 +23,7 @@
       "hero.last": "Останній знімок",
       "hero.source": "Джерело",
       "hero.nominal": "VA NOMINAL",
-      "snapshot.note": "Дані оновлюються автоматично кожні 15 секунд",
+      "snapshot.note": "Дані оновлюються автоматично кожні 10 секунд",
       "section.now": "01 / ЗАРАЗ",
       "section.flow": "Потік енергії",
       "metric.pv.label": "PV input",
@@ -58,10 +58,36 @@
       "metric.option_ac_temp": "AC radiator, °C",
       "metric.option_transformer_temp": "Transformer, °C",
       "metric.option_dc_temp": "DC radiator, °C",
-      "history.kicker": "02 / ІСТОРІЯ",
+      "operations.kicker": "02 / ОПЕРАТИВНО",
+      "operations.title": "Оперативні графіки",
+      "operations.note": "Вибраний період · live-дані кожні 10 секунд",
+      "operations.aria_label": "Оперативні графіки моніторингу",
+      "operations.live": "LIVE · 10 S",
+      "operations.power.kicker": "POWER FLOW",
+      "operations.power.title": "Потік потужності",
+      "operations.power.aria_label": "Графік потоку потужності",
+      "operations.battery.kicker": "BATTERY",
+      "operations.battery.title": "Напруга батареї",
+      "operations.battery.aria_label": "Графік напруги батареї",
+      "operations.battery.caption": "Порогові значення з read-only конфігурації",
+      "operations.battery.low": "MIN",
+      "operations.battery.high": "MAX",
+      "operations.thermal.kicker": "THERMAL",
+      "operations.thermal.title": "Температури",
+      "operations.thermal.aria_label": "Графік температур",
+      "operations.legend.pv": "PV",
+      "operations.legend.load": "Навантаження",
+      "operations.legend.grid": "Grid",
+      "operations.legend.battery": "Battery",
+      "operations.legend.ac": "AC radiator",
+      "operations.legend.transformer": "Transformer",
+      "operations.legend.dc": "DC radiator",
+      "history.kicker": "03 / ІСТОРІЯ",
       "history.title": "Поведінка системи",
       "history.range_aria": "Період історії",
       "history.chart_aria": "Графік історичних показників",
+      "range.1h": "1 год",
+      "range.6h": "6 год",
       "range.24h": "24 год",
       "range.7d": "7 днів",
       "range.30d": "30 днів",
@@ -82,7 +108,7 @@
       "history.points_one": "точка",
       "history.points_many": "точок",
       "history.shown_limit": "показано ліміт raw points",
-      "status.kicker": "03 / СТАН",
+      "status.kicker": "04 / СТАН",
       "status.title": "Система",
       "status.model": "Модель",
       "status.nominal": "Номінал",
@@ -105,7 +131,7 @@
       "system.stale_detail": "Останній sample надто старий",
       "health.active": "Read-only канал активний",
       "health.stale_age": "Останній sample",
-      "telemetry.kicker": "04 / TELEMETRY",
+      "telemetry.kicker": "05 / TELEMETRY",
       "telemetry.title": "Деталі сигналу",
       "telemetry.ac": "AC output",
       "telemetry.dc": "DC / bus",
@@ -124,7 +150,7 @@
       "telemetry.charged": "Charged",
       "telemetry.discharged": "Discharged",
       "telemetry.uptime": "Charger uptime",
-      "config.kicker": "05 / CONFIG",
+      "config.kicker": "06 / CONFIG",
       "config.title": "Параметри",
       "config.readonly": "READ ONLY",
       "config.charger": "Зарядний контур",
@@ -145,7 +171,7 @@
       "config.max_discharge": "Max discharge",
       "config.grid_charge": "Grid charge",
       "config.source_priority": "Source priority",
-      "diagnostics.kicker": "06 / DIAGNOSTICS",
+      "diagnostics.kicker": "07 / DIAGNOSTICS",
       "diagnostics.title": "Діагностика",
       "diagnostics.nominal": "NOMINAL",
       "diagnostics.channel": "Serial channel",
@@ -179,7 +205,7 @@
       "hero.last": "Last snapshot",
       "hero.source": "Source",
       "hero.nominal": "VA NOMINAL",
-      "snapshot.note": "Data refresh automatically every 15 seconds",
+      "snapshot.note": "Data refresh automatically every 10 seconds",
       "section.now": "01 / NOW",
       "section.flow": "Energy flow",
       "metric.pv.label": "PV input",
@@ -214,10 +240,36 @@
       "metric.option_ac_temp": "AC radiator, °C",
       "metric.option_transformer_temp": "Transformer, °C",
       "metric.option_dc_temp": "DC radiator, °C",
-      "history.kicker": "02 / HISTORY",
+      "operations.kicker": "02 / OPERATIONS",
+      "operations.title": "Operational charts",
+      "operations.note": "Selected range · live data every 10 seconds",
+      "operations.aria_label": "Operational monitoring charts",
+      "operations.live": "LIVE · 10 S",
+      "operations.power.kicker": "POWER FLOW",
+      "operations.power.title": "Power flow",
+      "operations.power.aria_label": "Power flow chart",
+      "operations.battery.kicker": "BATTERY",
+      "operations.battery.title": "Battery voltage",
+      "operations.battery.aria_label": "Battery voltage chart",
+      "operations.battery.caption": "Thresholds from read-only configuration",
+      "operations.battery.low": "LOW",
+      "operations.battery.high": "HIGH",
+      "operations.thermal.kicker": "THERMAL",
+      "operations.thermal.title": "Temperatures",
+      "operations.thermal.aria_label": "Temperature chart",
+      "operations.legend.pv": "PV",
+      "operations.legend.load": "Load",
+      "operations.legend.grid": "Grid",
+      "operations.legend.battery": "Battery",
+      "operations.legend.ac": "AC radiator",
+      "operations.legend.transformer": "Transformer",
+      "operations.legend.dc": "DC radiator",
+      "history.kicker": "03 / HISTORY",
       "history.title": "System behavior",
       "history.range_aria": "History range",
       "history.chart_aria": "Historical metrics chart",
+      "range.1h": "1 hr",
+      "range.6h": "6 hrs",
       "range.24h": "24 hrs",
       "range.7d": "7 days",
       "range.30d": "30 days",
@@ -238,7 +290,7 @@
       "history.points_one": "point",
       "history.points_many": "points",
       "history.shown_limit": "raw point limit shown",
-      "status.kicker": "03 / STATUS",
+      "status.kicker": "04 / STATUS",
       "status.title": "System",
       "status.model": "Model",
       "status.nominal": "Rated",
@@ -261,7 +313,7 @@
       "system.stale_detail": "The last sample is too old",
       "health.active": "Read-only channel active",
       "health.stale_age": "Last sample",
-      "telemetry.kicker": "04 / TELEMETRY",
+      "telemetry.kicker": "05 / TELEMETRY",
       "telemetry.title": "Signal details",
       "telemetry.ac": "AC output",
       "telemetry.dc": "DC / bus",
@@ -280,7 +332,7 @@
       "telemetry.charged": "Charged",
       "telemetry.discharged": "Discharged",
       "telemetry.uptime": "Charger uptime",
-      "config.kicker": "05 / CONFIG",
+      "config.kicker": "06 / CONFIG",
       "config.title": "Configuration",
       "config.readonly": "READ ONLY",
       "config.charger": "Charger circuit",
@@ -301,7 +353,7 @@
       "config.max_discharge": "Max discharge",
       "config.grid_charge": "Grid charge",
       "config.source_priority": "Source priority",
-      "diagnostics.kicker": "06 / DIAGNOSTICS",
+      "diagnostics.kicker": "07 / DIAGNOSTICS",
       "diagnostics.title": "Diagnostics",
       "diagnostics.nominal": "NOMINAL",
       "diagnostics.channel": "Serial channel",
@@ -325,7 +377,13 @@
     health: null,
     history: null,
     historyRequest: 0,
+    livePoints: [],
+    refreshTimer: null,
   };
+
+  const REFRESH_INTERVAL_MS = 10_000;
+  const LIVE_BUFFER_MS = 6 * 60 * 60 * 1000;
+  const MAX_OPERATIONAL_POINTS = 2400;
 
   const metricMeta = {
     load_power_w: { labelKey: "metric.load.label", unit: "W", color: "#efb35b", decimals: 0 },
@@ -348,6 +406,43 @@
     transformer_temperature_c: { labelKey: "telemetry.transformer", unit: "°C", color: "#efb35b", decimals: 0 },
     dc_radiator_temperature_c: { labelKey: "telemetry.dc_radiator", unit: "°C", color: "#efb35b", decimals: 0 },
   };
+
+  const operationalChartSpecs = [
+    {
+      canvasId: "powerChart",
+      emptyId: "powerChartEmpty",
+      unit: "W",
+      decimals: 0,
+      zeroLine: true,
+      series: [
+        { metric: "pv_power_w", labelKey: "operations.legend.pv", color: "#56d8db" },
+        { metric: "load_power_w", labelKey: "operations.legend.load", color: "#efb35b" },
+        { metric: "grid_power_w", labelKey: "operations.legend.grid", color: "#91a8ff" },
+        { metric: "battery_power_w", labelKey: "operations.legend.battery", color: "#71d39a" },
+      ],
+    },
+    {
+      canvasId: "batteryChart",
+      emptyId: "batteryChartEmpty",
+      unit: "V",
+      decimals: 2,
+      references: "battery",
+      series: [
+        { metric: "battery_voltage_v", labelKey: "metric.battery.label", color: "#71d39a" },
+      ],
+    },
+    {
+      canvasId: "thermalChart",
+      emptyId: "thermalChartEmpty",
+      unit: "°C",
+      decimals: 0,
+      series: [
+        { metric: "ac_radiator_temperature_c", labelKey: "operations.legend.ac", color: "#efb35b" },
+        { metric: "transformer_temperature_c", labelKey: "operations.legend.transformer", color: "#ef7272" },
+        { metric: "dc_radiator_temperature_c", labelKey: "operations.legend.dc", color: "#c18bff" },
+      ],
+    },
+  ];
 
   const $ = (id) => document.getElementById(id);
   const setText = (id, value) => { const node = $(id); if (node) node.textContent = value; };
@@ -441,6 +536,7 @@
     const systemNode = $("systemState");
     if (badgeNode) { badgeNode.dataset.state = status; }
     if (systemNode) { systemNode.dataset.state = status; }
+    document.querySelectorAll(".operational-live").forEach((node) => { node.dataset.state = status; });
     setText("connectionLabel", badge);
     setText("systemStateTitle", title);
     setText("systemStateText", detail);
@@ -458,6 +554,7 @@
   function renderCurrent(snapshot) {
     if (!snapshot) return;
     state.current = snapshot;
+    rememberLivePoint(snapshot);
     const metrics = snapshot.metrics || {};
     const identity = snapshot.identity || {};
     const inverter = (snapshot.status && snapshot.status.inverter) || {};
@@ -505,6 +602,7 @@
     renderConfiguration(snapshot.configuration);
     renderDiagnostics(snapshot);
     renderRaw(snapshot.raw);
+    renderOperationalCharts();
   }
 
   function stateLabel(code) {
@@ -659,6 +757,7 @@
       state.history = null;
       setText("historySummary", `${t("common.error")}: ${error.message}`);
       renderChart();
+      renderOperationalCharts();
     }
   }
 
@@ -670,6 +769,7 @@
     setText("historySummary", `${count} ${pointWord} · ${periodLabel}${suffix}`);
     setText("legendLabel", t((metricMeta[state.metric] || metricMeta.load_power_w).labelKey));
     renderChart();
+    renderOperationalCharts();
   }
 
   function renderChart() {
@@ -737,6 +837,176 @@
     }
   }
 
+  function rememberLivePoint(snapshot) {
+    if (!snapshot || !snapshot.captured_at) return;
+    const point = { captured_at: snapshot.captured_at, ...(snapshot.metrics || {}) };
+    const existing = state.livePoints.findIndex((item) => item.captured_at === point.captured_at);
+    if (existing >= 0) state.livePoints[existing] = point;
+    else state.livePoints.push(point);
+    const cutoff = Date.now() - LIVE_BUFFER_MS;
+    state.livePoints = state.livePoints.filter((item) => {
+      const timestamp = Date.parse(item.captured_at);
+      return Number.isFinite(timestamp) && timestamp >= cutoff;
+    });
+  }
+
+  function operationalPoints() {
+    const historyPoints = state.history && Array.isArray(state.history.points) ? state.history.points : [];
+    const from = state.history && state.history.from ? Date.parse(state.history.from) : NaN;
+    const points = new Map();
+    [...historyPoints, ...state.livePoints].forEach((point) => {
+      const timestamp = Date.parse(point.captured_at);
+      if (!Number.isFinite(timestamp) || (Number.isFinite(from) && timestamp < from)) return;
+      points.set(point.captured_at, point);
+    });
+    return limitOperationalPoints([...points.values()].sort((left, right) => (
+      Date.parse(left.captured_at) - Date.parse(right.captured_at)
+    )));
+  }
+
+  function limitOperationalPoints(points) {
+    if (points.length <= MAX_OPERATIONAL_POINTS) return points;
+    return Array.from({ length: MAX_OPERATIONAL_POINTS }, (_, index) => (
+      points[Math.round(index * (points.length - 1) / (MAX_OPERATIONAL_POINTS - 1))]
+    ));
+  }
+
+  function batteryReferenceLines() {
+    const configuration = state.current && state.current.configuration;
+    const charger = configuration && configuration.charger;
+    const inverter = configuration && configuration.inverter;
+    const low = safeNumber(inverter && inverter.battery_low_voltage_v)
+      ? inverter.battery_low_voltage_v
+      : charger && charger.battery_low_voltage_v;
+    const high = safeNumber(inverter && inverter.battery_high_voltage_v)
+      ? inverter.battery_high_voltage_v
+      : charger && charger.battery_high_voltage_v;
+    return [
+      safeNumber(low) ? { value: low, label: t("operations.battery.low"), color: "#ef7272" } : null,
+      safeNumber(high) ? { value: high, label: t("operations.battery.high"), color: "#56d8db" } : null,
+    ].filter(Boolean);
+  }
+
+  function renderOperationalCharts() {
+    const points = operationalPoints();
+    operationalChartSpecs.forEach((spec) => drawOperationalChart(spec, points));
+  }
+
+  function drawOperationalChart(spec, points) {
+    const canvas = $(spec.canvasId);
+    const empty = $(spec.emptyId);
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    const width = Math.max(1, rect.width);
+    const height = Math.max(1, rect.height);
+    const ratio = Math.min(window.devicePixelRatio || 1, 2);
+    canvas.width = Math.max(1, Math.floor(width * ratio));
+    canvas.height = Math.max(1, Math.floor(height * ratio));
+    const ctx = canvas.getContext("2d");
+    ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+    ctx.clearRect(0, 0, width, height);
+    if (!points.length) {
+      if (empty) empty.classList.remove("is-hidden");
+      return;
+    }
+
+    const padding = { top: 14, right: 12, bottom: 27, left: 48 };
+    const chartWidth = Math.max(1, width - padding.left - padding.right);
+    const chartHeight = Math.max(1, height - padding.top - padding.bottom);
+    const references = spec.references === "battery" ? batteryReferenceLines() : [];
+    const seriesValues = spec.series.flatMap((series) => points.map((point) => point[series.metric]).filter(safeNumber));
+    if (!seriesValues.length) {
+      if (empty) empty.classList.remove("is-hidden");
+      return;
+    }
+    if (empty) empty.classList.add("is-hidden");
+    const values = [...seriesValues, ...references.map((reference) => reference.value)];
+    let min = Math.min(...values);
+    let max = Math.max(...values);
+    if (min === max) { min -= 1; max += 1; }
+    const paddingValue = (max - min) * 0.12;
+    min -= paddingValue;
+    max += paddingValue;
+    const x = (index) => padding.left + (points.length === 1
+      ? chartWidth / 2
+      : index / (points.length - 1) * chartWidth);
+    const y = (value) => padding.top + chartHeight - ((value - min) / (max - min)) * chartHeight;
+
+    ctx.font = "9px IBM Plex Mono, monospace";
+    ctx.lineWidth = 1;
+    for (let index = 0; index <= 3; index += 1) {
+      const lineY = padding.top + chartHeight * index / 3;
+      ctx.strokeStyle = "rgba(173, 194, 208, .10)";
+      ctx.beginPath();
+      ctx.moveTo(padding.left, lineY);
+      ctx.lineTo(width - padding.right, lineY);
+      ctx.stroke();
+      ctx.fillStyle = "#52616d";
+      ctx.fillText(formatAxis(max - (max - min) * index / 3, spec), 4, lineY + 3);
+    }
+
+    if (spec.zeroLine && min < 0 && max > 0) {
+      const zeroY = y(0);
+      ctx.strokeStyle = "rgba(232, 237, 240, .26)";
+      ctx.beginPath();
+      ctx.moveTo(padding.left, zeroY);
+      ctx.lineTo(width - padding.right, zeroY);
+      ctx.stroke();
+    }
+
+    references.forEach((reference) => {
+      const lineY = y(reference.value);
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = reference.color;
+      ctx.globalAlpha = 0.55;
+      ctx.beginPath();
+      ctx.moveTo(padding.left, lineY);
+      ctx.lineTo(width - padding.right, lineY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = reference.color;
+      ctx.fillText(`${reference.label} ${number(reference.value, spec.decimals)} ${spec.unit}`, padding.left + 5, lineY - 4);
+    });
+
+    spec.series.forEach((series) => {
+      let lastPoint = null;
+      let drawing = false;
+      ctx.beginPath();
+      points.forEach((point, index) => {
+        const value = point[series.metric];
+        if (!safeNumber(value)) {
+          drawing = false;
+          return;
+        }
+        const pointX = x(index);
+        const pointY = y(value);
+        if (drawing) ctx.lineTo(pointX, pointY);
+        else ctx.moveTo(pointX, pointY);
+        drawing = true;
+        lastPoint = [pointX, pointY];
+      });
+      ctx.strokeStyle = series.color;
+      ctx.lineWidth = 1.7;
+      ctx.lineJoin = "round";
+      ctx.lineCap = "round";
+      ctx.stroke();
+      if (lastPoint) {
+        ctx.fillStyle = series.color;
+        ctx.beginPath();
+        ctx.arc(lastPoint[0], lastPoint[1], 2.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    });
+
+    ctx.fillStyle = "#52616d";
+    const labels = Math.min(4, points.length);
+    for (let index = 0; index < labels; index += 1) {
+      const pointIndex = Math.round(index * (points.length - 1) / Math.max(1, labels - 1));
+      ctx.fillText(shortTime(points[pointIndex].captured_at), x(pointIndex) - 18, height - 7);
+    }
+  }
+
   function formatAxis(value, meta) {
     if (!safeNumber(value)) return "--";
     return `${number(value, meta.decimals)} ${meta.unit}`;
@@ -756,8 +1026,6 @@
         const payload = JSON.parse(event.data);
         renderHealth(payload.health);
         renderCurrent(payload.data);
-        window.clearTimeout(state.historyTimer);
-        state.historyTimer = window.setTimeout(loadHistory, 1000);
       } catch (error) { console.warn("Invalid snapshot event", error); }
     });
     events.addEventListener("health", (event) => {
@@ -768,13 +1036,21 @@
     };
   }
 
+  function startRefreshLoop() {
+    if (state.refreshTimer) window.clearInterval(state.refreshTimer);
+    state.refreshTimer = window.setInterval(() => {
+      loadCurrent();
+      loadHistory();
+    }, REFRESH_INTERVAL_MS);
+  }
+
   function bindControls() {
     document.querySelectorAll("[data-lang]").forEach((button) => button.addEventListener("click", () => {
       state.language = button.dataset.lang === "en" ? "en" : "uk";
       try { localStorage.setItem("must-power-desk-language", state.language); } catch (error) { /* storage can be unavailable */ }
       applyLanguage();
     }));
-    const defaultPeriods = { "24h": "30m", "7d": "day", "30d": "day", "1y": "month", all: "month" };
+    const defaultPeriods = { "1h": "minute", "6h": "minute", "24h": "30m", "7d": "day", "30d": "day", "1y": "month", all: "month" };
     document.querySelectorAll("[data-range]").forEach((button) => button.addEventListener("click", () => {
       document.querySelectorAll("[data-range]").forEach((item) => item.classList.remove("is-active"));
       button.classList.add("is-active");
@@ -797,6 +1073,7 @@
     bindControls();
     await Promise.all([loadCurrent(), loadHistory()]);
     connectEvents();
+    startRefreshLoop();
   }
 
   boot();

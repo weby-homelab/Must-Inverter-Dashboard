@@ -6,7 +6,7 @@ import urllib.request
 from pathlib import Path
 
 from must_dashboard.config import Settings
-from must_dashboard.http import AppContext, DashboardServer, _auto_period
+from must_dashboard.http import AppContext, DashboardServer, _auto_period, _range_start
 from must_dashboard.poller import EventHub
 from must_dashboard.storage import Storage
 
@@ -28,6 +28,13 @@ class HttpTests(unittest.TestCase):
         self.assertEqual(_auto_period(3600), "minute")
         self.assertEqual(_auto_period(24 * 3600), "30m")
         self.assertEqual(_auto_period(7 * 86400), "day")
+
+    def test_short_history_ranges_are_supported(self):
+        with tempfile.TemporaryDirectory() as directory:
+            storage = Storage(Path(directory) / "ranges.sqlite3")
+            end_ts = 1_000_000
+            self.assertEqual(_range_start("1h", end_ts, storage), end_ts - 3600)
+            self.assertEqual(_range_start("6h", end_ts, storage), end_ts - 6 * 3600)
 
     def test_healthz_reports_readiness_and_security_headers(self):
         with tempfile.TemporaryDirectory() as directory:

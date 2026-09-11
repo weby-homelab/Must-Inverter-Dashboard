@@ -59,7 +59,7 @@
           <p class="section-kicker" data-i18n="section.now">01 / ЗАРАЗ</p>
           <h2 data-i18n="section.flow">Потік енергії</h2>
         </div>
-        <p class="section-note" id="snapshotNote" data-i18n="snapshot.note">Дані оновлюються автоматично кожні 15 секунд</p>
+         <p class="section-note" id="snapshotNote" data-i18n="snapshot.note">Дані оновлюються автоматично кожні 10 секунд</p>
       </section>
 
       <section class="flow-grid reveal">
@@ -91,14 +91,56 @@
           <div class="metric-detail"><span id="batteryPower">-- W</span><span id="batteryState"><span data-i18n="common.state">стан</span> --</span></div>
           <div class="battery-track" title="Позиція напруги у робочому діапазоні, не оцінка SOC"><span id="batteryBar"></span></div>
         </article>
-      </section>
+       </section>
 
-      <section class="dashboard-columns reveal">
-        <article class="panel chart-panel">
-          <div class="panel-heading chart-heading">
-            <div><p class="section-kicker" data-i18n="history.kicker">02 / ІСТОРІЯ</p><h2 data-i18n="history.title">Поведінка системи</h2></div>
-            <div class="chart-controls" role="group" data-i18n-aria-label="history.range_aria" aria-label="Період історії">
-              <button type="button" class="range-button is-active" data-range="24h" data-i18n="range.24h">24 год</button>
+       <section class="section-heading reveal">
+         <div><p class="section-kicker" data-i18n="operations.kicker">02 / ОПЕРАТИВНО</p><h2 data-i18n="operations.title">Оперативні графіки</h2></div>
+         <p class="section-note" id="operationalNote" data-i18n="operations.note">Вибраний період · live-дані кожні 10 секунд</p>
+       </section>
+       <section class="operational-grid reveal" data-i18n-aria-label="operations.aria_label" aria-label="Оперативні графіки">
+         <article class="panel operational-panel operational-power">
+           <div class="panel-heading operational-heading">
+             <div><p class="section-kicker" data-i18n="operations.power.kicker">POWER FLOW</p><h3 data-i18n="operations.power.title">Потік потужності</h3></div>
+             <span class="operational-live"><i></i><span data-i18n="operations.live">LIVE · 10 S</span></span>
+           </div>
+           <div class="operational-chart-wrap"><canvas id="powerChart" data-i18n-aria-label="operations.power.aria_label" aria-label="Графік потоку потужності"></canvas><div class="chart-empty" id="powerChartEmpty" data-i18n="history.empty">Історія з'явиться після перших збережених samples</div></div>
+           <div class="operational-legend">
+             <span><i class="legend-pv"></i><span data-i18n="operations.legend.pv">PV</span></span>
+             <span><i class="legend-load"></i><span data-i18n="operations.legend.load">Навантаження</span></span>
+             <span><i class="legend-grid"></i><span data-i18n="operations.legend.grid">Grid</span></span>
+             <span><i class="legend-battery"></i><span data-i18n="operations.legend.battery">Battery</span></span>
+           </div>
+         </article>
+         <article class="panel operational-panel">
+           <div class="panel-heading operational-heading">
+             <div><p class="section-kicker" data-i18n="operations.battery.kicker">BATTERY</p><h3 data-i18n="operations.battery.title">Напруга батареї</h3></div>
+             <span class="operational-live"><i></i><span data-i18n="operations.live">LIVE · 10 S</span></span>
+           </div>
+           <div class="operational-chart-wrap"><canvas id="batteryChart" data-i18n-aria-label="operations.battery.aria_label" aria-label="Графік напруги батареї"></canvas><div class="chart-empty" id="batteryChartEmpty" data-i18n="history.empty">Історія з'явиться після перших збережених samples</div></div>
+           <div class="operational-caption" data-i18n="operations.battery.caption">Порогові значення з read-only конфігурації</div>
+         </article>
+         <article class="panel operational-panel">
+           <div class="panel-heading operational-heading">
+             <div><p class="section-kicker" data-i18n="operations.thermal.kicker">THERMAL</p><h3 data-i18n="operations.thermal.title">Температури</h3></div>
+             <span class="operational-live"><i></i><span data-i18n="operations.live">LIVE · 10 S</span></span>
+           </div>
+           <div class="operational-chart-wrap"><canvas id="thermalChart" data-i18n-aria-label="operations.thermal.aria_label" aria-label="Графік температур"></canvas><div class="chart-empty" id="thermalChartEmpty" data-i18n="history.empty">Історія з'явиться після перших збережених samples</div></div>
+           <div class="operational-legend operational-legend-compact">
+             <span><i class="legend-ac"></i><span data-i18n="operations.legend.ac">AC radiator</span></span>
+             <span><i class="legend-transformer"></i><span data-i18n="operations.legend.transformer">Transformer</span></span>
+             <span><i class="legend-dc"></i><span data-i18n="operations.legend.dc">DC radiator</span></span>
+           </div>
+         </article>
+       </section>
+
+       <section class="dashboard-columns reveal">
+         <article class="panel chart-panel">
+           <div class="panel-heading chart-heading">
+             <div><p class="section-kicker" data-i18n="history.kicker">03 / ІСТОРІЯ</p><h2 data-i18n="history.title">Поведінка системи</h2></div>
+             <div class="chart-controls" role="group" data-i18n-aria-label="history.range_aria" aria-label="Період історії">
+               <button type="button" class="range-button" data-range="1h" data-i18n="range.1h">1 год</button>
+               <button type="button" class="range-button" data-range="6h" data-i18n="range.6h">6 год</button>
+               <button type="button" class="range-button is-active" data-range="24h" data-i18n="range.24h">24 год</button>
               <button type="button" class="range-button" data-range="7d" data-i18n="range.7d">7 днів</button>
               <button type="button" class="range-button" data-range="30d" data-i18n="range.30d">30 днів</button>
               <button type="button" class="range-button" data-range="1y" data-i18n="range.1y">1 рік</button>
@@ -158,7 +200,7 @@
         </article>
 
         <aside class="panel status-panel">
-          <div class="panel-heading"><div><p class="section-kicker" data-i18n="status.kicker">03 / СТАН</p><h2 data-i18n="status.title">Система</h2></div><span class="status-code" id="workState">--</span></div>
+           <div class="panel-heading"><div><p class="section-kicker" data-i18n="status.kicker">04 / СТАН</p><h2 data-i18n="status.title">Система</h2></div><span class="status-code" id="workState">--</span></div>
           <div class="system-state" id="systemState" data-state="starting"><span class="state-orb"></span><div><strong id="systemStateTitle" data-i18n="system.waiting">Очікування</strong><span id="systemStateText" data-i18n="system.connecting">Підключення до інвертора</span></div></div>
           <div class="status-list">
             <div><span data-i18n="status.model">Модель</span><strong id="identityModel">--</strong></div>
@@ -171,8 +213,8 @@
         </aside>
       </section>
 
-      <section class="section-heading telemetry-heading reveal">
-        <div><p class="section-kicker" data-i18n="telemetry.kicker">04 / TELEMETRY</p><h2 data-i18n="telemetry.title">Деталі сигналу</h2></div>
+       <section class="section-heading telemetry-heading reveal">
+         <div><p class="section-kicker" data-i18n="telemetry.kicker">05 / TELEMETRY</p><h2 data-i18n="telemetry.title">Деталі сигналу</h2></div>
       </section>
       <section class="telemetry-grid reveal">
         <article class="panel telemetry-card"><div class="telemetry-title"><span class="telemetry-glyph">AC</span><span data-i18n="telemetry.ac">AC output</span></div><div class="telemetry-main" id="inverterVoltage">-- V</div><dl><div><dt data-i18n="telemetry.current">Струм</dt><dd id="inverterCurrent">-- A</dd></div><div><dt data-i18n="telemetry.frequency">Частота</dt><dd id="inverterFrequency">-- Hz</dd></div><div><dt data-i18n="telemetry.reactive">Reactive</dt><dd id="inverterReactive">-- var</dd></div></dl></article>
@@ -182,12 +224,12 @@
       </section>
 
       <section class="lower-grid reveal">
-        <article class="panel config-panel"><div class="panel-heading"><div><p class="section-kicker" data-i18n="config.kicker">05 / CONFIG</p><h2 data-i18n="config.title">Параметри</h2></div><span class="read-only-tag" data-i18n="config.readonly">READ ONLY</span></div><div class="config-columns"><div><h3 data-i18n="config.charger">Зарядний контур</h3><div id="chargerConfig" class="key-value-list"></div></div><div><h3 data-i18n="config.inverter">Інверторний контур</h3><div id="inverterConfig" class="key-value-list"></div></div></div></article>
-        <article class="panel diagnostics-panel"><div class="panel-heading"><div><p class="section-kicker" data-i18n="diagnostics.kicker">06 / DIAGNOSTICS</p><h2 data-i18n="diagnostics.title">Діагностика</h2></div><span class="diagnostic-badge" id="diagnosticBadge" data-i18n="diagnostics.nominal">NOMINAL</span></div><div id="diagnosticsList" class="diagnostic-list"></div><details class="raw-details"><summary><span data-i18n="diagnostics.raw">Raw register frames</span> <span class="raw-expand" data-i18n="diagnostics.expand">розгорнути</span></summary><div id="rawRegisters"></div></details></article>
+         <article class="panel config-panel"><div class="panel-heading"><div><p class="section-kicker" data-i18n="config.kicker">06 / CONFIG</p><h2 data-i18n="config.title">Параметри</h2></div><span class="read-only-tag" data-i18n="config.readonly">READ ONLY</span></div><div class="config-columns"><div><h3 data-i18n="config.charger">Зарядний контур</h3><div id="chargerConfig" class="key-value-list"></div></div><div><h3 data-i18n="config.inverter">Інверторний контур</h3><div id="inverterConfig" class="key-value-list"></div></div></div></article>
+         <article class="panel diagnostics-panel"><div class="panel-heading"><div><p class="section-kicker" data-i18n="diagnostics.kicker">07 / DIAGNOSTICS</p><h2 data-i18n="diagnostics.title">Діагностика</h2></div><span class="diagnostic-badge" id="diagnosticBadge" data-i18n="diagnostics.nominal">NOMINAL</span></div><div id="diagnosticsList" class="diagnostic-list"></div><details class="raw-details"><summary><span data-i18n="diagnostics.raw">Raw register frames</span> <span class="raw-expand" data-i18n="diagnostics.expand">розгорнути</span></summary><div id="rawRegisters"></div></details></article>
       </section>
     </main>
 
-    <footer class="footer"><span>MUST POWER DESK <b>v0.1.1</b></span><span data-i18n="footer">Local service · read-only Modbus RTU · UTC storage</span></footer>
+     <footer class="footer"><span>MUST POWER DESK <b>v0.2.0</b></span><span data-i18n="footer">Local service · read-only Modbus RTU · UTC storage</span></footer>
   </div>
 </body>
 </html>

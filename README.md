@@ -55,6 +55,8 @@ The gallery shows the live-validated MUST PV18-3224 VPM II / PV1800 dashboard. V
 - No inverter write commands, remote controls, or configuration mutations.
 - Current telemetry for PV, battery, grid, AC output, load, temperatures, and accumulated counters.
 - History resolutions: 1 minute, 30 minutes, hour, day, week, month, and raw samples.
+- History ranges include 1 hour and 6 hours for short operational checks, plus 24 hours, 7 days, 30 days, 1 year, and all retained data.
+- Operational power-flow, battery-voltage, and temperature charts with a six-hour live browser buffer.
 - CSV export and a streaming `/api/events` endpoint.
 - Bright, responsive dashboard with `UKR | ENG` language switching.
 - SQLite WAL persistence with a 730-day default retention policy.
@@ -71,7 +73,7 @@ flowchart LR
     subgraph host["Local host / yoga"]
         ui["MUST Power Desk UI<br/>UKR | ENG<br/>Charts + CSV"]:::ui
         api["Python HTTP API<br/>HTTP / SSE<br/>127.0.0.1:8090"]:::api
-        poller["Read-only poller<br/>15 s telemetry cycle"]:::poller
+        poller["Read-only poller<br/>10 s telemetry cycle"]:::poller
         modbus["Modbus RTU client<br/>Function 03 only"]:::modbus
         device[("MUST inverter<br/>supported register map")]:::device
         db[("SQLite WAL<br/>1 sample / minute<br/>730-day retention")]:::data
@@ -156,7 +158,7 @@ All runtime settings are optional and are documented in `.env.example`:
 | `MUST_SERIAL_PORT` | `/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0` | Stable serial device path |
 | `MUST_SLAVE_ID` | `4` | Modbus unit ID |
 | `MUST_BAUDRATE` | `19200` | Serial baud rate; framing is 8N1 |
-| `MUST_POLL_INTERVAL` | `15` | Telemetry poll interval in seconds |
+| `MUST_POLL_INTERVAL` | `10` | Telemetry poll interval in seconds |
 | `MUST_SAMPLE_INTERVAL` | `60` | Minimum persistence interval in seconds |
 | `MUST_CONFIG_INTERVAL` | `300` | Read-only configuration refresh interval |
 | `MUST_SERIAL_TIMEOUT` | `2.5` | Serial response timeout in seconds |
@@ -164,7 +166,7 @@ All runtime settings are optional and are documented in `.env.example`:
 | `MUST_RETENTION_DAYS` | `730` | SQLite retention window |
 | `MUST_DB_PATH` | `data/inverter.sqlite3` | SQLite database path |
 
-The poller may read the inverter every 15 seconds, but persistence is rate-limited to one sample per minute. This keeps the raw database compact while preserving fine-grained history.
+The poller reads the inverter every 10 seconds, while persistence remains rate-limited to one sample per minute. The dashboard receives every successful snapshot over SSE and keeps a six-hour in-browser live buffer for operational charts; the SQLite history remains compact and durable.
 
 ## Modbus Register Map
 
@@ -195,6 +197,8 @@ Every response is framed and CRC-validated before decoding. A failed section is 
 | `month` | - | One UTC bucket per month |
 
 When `period=auto` or no period is supplied, the server selects `minute` for ranges up to 6 hours, `30m` up to 3 days, `day` up to 45 days, `week` up to 180 days, and `month` for longer ranges.
+
+The dashboard exposes one-hour and six-hour history ranges in addition to the longer views. Operational charts combine the selected persisted range with the latest six hours of live snapshots and are refreshed every 10 seconds.
 
 ## API
 
@@ -256,6 +260,13 @@ curl -fsS http://127.0.0.1:8090/healthz
 ```
 
 The test suite covers signed register decoding, CRC and Modbus exception handling, HTTP readiness/security headers, SQLite migration, raw history limits, automatic period selection, and minute/30-minute bucket aggregation.
+
+## v0.2.0 Release Notes
+
+- Added one-hour and six-hour dashboard history ranges with minute defaults.
+- Added live operational charts for power flow, battery voltage thresholds, and temperatures.
+- Reduced the default telemetry cycle and dashboard refresh cadence from 15 seconds to 10 seconds.
+- Kept SQLite persistence at one sample per minute to avoid unnecessary database growth.
 
 ## v0.1.1 Release Notes
 

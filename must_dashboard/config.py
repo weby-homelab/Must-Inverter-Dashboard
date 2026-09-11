@@ -75,7 +75,7 @@ class Settings:
             serial_port=os.environ.get("MUST_SERIAL_PORT", DEFAULT_SERIAL_PORT),
             slave_id=_int_env("MUST_SLAVE_ID", 4, 1),
             baudrate=_int_env("MUST_BAUDRATE", 19200, 1200),
-            poll_interval=_float_env("MUST_POLL_INTERVAL", 15.0, 2.0),
+            poll_interval=_float_env("MUST_POLL_INTERVAL", 10.0, 2.0),
             sample_interval=_float_env("MUST_SAMPLE_INTERVAL", 60.0, 1.0),
             config_interval=_float_env("MUST_CONFIG_INTERVAL", 300.0, 30.0),
             serial_timeout=_float_env("MUST_SERIAL_TIMEOUT", 2.5, 0.2),

@@ -40,7 +40,7 @@ class DashboardServer(ThreadingHTTPServer):
 class DashboardHandler(BaseHTTPRequestHandler):
     server: DashboardServer
     protocol_version = "HTTP/1.1"
-    server_version = "MUSTPowerDesk/0.1"
+    server_version = "MUSTPowerDesk/0.2"
     sys_version = ""
 
     def do_GET(self) -> None:

@@ -112,6 +112,32 @@ h1 em { color: var(--cyan); font-style: normal; }
 .battery-track { background: rgba(113, 211, 154, .12); }
 .battery-track span { background: var(--green); }
 
+.operational-grid { display: grid; grid-template-columns: minmax(0, 1.35fr) repeat(2, minmax(0, .825fr)); gap: 12px; margin-bottom: 48px; }
+.operational-panel { min-height: 300px; padding: 21px; }
+.operational-heading { align-items: center; }
+.operational-heading .section-kicker { margin-bottom: 7px; }
+.operational-heading h3 { margin: 0; color: var(--text); font-size: 16px; font-weight: 450; letter-spacing: -.025em; }
+.operational-live { display: inline-flex; align-items: center; gap: 6px; color: var(--faint); font-family: var(--mono); font-size: 8px; letter-spacing: .08em; white-space: nowrap; }
+.operational-live i { display: block; width: 5px; height: 5px; border-radius: 50%; background: var(--green); box-shadow: 0 0 9px var(--green); }
+.operational-live[data-state="degraded"], .operational-live[data-state="stale"], .operational-live[data-state="starting"] { color: var(--amber); }
+.operational-live[data-state="degraded"] i, .operational-live[data-state="stale"] i, .operational-live[data-state="starting"] i { background: var(--amber); box-shadow: 0 0 9px var(--amber); }
+.operational-live[data-state="offline"] { color: var(--red); }
+.operational-live[data-state="offline"] i { background: var(--red); box-shadow: 0 0 9px var(--red); }
+.operational-chart-wrap { position: relative; height: 190px; margin-top: 19px; }
+.operational-chart-wrap canvas { display: block; width: 100%; height: 100%; }
+.operational-power .operational-chart-wrap { height: 214px; }
+.operational-legend { display: flex; flex-wrap: wrap; gap: 10px 15px; margin-top: 8px; color: var(--muted); font-family: var(--mono); font-size: 8px; }
+.operational-legend > span { display: inline-flex; align-items: center; gap: 5px; }
+.operational-legend i { display: block; width: 13px; height: 2px; border-radius: 2px; }
+.legend-pv { background: var(--cyan); }
+.legend-load { background: var(--amber); }
+.legend-grid { background: #91a8ff; }
+.legend-battery { background: var(--green); }
+.legend-ac { background: var(--amber); }
+.legend-transformer { background: var(--red); }
+.legend-dc { background: #c18bff; }
+.operational-caption { margin-top: 8px; color: var(--faint); font-family: var(--mono); font-size: 8px; line-height: 1.4; }
+
 .dashboard-columns { display: grid; grid-template-columns: minmax(0, 1.85fr) minmax(280px, .75fr); gap: 12px; margin-bottom: 48px; }
 .panel { padding: 25px; }
 .panel-heading { display: flex; align-items: start; justify-content: space-between; gap: 16px; }
@@ -199,6 +225,8 @@ dd { color: var(--muted); }
   .hero { padding-right: 2%; padding-left: 0; }
   .hero-orbit { transform: scale(.82); margin-right: -20px; }
   .flow-grid, .telemetry-grid { grid-template-columns: repeat(2, 1fr); }
+  .operational-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .operational-power { grid-column: 1 / -1; }
   .dashboard-columns, .lower-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 650px) {
@@ -217,13 +245,16 @@ dd { color: var(--muted); }
   .metric-card { min-height: 170px; }
   .panel { padding: 19px; }
   .chart-heading { align-items: start; flex-direction: column; }
-  .chart-controls { width: 100%; justify-content: space-between; }
-  .range-button { flex: 1; padding-right: 5px; padding-left: 5px; }
+  .chart-controls { width: 100%; justify-content: flex-start; overflow-x: auto; }
+  .range-button { flex: 0 0 auto; min-width: 43px; padding-right: 7px; padding-left: 7px; }
   .chart-toolbar { align-items: stretch; flex-wrap: wrap; gap: 10px; }
   .chart-toolbar label { flex: 1; min-width: 120px; }
   .chart-toolbar select { width: 100%; }
   .export-link { width: 100%; margin: 0; }
   .chart-wrap { height: 235px; }
+  .operational-grid { grid-template-columns: 1fr; }
+  .operational-power { grid-column: auto; }
+  .operational-chart-wrap, .operational-power .operational-chart-wrap { height: 205px; }
   .config-columns { grid-template-columns: 1fr; gap: 28px; }
   .footer { display: block; line-height: 2; }
   .footer span { display: block; }
