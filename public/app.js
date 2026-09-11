@@ -379,6 +379,9 @@
     historyRequest: 0,
     livePoints: [],
     refreshTimer: null,
+    chartModels: new Map(),
+    chartPointers: new Map(),
+    activeChartId: null,
   };
 
   const REFRESH_INTERVAL_MS = 10_000;
@@ -776,6 +779,8 @@
     const canvas = $("historyChart");
     const empty = $("chartEmpty");
     if (!canvas) return;
+    state.chartModels.delete(canvas.id);
+    hideChartTooltip(canvas.id);
     const points = (state.history && state.history.points) || [];
     if (!points.length) {
       if (empty) empty.classList.remove("is-hidden");
@@ -798,7 +803,10 @@
     const meta = metricMeta[state.metric] || metricMeta.load_power_w;
     const values = points.map((point) => point[state.metric]).filter(safeNumber);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (!values.length) return;
+    if (!values.length) {
+      if (empty) empty.classList.remove("is-hidden");
+      return;
+    }
     let min = Math.min(...values);
     let max = Math.max(...values);
     if (min === max) { min -= 1; max += 1; }
@@ -835,6 +843,19 @@
       const index = Math.round(i * (points.length - 1) / Math.max(1, labels - 1));
       ctx.fillText(shortTime(points[index].captured_at), x(index) - 18, height - 8);
     }
+    state.chartModels.set(canvas.id, {
+      canvasId: canvas.id,
+      points,
+      series: [{ metric: state.metric, label: t(meta.labelKey), unit: meta.unit, decimals: meta.decimals, color: meta.color }],
+      x,
+      y,
+      padding,
+      chartWidth,
+      chartHeight,
+      width,
+      height,
+    });
+    refreshChartTooltip(canvas.id);
   }
 
   function rememberLivePoint(snapshot) {
@@ -896,6 +917,8 @@
     const canvas = $(spec.canvasId);
     const empty = $(spec.emptyId);
     if (!canvas) return;
+    state.chartModels.delete(canvas.id);
+    hideChartTooltip(canvas.id);
     const rect = canvas.getBoundingClientRect();
     const width = Math.max(1, rect.width);
     const height = Math.max(1, rect.height);
@@ -1005,6 +1028,25 @@
       const pointIndex = Math.round(index * (points.length - 1) / Math.max(1, labels - 1));
       ctx.fillText(shortTime(points[pointIndex].captured_at), x(pointIndex) - 18, height - 7);
     }
+    state.chartModels.set(canvas.id, {
+      canvasId: canvas.id,
+      points,
+      series: spec.series.map((series) => ({
+        metric: series.metric,
+        label: t(series.labelKey),
+        unit: spec.unit,
+        decimals: spec.decimals,
+        color: series.color,
+      })),
+      x,
+      y,
+      padding,
+      chartWidth,
+      chartHeight,
+      width,
+      height,
+    });
+    refreshChartTooltip(canvas.id);
   }
 
   function formatAxis(value, meta) {
@@ -1016,6 +1058,93 @@
     const value = hex.replace("#", "");
     const bigint = parseInt(value, 16);
     return `rgba(${(bigint >> 16) & 255}, ${(bigint >> 8) & 255}, ${bigint & 255}, ${alpha})`;
+  }
+
+  function bindChartHover() {
+    document.querySelectorAll("#historyChart, .operational-chart-wrap canvas").forEach((canvas) => {
+      canvas.addEventListener("mousemove", handleChartMove);
+      canvas.addEventListener("mouseleave", () => {
+        state.chartPointers.delete(canvas.id);
+        hideChartTooltip(canvas.id);
+      });
+    });
+  }
+
+  function handleChartMove(event) {
+    const canvas = event.currentTarget;
+    const model = state.chartModels.get(canvas.id);
+    if (!model || !model.points.length) {
+      hideChartTooltip(canvas.id);
+      return;
+    }
+    const pointer = { clientX: event.clientX, clientY: event.clientY };
+    state.chartPointers.set(canvas.id, pointer);
+    const rect = canvas.getBoundingClientRect();
+    const chartX = Math.max(0, Math.min(model.chartWidth, event.clientX - rect.left - model.padding.left));
+    const position = model.points.length === 1 ? 0 : chartX / model.chartWidth * (model.points.length - 1);
+    const index = Math.max(0, Math.min(model.points.length - 1, Math.round(position)));
+    showChartTooltip(model, index, pointer.clientX, pointer.clientY);
+  }
+
+  function showChartTooltip(model, index, clientX, clientY) {
+    const tooltip = $("chartTooltip");
+    const time = $("chartTooltipTime");
+    const values = $("chartTooltipValues");
+    const point = model.points[index];
+    if (!tooltip || !time || !values || !point) return;
+    time.textContent = timeLabel(point.captured_at);
+    values.replaceChildren();
+    model.series.forEach((series) => {
+      const row = document.createElement("div");
+      row.className = "chart-tooltip-row";
+      const label = document.createElement("span");
+      const swatch = document.createElement("i");
+      const result = document.createElement("span");
+      swatch.style.background = series.color;
+      label.append(swatch, document.createTextNode(series.label));
+      result.textContent = safeNumber(point[series.metric])
+        ? `${number(point[series.metric], series.decimals)} ${series.unit}`
+        : t("common.not_available");
+      row.append(label, result);
+      values.append(row);
+    });
+    state.activeChartId = model.canvasId;
+    tooltip.setAttribute("aria-hidden", "false");
+    tooltip.classList.add("is-visible");
+    tooltip.style.left = `${clientX + 14}px`;
+    tooltip.style.top = `${clientY + 14}px`;
+    const bounds = tooltip.getBoundingClientRect();
+    const margin = 8;
+    const left = Math.max(margin, Math.min(clientX + 14, window.innerWidth - bounds.width - margin));
+    const top = Math.max(margin, Math.min(clientY + 14, window.innerHeight - bounds.height - margin));
+    tooltip.style.left = `${left}px`;
+    tooltip.style.top = `${top}px`;
+  }
+
+  function refreshChartTooltip(chartId) {
+    const pointer = state.chartPointers.get(chartId);
+    const model = state.chartModels.get(chartId);
+    if (!pointer || !model) return;
+    showChartTooltip(model, nearestChartIndex(model, pointer.clientX), pointer.clientX, pointer.clientY);
+  }
+
+  function nearestChartIndex(model, clientX) {
+    const canvas = $(model.canvasId);
+    if (!canvas) return 0;
+    const rect = canvas.getBoundingClientRect();
+    const chartX = Math.max(0, Math.min(model.chartWidth, clientX - rect.left - model.padding.left));
+    const position = model.points.length === 1 ? 0 : chartX / model.chartWidth * (model.points.length - 1);
+    return Math.max(0, Math.min(model.points.length - 1, Math.round(position)));
+  }
+
+  function hideChartTooltip(chartId = null) {
+    if (chartId && state.activeChartId !== chartId) return;
+    const tooltip = $("chartTooltip");
+    if (tooltip) {
+      tooltip.classList.remove("is-visible");
+      tooltip.setAttribute("aria-hidden", "true");
+    }
+    state.activeChartId = null;
   }
 
   function connectEvents() {
@@ -1065,7 +1194,9 @@
     });
     $("periodSelect").addEventListener("change", (event) => { state.period = event.target.value; loadHistory(); });
     $("refreshButton").addEventListener("click", () => { loadCurrent(); loadHistory(); });
-    window.addEventListener("resize", () => renderChart());
+    bindChartHover();
+    window.addEventListener("resize", () => { renderChart(); renderOperationalCharts(); });
+    window.addEventListener("blur", () => hideChartTooltip());
   }
 
   async function boot() {

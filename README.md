@@ -56,11 +56,11 @@ The gallery shows the live-validated MUST PV18-3224 VPM II / PV1800 dashboard. V
 - Current telemetry for PV, battery, grid, AC output, load, temperatures, and accumulated counters.
 - History resolutions: 1 minute, 30 minutes, hour, day, week, month, and raw samples.
 - History ranges include 1 hour and 6 hours for short operational checks, plus 24 hours, 7 days, 30 days, 1 year, and all retained data.
-- Operational power-flow, battery-voltage, and temperature charts with a six-hour live browser buffer.
+- Operational power-flow, battery-voltage, and temperature charts with a six-hour live browser buffer and pointer tooltips.
 - CSV export and a streaming `/api/events` endpoint.
 - Bright, responsive dashboard with `UKR | ENG` language switching.
 - SQLite WAL persistence with a 730-day default retention policy.
-- Localhost binding and defensive HTTP/systemd security headers.
+- Localhost binding by default, with documented Tailscale-only deployment, and defensive HTTP/systemd security headers.
 
 ## Architecture
 
@@ -71,7 +71,7 @@ flowchart LR
     operator([Operator]):::actor -->|HTTP| ui
 
     subgraph host["Local host / yoga"]
-        ui["MUST Power Desk UI<br/>UKR | ENG<br/>Charts + CSV"]:::ui
+        ui["MUST Power Desk UI<br/>UKR | ENG<br/>Charts + hover + CSV"]:::ui
         api["Python HTTP API<br/>HTTP / SSE<br/>127.0.0.1:8090"]:::api
         poller["Read-only poller<br/>10 s telemetry cycle"]:::poller
         modbus["Modbus RTU client<br/>Function 03 only"]:::modbus
@@ -99,7 +99,7 @@ flowchart LR
     linkStyle default stroke:#64748B,stroke-width:2px;
 ```
 
-The optional reverse proxy is not part of the default deployment. If the dashboard is exposed beyond localhost, add authentication, TLS, rate limiting, and an explicit network policy first.
+The optional reverse proxy is not part of the default deployment. If the dashboard is exposed beyond localhost, add authentication, TLS, rate limiting, and an explicit network policy first. A Tailscale-only bind is documented below as the private-network alternative.
 
 ## Supported Inverter Models
 
@@ -142,7 +142,7 @@ Open `http://127.0.0.1:8090` in a browser. The default `.env` keeps the service 
 On Debian or Ubuntu, this command installs the OS prerequisites, clones the pinned release, creates the isolated Python environment, installs `pyserial`, creates the non-root service account, enables systemd, runs the tests, and waits for `/healthz`:
 
 ```bash
-sudo apt-get update && sudo apt-get install -y ca-certificates curl && curl -fsSL https://raw.githubusercontent.com/weby-homelab/Must-Inverter-Dashboard/v0.1.1/install.sh | sudo bash
+sudo apt-get update && sudo apt-get install -y ca-certificates curl && curl -fsSL https://raw.githubusercontent.com/weby-homelab/Must-Inverter-Dashboard/v0.2.1/install.sh | sudo bash
 ```
 
 The installer places the application in `/opt/must-inverter-dashboard`, creates the `mustdash` account with serial access through `dialout`, and starts `must-inverter-dashboard.service`. If a `/dev/serial/by-id/` adapter is present, its first device is selected automatically; otherwise edit `/opt/must-inverter-dashboard/.env` before starting the service. The installer is intended for a clean or previously installer-managed directory and refuses to overwrite a checkout with local changes.
@@ -153,7 +153,7 @@ All runtime settings are optional and are documented in `.env.example`:
 
 | Variable | Default | Purpose |
 | --- | --- | --- |
-| `MUST_DASH_HOST` | `127.0.0.1` | HTTP bind address |
+| `MUST_DASH_HOST` | `127.0.0.1` | HTTP bind address; use this node's Tailscale IPv4 for tailnet-only access |
 | `MUST_DASH_PORT` | `8090` | HTTP port |
 | `MUST_SERIAL_PORT` | `/dev/serial/by-id/usb-1a86_USB_Serial-if00-port0` | Stable serial device path |
 | `MUST_SLAVE_ID` | `4` | Modbus unit ID |
@@ -241,11 +241,26 @@ journalctl -u must-inverter-dashboard.service -f
 
 The default deployment binds only to `127.0.0.1:8090` and grants write access only to `data`. Do not expose the service directly to the Internet.
 
+### Tailscale-only access
+
+Keep the default loopback bind for a local-only deployment. To make the dashboard reachable from the Tailscale network without opening it on public or LAN interfaces, set `MUST_DASH_HOST` in the service environment file to this node's Tailscale IPv4 address (the `100.x.y.z` value from `tailscale ip -4`):
+
+```bash
+sudoedit /etc/must-inverter-dashboard.env
+# MUST_DASH_HOST=100.x.y.z
+sudo chmod 0640 /etc/must-inverter-dashboard.env
+sudo systemctl restart must-inverter-dashboard.service
+curl -fsS "http://$(tailscale ip -4):8090/healthz"
+```
+
+The environment file must be readable by the service account. Do not replace the address with `0.0.0.0`. Verify the listener with `ss -ltnp` and test the health endpoint from another authorized Tailscale peer.
+
 ## Security Model
 
 - The Modbus client issues function `03` reads only.
 - There is no write API and no UI control surface.
 - The HTTP server defaults to loopback binding.
+- Tailscale exposure is opt-in and binds to the node's Tailscale address, not all interfaces.
 - Responses include CSP, frame, MIME-sniffing, referrer, permissions, and cross-origin policy headers.
 - `.env`, SQLite databases, logs, and Python caches are excluded by `.gitignore`.
 - Keep credentials outside the repository and never place tokens in README, source, issues, or release notes.
@@ -259,7 +274,14 @@ node --check public/app.js
 curl -fsS http://127.0.0.1:8090/healthz
 ```
 
-The test suite covers signed register decoding, CRC and Modbus exception handling, HTTP readiness/security headers, SQLite migration, raw history limits, automatic period selection, and minute/30-minute bucket aggregation.
+The test suite covers signed register decoding, CRC and Modbus exception handling, HTTP readiness/security headers, SQLite migration, raw history limits, automatic period selection, and minute/30-minute bucket aggregation. Browser verification should also move the pointer over each chart and confirm the timestamp and series values in the tooltip.
+
+## v0.2.1 Release Notes
+
+- Added pointer tooltips to the history, power-flow, battery-voltage, and temperature charts.
+- Added nearest-sample timestamps, localized series labels, units, and unavailable-value handling to chart tooltips.
+- Documented and deployed an opt-in Tailscale-only bind without exposing the dashboard on `0.0.0.0`.
+- Updated the installer and health/server version metadata for the release.
 
 ## v0.2.0 Release Notes
 

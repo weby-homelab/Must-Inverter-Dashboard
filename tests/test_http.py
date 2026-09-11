@@ -5,6 +5,7 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+from must_dashboard import __version__
 from must_dashboard.config import Settings
 from must_dashboard.http import AppContext, DashboardServer, _auto_period, _range_start
 from must_dashboard.poller import EventHub
@@ -64,6 +65,7 @@ class HttpTests(unittest.TestCase):
                 with urllib.request.urlopen(f"{url}/healthz", timeout=3) as response:
                     self.assertEqual(response.status, 200)
                     self.assertIn("Content-Security-Policy", response.headers)
+                    self.assertEqual(response.headers["Server"].strip(), f"MUSTPowerDesk/{__version__}")
                 poller.status = "offline"
                 with self.assertRaises(urllib.error.HTTPError) as raised:
                     urllib.request.urlopen(f"{url}/healthz", timeout=3)

@@ -5,7 +5,7 @@ readonly REPO_URL="https://github.com/weby-homelab/Must-Inverter-Dashboard.git"
 readonly INSTALL_DIR="/opt/must-inverter-dashboard"
 readonly SERVICE_NAME="must-inverter-dashboard.service"
 readonly SERVICE_USER="mustdash"
-readonly VERSION="${1:-v0.1.1}"
+readonly VERSION="${1:-v0.2.1}"
 
 fail() {
     printf 'ERROR: %s\n' "$1" >&2
