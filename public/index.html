@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0d1117">
-  <meta name="description" content="Локальний read-only моніторинг MUST PV18-3224 VPM II">
+  <meta name="description" content="Локальний моніторинг та безпечне керування MUST PV18-3224 VPM II">
   <title>MUST Power Desk</title>
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="/assets/styles.css">
@@ -23,6 +23,9 @@
         <div class="language-switcher" role="group" data-i18n-aria-label="language.label">
           <button type="button" data-lang="uk" aria-pressed="true">UKR</button><span>|</span><button type="button" data-lang="en" aria-pressed="false">ENG</button>
         </div>
+        <button class="theme-toggle" id="themeToggle" type="button" data-i18n-title="theme.toggle" data-i18n-aria-label="theme.toggle" title="Змінити тему" aria-label="Змінити тему">
+          <span id="themeToggleLabel">DARK</span>
+        </button>
         <div class="connection-badge" id="connectionBadge" data-state="starting" aria-live="polite">
           <span class="status-dot"></span>
           <span id="connectionLabel" data-i18n="system.starting">Запуск сервісу</span>
@@ -38,19 +41,54 @@
         <div class="hero-copy">
           <p class="eyebrow"><span class="eyebrow-line"></span> <span data-i18n="hero.device">PV18-3224 VPM II</span> <span class="eyebrow-separator">/</span> <span data-i18n="hero.live">LIVE TELEMETRY</span></p>
           <h1><span data-i18n="hero.title">Енергія</span><br><em data-i18n="hero.title2">під контролем.</em></h1>
-          <p class="hero-description" data-i18n="hero.description">Локальний read-only моніторинг інвертора. Жодних команд керування, лише точні дані з вашого USB Modbus-каналу.</p>
+          <p class="hero-description" data-i18n="hero.description">Локальний моніторинг та захищене керування інвертором через ваш USB Modbus-канал.</p>
           <div class="hero-meta">
             <span><span class="meta-label" data-i18n="hero.last">Останній знімок</span> <strong id="lastUpdated" data-i18n="common.waiting">очікування...</strong></span>
             <span><span class="meta-label" data-i18n="hero.source">Джерело</span> <strong id="sourcePort">USB serial</strong></span>
+            <span><span class="meta-label" data-i18n="hero.mode">Режим</span> <strong id="heroModeBadge">--</strong></span>
           </div>
         </div>
-        <div class="hero-orbit" aria-hidden="true">
-          <div class="orbit-ring orbit-ring-one"></div>
-          <div class="orbit-ring orbit-ring-two"></div>
-          <div class="orbit-core"><span class="core-pulse"></span><span>3200<br><small data-i18n="hero.nominal">VA NOMINAL</small></span></div>
-          <span class="orbit-label orbit-label-one">PV</span>
-          <span class="orbit-label orbit-label-two">AC</span>
-          <span class="orbit-label orbit-label-three">BATT</span>
+        <div class="power-flow-card" aria-label="Power flow schematic">
+          <svg class="power-flow-svg" viewBox="0 0 380 320" role="img" aria-label="PV, Grid, Battery, Load schematic">
+            <path id="flowLinePv" class="flow-line flow-pv is-idle" d="M190,62 L190,126" />
+            <path id="flowLineGrid" class="flow-line flow-grid-line is-idle" d="M78,160 L148,160" />
+            <path id="flowLineLoad" class="flow-line flow-load is-idle" d="M232,160 L302,160" />
+            <path id="flowLineBatt" class="flow-line flow-batt is-idle" d="M190,194 L190,258" />
+
+            <g class="flow-node flow-node-pv" transform="translate(190,34)">
+              <rect x="-58" y="-26" width="116" height="52" rx="12" />
+              <text class="flow-node-title" x="0" y="-8">PV SOLAR</text>
+              <text class="flow-node-val" id="flowPvWatts" x="0" y="9">0 W</text>
+              <text class="flow-node-sub" id="flowPvMeta" x="0" y="21">-- V</text>
+            </g>
+
+            <g class="flow-node flow-node-grid" id="flowGridNode" transform="translate(46,160)">
+              <rect x="-42" y="-32" width="84" height="64" rx="12" />
+              <text class="flow-node-title" x="0" y="-12">GRID</text>
+              <text class="flow-node-val" id="flowGridWatts" x="0" y="6">0 W</text>
+              <text class="flow-node-sub" id="flowGridMeta" x="0" y="20">-- V</text>
+            </g>
+
+            <g class="flow-node flow-node-center" transform="translate(190,160)">
+              <circle r="38" />
+              <text class="flow-center-code" id="flowInvMode" x="0" y="-4">PV1800</text>
+              <text class="flow-center-sub" id="flowInvState" x="0" y="13">--</text>
+            </g>
+
+            <g class="flow-node flow-node-load" transform="translate(334,160)">
+              <rect x="-42" y="-32" width="84" height="64" rx="12" />
+              <text class="flow-node-title" x="0" y="-12">LOAD</text>
+              <text class="flow-node-val" id="flowLoadWatts" x="0" y="6">0 W</text>
+              <text class="flow-node-sub" id="flowLoadMeta" x="0" y="20">--%</text>
+            </g>
+
+            <g class="flow-node flow-node-batt" transform="translate(190,286)">
+              <rect x="-66" y="-26" width="132" height="52" rx="12" />
+              <text class="flow-node-title" x="0" y="-8">BATTERY</text>
+              <text class="flow-node-val" id="flowBattWatts" x="0" y="9">0 W</text>
+              <text class="flow-node-sub" id="flowBattMeta" x="0" y="21">-- V</text>
+            </g>
+          </svg>
         </div>
       </section>
 
@@ -59,7 +97,7 @@
           <p class="section-kicker" data-i18n="section.now">01 / ЗАРАЗ</p>
           <h2 data-i18n="section.flow">Потік енергії</h2>
         </div>
-         <p class="section-note" id="snapshotNote" data-i18n="snapshot.note">Дані оновлюються автоматично кожні 10 секунд</p>
+        <p class="section-note" id="snapshotNote" data-i18n="snapshot.note">Дані оновлюються автоматично кожні 10 секунд</p>
       </section>
 
       <section class="flow-grid reveal">
@@ -77,71 +115,71 @@
           <div class="metric-detail"><span id="loadPercent">--%</span><span id="loadCurrent">-- A</span></div>
           <div class="load-track"><span id="loadBar"></span></div>
         </article>
-        <article class="metric-card metric-grid">
-          <div class="metric-top"><span class="metric-icon">⌁</span><span class="metric-label" data-i18n="metric.grid.label">Grid</span><span class="live-mark" data-i18n="metric.live">LIVE</span></div>
+        <article class="metric-card metric-grid" id="gridMetricCard">
+          <div class="metric-top"><span class="metric-icon">⌁</span><span class="metric-label" data-i18n="metric.grid.label">Grid</span><span class="live-mark" id="gridLiveBadge" data-i18n="metric.live">LIVE</span></div>
           <div class="metric-value" id="gridPower">--</div>
-          <div class="metric-unit" data-i18n="metric.grid.unit">потік мережі</div>
+          <div class="metric-unit" id="gridStatusText" data-i18n="metric.grid.unit">потік мережі</div>
           <div class="metric-detail"><span id="gridVoltage">-- V</span><span id="gridFrequency">-- Hz</span></div>
           <div class="metric-accent"></div>
         </article>
         <article class="metric-card metric-battery">
-          <div class="metric-top"><span class="metric-icon">▰</span><span class="metric-label" data-i18n="metric.battery.label">Battery</span><span class="live-mark" data-i18n="metric.live">LIVE</span></div>
+          <div class="metric-top"><span class="metric-icon">▰</span><span class="metric-label" data-i18n="metric.battery.label">Battery</span><span class="live-mark" id="batteryAutonomy">--</span></div>
           <div class="metric-value" id="batteryVoltage">--</div>
           <div class="metric-unit" data-i18n="metric.battery.unit">напруга батареї</div>
           <div class="metric-detail"><span id="batteryPower">-- W</span><span id="batteryState"><span data-i18n="common.state">стан</span> --</span></div>
-          <div class="battery-track" title="Позиція напруги у робочому діапазоні, не оцінка SOC"><span id="batteryBar"></span></div>
+          <div class="battery-track" title="Позиція напруги у робочому діапазоні, не точний BMS SOC"><span id="batteryBar"></span></div>
         </article>
-       </section>
+      </section>
 
-       <section class="section-heading reveal">
-         <div><p class="section-kicker" data-i18n="operations.kicker">02 / ОПЕРАТИВНО</p><h2 data-i18n="operations.title">Оперативні графіки</h2></div>
-         <p class="section-note" id="operationalNote" data-i18n="operations.note">Вибраний період · live-дані кожні 10 секунд</p>
-       </section>
-       <section class="operational-grid reveal" data-i18n-aria-label="operations.aria_label" aria-label="Оперативні графіки">
-         <article class="panel operational-panel operational-power">
-           <div class="panel-heading operational-heading">
-             <div><p class="section-kicker" data-i18n="operations.power.kicker">POWER FLOW</p><h3 data-i18n="operations.power.title">Потік потужності</h3></div>
-             <span class="operational-live"><i></i><span data-i18n="operations.live">LIVE · 10 S</span></span>
-           </div>
-           <div class="operational-chart-wrap"><canvas id="powerChart" data-i18n-aria-label="operations.power.aria_label" aria-label="Графік потоку потужності"></canvas><div class="chart-empty" id="powerChartEmpty" data-i18n="history.empty">Історія з'явиться після перших збережених samples</div></div>
-           <div class="operational-legend">
-              <span><i class="legend-pv"></i><span data-i18n="operations.legend.pv">PV</span></span>
-              <span><i class="legend-load"></i><span data-i18n="operations.legend.load">Навантаження</span></span>
-              <span><i class="legend-inverter"></i><span data-i18n="operations.legend.inverter">Інвертор</span></span>
-              <span><i class="legend-grid"></i><span data-i18n="operations.legend.grid">Grid</span></span>
-             <span><i class="legend-battery"></i><span data-i18n="operations.legend.battery">Battery</span></span>
-           </div>
-         </article>
-         <article class="panel operational-panel">
-           <div class="panel-heading operational-heading">
-             <div><p class="section-kicker" data-i18n="operations.battery.kicker">BATTERY</p><h3 data-i18n="operations.battery.title">Напруга батареї</h3></div>
-             <span class="operational-live"><i></i><span data-i18n="operations.live">LIVE · 10 S</span></span>
-           </div>
-           <div class="operational-chart-wrap"><canvas id="batteryChart" data-i18n-aria-label="operations.battery.aria_label" aria-label="Графік напруги батареї"></canvas><div class="chart-empty" id="batteryChartEmpty" data-i18n="history.empty">Історія з'явиться після перших збережених samples</div></div>
-           <div class="operational-caption" data-i18n="operations.battery.caption">Порогові значення з read-only конфігурації</div>
-         </article>
-         <article class="panel operational-panel">
-           <div class="panel-heading operational-heading">
-             <div><p class="section-kicker" data-i18n="operations.thermal.kicker">THERMAL</p><h3 data-i18n="operations.thermal.title">Температури</h3></div>
-             <span class="operational-live"><i></i><span data-i18n="operations.live">LIVE · 10 S</span></span>
-           </div>
-           <div class="operational-chart-wrap"><canvas id="thermalChart" data-i18n-aria-label="operations.thermal.aria_label" aria-label="Графік температур"></canvas><div class="chart-empty" id="thermalChartEmpty" data-i18n="history.empty">Історія з'явиться після перших збережених samples</div></div>
-           <div class="operational-legend operational-legend-compact">
-             <span><i class="legend-ac"></i><span data-i18n="operations.legend.ac">AC radiator</span></span>
-             <span><i class="legend-transformer"></i><span data-i18n="operations.legend.transformer">Transformer</span></span>
-             <span><i class="legend-dc"></i><span data-i18n="operations.legend.dc">DC radiator</span></span>
-           </div>
-         </article>
-       </section>
+      <section class="section-heading reveal">
+        <div><p class="section-kicker" data-i18n="operations.kicker">02 / ОПЕРАТИВНО</p><h2 data-i18n="operations.title">Оперативні графіки</h2></div>
+        <p class="section-note" id="operationalNote" data-i18n="operations.note">Вибраний період · live-дані кожні 10 секунд</p>
+      </section>
+      <section class="operational-grid reveal" data-i18n-aria-label="operations.aria_label" aria-label="Оперативні графіки">
+        <article class="panel operational-panel operational-power">
+          <div class="panel-heading operational-heading">
+            <div><p class="section-kicker" data-i18n="operations.power.kicker">POWER FLOW</p><h3 data-i18n="operations.power.title">Потік потужності</h3></div>
+            <span class="operational-live"><i></i><span data-i18n="operations.live">LIVE · 10 S</span></span>
+          </div>
+          <div class="operational-chart-wrap"><canvas id="powerChart" data-i18n-aria-label="operations.power.aria_label" aria-label="Графік потоку потужності"></canvas><div class="chart-empty" id="powerChartEmpty" data-i18n="history.empty">Історія з'явиться після перших збережених samples</div></div>
+          <div class="operational-legend">
+            <span><i class="legend-pv"></i><span data-i18n="operations.legend.pv">PV</span></span>
+            <span><i class="legend-load"></i><span data-i18n="operations.legend.load">Навантаження</span></span>
+            <span><i class="legend-inverter"></i><span data-i18n="operations.legend.inverter">Інвертор</span></span>
+            <span><i class="legend-grid"></i><span data-i18n="operations.legend.grid">Grid</span></span>
+            <span><i class="legend-battery"></i><span data-i18n="operations.legend.battery">Battery</span></span>
+          </div>
+        </article>
+        <article class="panel operational-panel">
+          <div class="panel-heading operational-heading">
+            <div><p class="section-kicker" data-i18n="operations.battery.kicker">BATTERY</p><h3 data-i18n="operations.battery.title">Напруга батареї</h3></div>
+            <span class="operational-live"><i></i><span data-i18n="operations.live">LIVE · 10 S</span></span>
+          </div>
+          <div class="operational-chart-wrap"><canvas id="batteryChart" data-i18n-aria-label="operations.battery.aria_label" aria-label="Графік напруги батареї"></canvas><div class="chart-empty" id="batteryChartEmpty" data-i18n="history.empty">Історія з'явиться після перших збережених samples</div></div>
+          <div class="operational-caption" data-i18n="operations.battery.caption">Порогові значення з конфігурації</div>
+        </article>
+        <article class="panel operational-panel">
+          <div class="panel-heading operational-heading">
+            <div><p class="section-kicker" data-i18n="operations.thermal.kicker">THERMAL</p><h3 data-i18n="operations.thermal.title">Температури</h3></div>
+            <span class="operational-live"><i></i><span data-i18n="operations.live">LIVE · 10 S</span></span>
+          </div>
+          <div class="operational-chart-wrap"><canvas id="thermalChart" data-i18n-aria-label="operations.thermal.aria_label" aria-label="Графік температур"></canvas><div class="chart-empty" id="thermalChartEmpty" data-i18n="history.empty">Історія з'явиться після перших збережених samples</div></div>
+          <div class="operational-legend operational-legend-compact">
+            <span><i class="legend-ac"></i><span data-i18n="operations.legend.ac">AC radiator</span></span>
+            <span><i class="legend-transformer"></i><span data-i18n="operations.legend.transformer">Transformer</span></span>
+            <span><i class="legend-dc"></i><span data-i18n="operations.legend.dc">DC radiator</span></span>
+          </div>
+        </article>
+      </section>
 
-       <section class="dashboard-columns reveal">
-         <article class="panel chart-panel">
-           <div class="panel-heading chart-heading">
-             <div><p class="section-kicker" data-i18n="history.kicker">03 / ІСТОРІЯ</p><h2 data-i18n="history.title">Поведінка системи</h2></div>
-             <div class="chart-controls" role="group" data-i18n-aria-label="history.range_aria" aria-label="Період історії">
-               <button type="button" class="range-button" data-range="1h" data-i18n="range.1h">1 год</button>
-               <button type="button" class="range-button" data-range="6h" data-i18n="range.6h">6 год</button>
-               <button type="button" class="range-button is-active" data-range="24h" data-i18n="range.24h">24 год</button>
+      <section class="dashboard-columns reveal">
+        <article class="panel chart-panel">
+          <div class="panel-heading chart-heading">
+            <div><p class="section-kicker" data-i18n="history.kicker">03 / ІСТОРІЯ</p><h2 data-i18n="history.title">Поведінка системи</h2></div>
+            <div class="chart-controls" role="group" data-i18n-aria-label="history.range_aria" aria-label="Період історії">
+              <button type="button" class="range-button" data-range="1h" data-i18n="range.1h">1 год</button>
+              <button type="button" class="range-button" data-range="6h" data-i18n="range.6h">6 год</button>
+              <button type="button" class="range-button is-active" data-range="24h" data-i18n="range.24h">24 год</button>
               <button type="button" class="range-button" data-range="7d" data-i18n="range.7d">7 днів</button>
               <button type="button" class="range-button" data-range="30d" data-i18n="range.30d">30 днів</button>
               <button type="button" class="range-button" data-range="1y" data-i18n="range.1y">1 рік</button>
@@ -152,10 +190,10 @@
             <label><span data-i18n="history.metric">Показник</span>
               <select id="metricSelect">
                 <optgroup label="Power flow" data-i18n-label="metric.group_power">
-                 <option value="load_power_w" data-i18n="metric.option_load_power">Навантаження, W</option>
-                 <option value="pv_power_w" data-i18n="metric.option_pv_power">PV генерація, W</option>
+                  <option value="load_power_w" data-i18n="metric.option_load_power">Навантаження, W</option>
+                  <option value="pv_power_w" data-i18n="metric.option_pv_power">PV генерація, W</option>
                   <option value="inverter_power_w" data-i18n="metric.option_inverter_power">Потужність інвертора, W</option>
-                 <option value="grid_power_w" data-i18n="metric.option_grid_power">Потік мережі, W</option>
+                  <option value="grid_power_w" data-i18n="metric.option_grid_power">Потік мережі, W</option>
                   <option value="battery_power_w" data-i18n="metric.option_battery_power">Потужність батареї, W</option>
                   <option value="load_percent" data-i18n="metric.option_load_percent">Навантаження, %</option>
                 </optgroup>
@@ -197,36 +235,55 @@
           <div class="chart-wrap">
             <canvas id="historyChart" data-i18n-aria-label="history.chart_aria" aria-label="Графік історичних показників"></canvas>
             <div class="chart-empty" id="chartEmpty" data-i18n="history.empty">Історія з'явиться після перших збережених samples</div>
-           </div>
-           <div class="chart-footer"><span id="historySummary" data-i18n="history.no_data">Немає збережених даних</span><span class="chart-legend"><i></i><span id="legendLabel">Навантаження</span></span></div>
-           <div class="history-insight" aria-live="polite">
-             <div class="history-insight-heading"><span class="section-kicker" data-i18n="history.summary_kicker">ПІДСУМОК ПЕРІОДУ</span><span class="history-quality" id="historyQuality">--</span></div>
-             <div class="history-stat-grid">
-               <div class="history-stat"><span data-i18n="history.load_energy">Спожито (оцінка)</span><strong id="summaryLoadEnergy">--</strong></div>
-               <div class="history-stat"><span data-i18n="history.grid_import">Мережа (оцінка)</span><strong id="summaryGridImport">--</strong></div>
-               <div class="history-stat"><span data-i18n="history.peak_load">Пік навантаження</span><strong id="summaryPeakLoad">--</strong></div>
-               <div class="history-stat"><span data-i18n="history.battery_range">Батарея</span><strong id="summaryBatteryRange">--</strong></div>
-             </div>
-             <p class="history-insight-note" id="historyInsightNote" data-i18n="history.summary_waiting">Аналіз діапазону...</p>
-           </div>
-         </article>
-
-        <aside class="panel status-panel">
-           <div class="panel-heading"><div><p class="section-kicker" data-i18n="status.kicker">04 / СТАН</p><h2 data-i18n="status.title">Система</h2></div><span class="status-code" id="workState">--</span></div>
-          <div class="system-state" id="systemState" data-state="starting"><span class="state-orb"></span><div><strong id="systemStateTitle" data-i18n="system.waiting">Очікування</strong><span id="systemStateText" data-i18n="system.connecting">Підключення до інвертора</span></div></div>
-          <div class="status-list">
-            <div><span data-i18n="status.model">Модель</span><strong id="identityModel">--</strong></div>
-            <div><span data-i18n="status.nominal">Номінал</span><strong id="ratedPower">--</strong></div>
-            <div><span data-i18n="status.serial">Serial number</span><strong class="mono" id="identitySerial">--</strong></div>
-            <div><span data-i18n="status.firmware">Firmware</span><strong class="mono" id="identityFirmware">--</strong></div>
-            <div><span data-i18n="status.poll">Останній poll</span><strong id="pollLatency">--</strong></div>
           </div>
-          <div class="health-strip"><span class="health-icon">✓</span><span id="healthMessage" data-i18n="health.active">Read-only канал активний</span></div>
-        </aside>
+          <div class="chart-footer"><span id="historySummary" data-i18n="history.no_data">Немає збережених даних</span><span class="chart-legend"><i></i><span id="legendLabel">Навантаження</span></span></div>
+          <div class="history-insight" aria-live="polite">
+            <div class="history-insight-heading"><span class="section-kicker" data-i18n="history.summary_kicker">ПІДСУМОК ПЕРІОДУ</span><span class="history-quality" id="historyQuality">--</span></div>
+            <div class="history-stat-grid">
+              <div class="history-stat"><span data-i18n="history.load_energy">Спожито (оцінка)</span><strong id="summaryLoadEnergy">--</strong></div>
+              <div class="history-stat"><span data-i18n="history.grid_import">Мережа (оцінка)</span><strong id="summaryGridImport">--</strong></div>
+              <div class="history-stat"><span data-i18n="history.peak_load">Пік навантаження</span><strong id="summaryPeakLoad">--</strong></div>
+              <div class="history-stat"><span data-i18n="history.battery_range">Батарея</span><strong id="summaryBatteryRange">--</strong></div>
+            </div>
+            <p class="history-insight-note" id="historyInsightNote" data-i18n="history.summary_waiting">Аналіз діапазону...</p>
+          </div>
+        </article>
+
+        <div class="side-column">
+          <aside class="panel status-panel">
+            <div class="panel-heading"><div><p class="section-kicker" data-i18n="status.kicker">04 / СТАН</p><h2 data-i18n="status.title">Система</h2></div><span class="status-code" id="workState">--</span></div>
+            <div class="system-state" id="systemState" data-state="starting"><span class="state-orb"></span><div><strong id="systemStateTitle" data-i18n="system.waiting">Очікування</strong><span id="systemStateText" data-i18n="system.connecting">Підключення до інвертора</span></div></div>
+            <div class="status-list">
+              <div><span data-i18n="status.model">Модель</span><strong id="identityModel">--</strong></div>
+              <div><span data-i18n="status.nominal">Номінал</span><strong id="ratedPower">--</strong></div>
+              <div><span data-i18n="status.serial">Serial number</span><strong class="mono" id="identitySerial">--</strong></div>
+              <div><span data-i18n="status.firmware">Firmware</span><strong class="mono" id="identityFirmware">--</strong></div>
+              <div><span data-i18n="status.poll">Останній poll</span><strong id="pollLatency">--</strong></div>
+            </div>
+            <div class="health-strip"><span class="health-icon">✓</span><span id="healthMessage" data-i18n="health.active">Канал активний</span></div>
+          </aside>
+
+          <aside class="panel outages-panel">
+            <div class="panel-heading">
+              <div><p class="section-kicker" data-i18n="outages.kicker">04B / МЕРЕЖА</p><h2 data-i18n="outages.title">Відключення</h2></div>
+              <div class="outage-ranges" role="group" aria-label="Outages range">
+                <button type="button" class="outage-range-btn" data-outage-range="24h">24h</button>
+                <button type="button" class="outage-range-btn is-active" data-outage-range="7d">7d</button>
+                <button type="button" class="outage-range-btn" data-outage-range="30d">30d</button>
+              </div>
+            </div>
+            <div class="outage-summary-row">
+              <div><span data-i18n="outages.count">Подій</span><strong id="outageCount">--</strong></div>
+              <div><span data-i18n="outages.duration">Без світла</span><strong id="outageDuration">--</strong></div>
+              <div><span data-i18n="outages.autonomy">Автономність</span><strong id="outageAutonomy">--</strong></div>
+            </div>
+            <div class="outage-list" id="outagesList"></div>
+          </aside>
+        </div>
       </section>
 
-       <section class="section-heading telemetry-heading reveal">
-         <div><p class="section-kicker" data-i18n="telemetry.kicker">05 / TELEMETRY</p><h2 data-i18n="telemetry.title">Деталі сигналу</h2></div>
+      <section class="section-heading telemetry-heading reveal">
+        <div><p class="section-kicker" data-i18n="telemetry.kicker">05 / TELEMETRY</p><h2 data-i18n="telemetry.title">Деталі сигналу</h2></div>
       </section>
       <section class="telemetry-grid reveal">
         <article class="panel telemetry-card"><div class="telemetry-title"><span class="telemetry-glyph">AC</span><span data-i18n="telemetry.ac">AC output</span></div><div class="telemetry-main" id="inverterVoltage">-- V</div><dl><div><dt data-i18n="telemetry.current">Струм</dt><dd id="inverterCurrent">-- A</dd></div><div><dt data-i18n="telemetry.frequency">Частота</dt><dd id="inverterFrequency">-- Hz</dd></div><div><dt data-i18n="telemetry.reactive">Reactive</dt><dd id="inverterReactive">-- var</dd></div></dl></article>
@@ -236,13 +293,137 @@
       </section>
 
       <section class="lower-grid reveal">
-         <article class="panel config-panel"><div class="panel-heading"><div><p class="section-kicker" data-i18n="config.kicker">06 / CONFIG</p><h2 data-i18n="config.title">Параметри</h2></div><span class="read-only-tag" data-i18n="config.readonly">READ ONLY</span></div><div class="config-columns"><div><h3 data-i18n="config.charger">Зарядний контур</h3><div id="chargerConfig" class="key-value-list"></div></div><div><h3 data-i18n="config.inverter">Інверторний контур</h3><div id="inverterConfig" class="key-value-list"></div></div></div></article>
-         <article class="panel diagnostics-panel"><div class="panel-heading"><div><p class="section-kicker" data-i18n="diagnostics.kicker">07 / DIAGNOSTICS</p><h2 data-i18n="diagnostics.title">Діагностика</h2></div><span class="diagnostic-badge" id="diagnosticBadge" data-i18n="diagnostics.nominal">NOMINAL</span></div><div id="diagnosticsList" class="diagnostic-list"></div><details class="raw-details"><summary><span data-i18n="diagnostics.raw">Raw register frames</span> <span class="raw-expand" data-i18n="diagnostics.expand">розгорнути</span></summary><div id="rawRegisters"></div></details></article>
+        <article class="panel config-panel">
+          <div class="panel-heading control-heading">
+            <div><p class="section-kicker" data-i18n="config.kicker">06 / CONFIG &amp; CONTROL</p><h2 data-i18n="config.title">Параметри та керування</h2></div>
+            <div class="control-header-actions">
+              <span class="read-only-tag" id="controlModeBadge" data-i18n="config.readonly">READ ONLY</span>
+              <button type="button" class="btn-secondary hidden" id="unlockControlBtn" data-i18n="control.unlock">Розблокувати</button>
+            </div>
+          </div>
+
+          <div class="control-banner" id="controlInterlockBanner"></div>
+
+          <div class="config-columns">
+            <div><h3 data-i18n="config.charger">Зарядний контур</h3><div id="chargerConfig" class="key-value-list"></div></div>
+            <div><h3 data-i18n="config.inverter">Інверторний контур</h3><div id="inverterConfig" class="key-value-list"></div></div>
+          </div>
+
+          <div class="control-deck" id="controlDeck">
+            <div class="presets-block">
+              <div class="control-subhead"><span data-i18n="control.presets">Швидкі пресети</span><small id="controlBudgetNote"></small></div>
+              <div class="presets-grid">
+                <button type="button" class="preset-btn" data-preset="fast_charge" data-i18n="preset.fast_charge">Швидка зарядка (30A)</button>
+                <button type="button" class="preset-btn" data-preset="gentle_charge" data-i18n="preset.gentle_charge">Щадна зарядка (15A)</button>
+                <button type="button" class="preset-btn" data-preset="ups_utility" data-i18n="preset.ups_utility">UPS · Мережа (UTI)</button>
+                <button type="button" class="preset-btn" data-preset="solar_first" data-i18n="preset.solar_first">Пріоритет сонця (SBU)</button>
+              </div>
+            </div>
+
+            <div class="control-section">
+              <div class="control-subhead"><span data-i18n="control.tier1_title">Tier 1 · Оперативні налаштування</span><button type="button" class="btn-primary" id="previewTier1Btn" data-i18n="control.preview_tier1">Перевірити зміни</button></div>
+              <div class="control-grid">
+                <label class="ctrl-field"><span data-i18n="config.energy_mode">Режим роботи</span>
+                  <select id="ctrlEnergyMode">
+                    <option value="1">1 · SBU (Solar-Batt-Grid)</option>
+                    <option value="2">2 · SUB (Solar-Grid-Batt)</option>
+                    <option value="3">3 · UTI (Utility first)</option>
+                    <option value="4">4 · SOL (Solar only)</option>
+                  </select>
+                </label>
+                <label class="ctrl-field"><span data-i18n="config.source_priority">Пріоритет зарядки</span>
+                  <select id="ctrlChargerPriority">
+                    <option value="0">0 · CSO (Solar first)</option>
+                    <option value="2">2 · SNU (Solar + Grid)</option>
+                    <option value="3">3 · OSO (Solar only)</option>
+                  </select>
+                </label>
+                <label class="ctrl-field"><span data-i18n="config.grid_standard">Діапазон входу AC</span>
+                  <select id="ctrlGridStandard">
+                    <option value="0">0 · APL (90–280V)</option>
+                    <option value="1">1 · UPS (170–280V)</option>
+                  </select>
+                </label>
+                <label class="ctrl-field"><span data-i18n="config.grid_charge">Макс. струм від мережі (A)</span>
+                  <input id="ctrlGridChargeCurrent" type="number" min="2" max="60" step="1">
+                </label>
+                <label class="ctrl-field"><span data-i18n="config.max_combine_current">Макс. сумарний струм (A)</span>
+                  <input id="ctrlCombineChargeCurrent" type="number" min="10" max="60" step="1">
+                </label>
+              </div>
+              <div class="flags-grid">
+                <label class="flag-toggle"><input type="checkbox" id="flagBuzzEnabled"><span data-i18n="flag.buzz">Звуковий зумер</span></label>
+                <label class="flag-toggle"><input type="checkbox" id="flagGridBuzz"><span data-i18n="flag.grid_buzz">Сигнал зникнення мережі</span></label>
+                <label class="flag-toggle"><input type="checkbox" id="flagLcdLight"><span data-i18n="flag.lcd_light">Підсвітка екрана LCD</span></label>
+                <label class="flag-toggle"><input type="checkbox" id="flagOverloadRestart"><span data-i18n="flag.overload_restart">Автоперезапуск (перевантаж.)</span></label>
+                <label class="flag-toggle"><input type="checkbox" id="flagOvertempRestart"><span data-i18n="flag.overtemp_restart">Автоперезапуск (перегрів)</span></label>
+                <label class="flag-toggle"><input type="checkbox" id="flagOverloadBypass"><span data-i18n="flag.overload_bypass">Байпас на мережу при перевантаж.</span></label>
+                <label class="flag-toggle"><input type="checkbox" id="flagAutoTurnPage"><span data-i18n="flag.auto_page">Автопрокрутка сторінок LCD</span></label>
+              </div>
+            </div>
+
+            <details class="tier2-details" id="tier2Details">
+              <summary><span data-i18n="control.tier2_title">Tier 2 · Пороги напруг батареї 24V (підвищений ризик)</span></summary>
+              <p class="tier2-hint" data-i18n="control.tier2_hint">Інваріант 24V: відсічка &lt; перехід на мережу &lt; повернення на батарею &le; float &le; bulk &le; high limit.</p>
+              <div class="control-grid">
+                <label class="ctrl-field"><span data-i18n="control.cutoff_v">Відсічка розряду (20127)</span><input id="ctrlBattLowV" type="number" min="20" max="26" step="0.1"></label>
+                <label class="ctrl-field"><span data-i18n="control.back_to_grid_v">Перехід на мережу (20118)</span><input id="ctrlNormalV" type="number" min="21" max="27" step="0.1"></label>
+                <label class="ctrl-field"><span data-i18n="control.back_to_batt_v">Повернення на АКБ (20119)</span><input id="ctrlSellV" type="number" min="24" max="29" step="0.1"></label>
+                <label class="ctrl-field"><span data-i18n="control.float_v">Float напруга (10103)</span><input id="ctrlFloatV" type="number" min="25" max="29.5" step="0.1"></label>
+                <label class="ctrl-field"><span data-i18n="control.bulk_v">Bulk / Absorb (10104)</span><input id="ctrlAbsorbV" type="number" min="25.5" max="30" step="0.1"></label>
+              </div>
+              <div class="tier2-actions">
+                <button type="button" class="btn-warning" id="previewTier2Btn" data-i18n="control.preview_tier2">Перевірити пороги (Tier 2)</button>
+              </div>
+            </details>
+
+            <div class="audit-section">
+              <div class="control-subhead"><span data-i18n="control.audit_title">Журнал змін конфігурації</span></div>
+              <div class="audit-list" id="controlAuditList"></div>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel diagnostics-panel">
+          <div class="panel-heading"><div><p class="section-kicker" data-i18n="diagnostics.kicker">07 / DIAGNOSTICS</p><h2 data-i18n="diagnostics.title">Діагностика</h2></div><span class="diagnostic-badge" id="diagnosticBadge" data-i18n="diagnostics.nominal">NOMINAL</span></div>
+          <div id="diagnosticsList" class="diagnostic-list"></div>
+          <div id="diagnosticFlags" class="diagnostic-flags"></div>
+          <details class="raw-details"><summary><span data-i18n="diagnostics.raw">Raw register frames</span> <span class="raw-expand" data-i18n="diagnostics.expand">розгорнути</span></summary><div id="rawRegisters"></div></details>
+        </article>
       </section>
     </main>
 
-     <footer class="footer"><span>MUST POWER DESK <b>v0.2.1</b></span><span data-i18n="footer">Local service · read-only Modbus RTU · UTC storage</span></footer>
+    <footer class="footer"><span>MUST POWER DESK <b>v0.3.0</b></span><span data-i18n="footer">Local service · Modbus RTU · UTC storage</span></footer>
   </div>
+
+  <div class="modal-backdrop hidden" id="controlModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div><p class="section-kicker" data-i18n="modal.kicker">SAFE WRITE INTERLOCK</p><h3 id="modalTitle" data-i18n="modal.title">Підтвердження запису в інвертор</h3></div>
+        <button type="button" class="icon-button" id="modalCloseBtn" aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="modalWarnings" class="modal-warnings"></div>
+        <table class="diff-table">
+          <thead><tr><th data-i18n="modal.param">Параметр</th><th data-i18n="modal.before">Було</th><th data-i18n="modal.after">Стане</th></tr></thead>
+          <tbody id="modalDiffBody"></tbody>
+        </table>
+        <label class="tier2-confirm-row hidden" id="tier2ConfirmRow">
+          <input type="checkbox" id="tier2ConfirmCheck">
+          <span data-i18n="modal.tier2_check">Я перевірив(ла) специфікацію 24V батареї та розумію ризик зміни порогів.</span>
+        </label>
+        <p class="modal-error hidden" id="modalError"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-secondary" id="modalCancelBtn" data-i18n="modal.cancel">Скасувати</button>
+        <button type="button" class="hold-confirm-btn" id="holdConfirmBtn">
+          <span class="hold-fill" id="holdConfirmFill"></span>
+          <span class="hold-label" id="holdConfirmLabel" data-i18n="modal.hold">Утримуйте для запису</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <div class="chart-tooltip" id="chartTooltip" role="tooltip" aria-hidden="true">
     <time id="chartTooltipTime"></time>
     <div id="chartTooltipValues" class="chart-tooltip-values"></div>

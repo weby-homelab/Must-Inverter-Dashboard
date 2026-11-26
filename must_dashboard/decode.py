@@ -3,6 +3,110 @@ from __future__ import annotations
 from typing import Any
 
 
+ENERGY_USE_MODES: dict[int, str] = {
+    1: "SBU",
+    2: "SUB",
+    3: "UTI",
+    4: "SOL",
+}
+
+CHARGER_SOURCE_PRIORITIES: dict[int, str] = {
+    0: "CSO",
+    2: "SNU",
+    3: "OSO",
+}
+
+GRID_PROTECT_STANDARDS: dict[int, str] = {
+    0: "APL",
+    1: "UPS",
+}
+
+BATTERY_TYPES: dict[int, str] = {
+    0: "USE",
+    1: "AGM",
+    2: "FLD",
+    3: "GEL",
+    4: "LI",
+}
+
+SYSTEM_SETTING_BITS: dict[int, str] = {
+    0x0001: "overload_restart_forbid",
+    0x0002: "overtemp_restart_forbid",
+    0x0004: "overload_bypass_forbid",
+    0x0008: "auto_turn_page_forbid",
+    0x0010: "grid_buzz_enable",
+    0x0020: "buzz_forbid",
+    0x0040: "lcd_light_enable",
+    0x0080: "record_fault_forbid",
+}
+
+CHARGER_ERROR_BITS: dict[int, str] = {
+    0: "hardware_protection",
+    1: "over_current",
+    2: "current_sensor_error",
+    3: "over_temperature",
+    4: "pv_voltage_high",
+    5: "pv_voltage_low",
+    6: "battery_voltage_high",
+    7: "battery_voltage_low",
+    8: "current_uncontrollable",
+    9: "parameter_error",
+}
+
+INVERTER_ERROR_1_BITS: dict[int, str] = {
+    0: "fan_locked",
+    1: "over_temperature",
+    2: "battery_voltage_high",
+    3: "battery_voltage_low",
+    4: "output_short",
+    5: "inverter_voltage_high",
+    6: "overload_timeout",
+    7: "bus_voltage_high",
+    8: "bus_soft_start_fail",
+    9: "main_relay_fail",
+    10: "inverter_voltage_low",
+    11: "grid_voltage_error",
+    12: "hardware_over_current",
+    13: "dc_offset_high",
+    14: "software_over_current",
+    15: "over_temperature_2",
+}
+
+INVERTER_WARNING_1_BITS: dict[int, str] = {
+    0: "fan_warning",
+    1: "overload_warning",
+    2: "battery_low_warning",
+    3: "eeprom_fault",
+}
+
+
+def decode_system_setting_flags(raw: int | None) -> dict[str, bool] | None:
+    if raw is None:
+        return None
+    unsigned = raw & 0xFFFF
+    return {name: bool(unsigned & mask) for mask, name in SYSTEM_SETTING_BITS.items()}
+
+
+def _decode_bit_flags(
+    raw: int | None,
+    bit_map: dict[int, str],
+    *,
+    prefix: str,
+    severity: str = "error",
+    info_codes: set[str] | None = None,
+) -> list[dict[str, Any]]:
+    if raw is None or raw == 0:
+        return []
+    unsigned = raw & 0xFFFF
+    flags: list[dict[str, Any]] = []
+    for bit in range(16):
+        if unsigned & (1 << bit):
+            code = bit_map.get(bit, f"{prefix}_bit_{bit}")
+            item_severity = "info" if info_codes and code in info_codes else severity
+            flags.append({"bit": bit, "code": code, "severity": item_severity})
+    return flags
+
+
 def signed16(value: int) -> int:
     value &= 0xFFFF
     return value - 0x10000 if value & 0x8000 else value
@@ -68,11 +172,15 @@ def decode_identity(registers: list[int] | None) -> dict[str, Any] | None:
 def decode_charger_status(registers: list[int] | None) -> dict[str, Any] | None:
     if not registers:
         return None
+    pv_voltage_v = scaled(registers, 4, 0.1)
+    error_code = value(registers, 12, signed=False)
+    warning_code = value(registers, 13, signed=False)
+    info_codes = {"pv_voltage_low"} if (pv_voltage_v is None or pv_voltage_v <= 0) else None
     return {
         "work_state_code": value(registers, 0),
         "mppt_state_code": value(registers, 1),
         "charging_state_code": value(registers, 2),
-        "pv_voltage_v": scaled(registers, 4, 0.1),
+        "pv_voltage_v": pv_voltage_v,
         "battery_voltage_v": scaled(registers, 5, 0.1),
         "charger_current_a": scaled(registers, 6, 0.1),
         "charger_power_w": value(registers, 7),
@@ -80,8 +188,21 @@ def decode_charger_status(registers: list[int] | None) -> dict[str, Any] | None:
         "external_temperature_c": value(registers, 9),
         "battery_relay_code": value(registers, 10),
         "pv_relay_code": value(registers, 11),
-        "error_code": value(registers, 12),
-        "warning_code": value(registers, 13),
+        "error_code": error_code,
+        "warning_code": warning_code,
+        "error_flags": _decode_bit_flags(
+            error_code,
+            CHARGER_ERROR_BITS,
+            prefix="charger_error",
+            severity="error",
+            info_codes=info_codes,
+        ),
+        "warning_flags": _decode_bit_flags(
+            warning_code,
+            {},
+            prefix="charger_warning",
+            severity="warning",
+        ),
         "battery_voltage_grade_code": value(registers, 14),
         "rated_current_a": scaled(registers, 15, 0.1),
         "accumulated_power_wh": _accumulated_energy_wh(registers, 16),
@@ -92,6 +213,20 @@ def decode_charger_status(registers: list[int] | None) -> dict[str, Any] | None:
 def decode_inverter_status(registers: list[int] | None) -> dict[str, Any] | None:
     if not registers:
         return None
+    error_1 = value(registers, 60, signed=False)
+    error_2 = value(registers, 61, signed=False)
+    error_3 = value(registers, 62, signed=False)
+    warning_1 = value(registers, 64, signed=False)
+    warning_2 = value(registers, 65, signed=False)
+    inverter_error_flags = (
+        _decode_bit_flags(error_1, INVERTER_ERROR_1_BITS, prefix="inverter_error_1", severity="error")
+        + _decode_bit_flags(error_2, {}, prefix="inverter_error_2", severity="error")
+        + _decode_bit_flags(error_3, {}, prefix="inverter_error_3", severity="error")
+    )
+    inverter_warning_flags = (
+        _decode_bit_flags(warning_1, INVERTER_WARNING_1_BITS, prefix="inverter_warning_1", severity="warning")
+        + _decode_bit_flags(warning_2, {}, prefix="inverter_warning_2", severity="warning")
+    )
     return {
         "work_state_code": value(registers, 0),
         "ac_voltage_grade_code": value(registers, 1),
@@ -136,6 +271,13 @@ def decode_inverter_status(registers: list[int] | None) -> dict[str, Any] | None
         "accumulated_self_use_power_wh": _accumulated_energy_wh(registers, 54),
         "accumulated_pv_sell_power_wh": _accumulated_energy_wh(registers, 56),
         "accumulated_grid_charger_power_wh": _accumulated_energy_wh(registers, 58),
+        "error_message_1": error_1,
+        "error_message_2": error_2,
+        "error_message_3": error_3,
+        "warning_message_1": warning_1,
+        "warning_message_2": warning_2,
+        "error_flags": inverter_error_flags,
+        "warning_flags": inverter_warning_flags,
         "serial_number": _register_pair_hex(registers, 68),
         "hardware_version": version(registers, 70),
         "software_version": version(registers, 71),
@@ -151,6 +293,7 @@ def decode_inverter_status(registers: list[int] | None) -> dict[str, Any] | None
 def decode_charger_config(registers: list[int] | None) -> dict[str, Any] | None:
     if not registers:
         return None
+    battery_type_code = value(registers, 9)
     return {
         "charger_work_enabled": bool(value(registers, 0)),
         "absorb_voltage_v": scaled(registers, 1, 0.1),
@@ -160,7 +303,8 @@ def decode_charger_config(registers: list[int] | None) -> dict[str, Any] | None:
         "battery_high_voltage_v": scaled(registers, 6, 0.1),
         "max_charger_current_a": scaled(registers, 7, 0.1),
         "absorb_charger_current_a": scaled(registers, 8, 0.1),
-        "battery_type_code": value(registers, 9),
+        "battery_type_code": battery_type_code,
+        "battery_type_label": BATTERY_TYPES.get(battery_type_code) if battery_type_code is not None else None,
         "battery_capacity_ah": value(registers, 10),
         "remove_accumulated_data_code": value(registers, 11),
         "equalization_enabled": bool(value(registers, 17)),
@@ -175,14 +319,22 @@ def decode_charger_config(registers: list[int] | None) -> dict[str, Any] | None:
 def decode_inverter_config(registers: list[int] | None) -> dict[str, Any] | None:
     if not registers:
         return None
+    energy_use_mode_code = value(registers, 8)
+    grid_protect_standard_code = value(registers, 10)
+    system_setting_code = value(registers, 41, signed=False)
+    charger_source_priority_code = value(registers, 42)
     return {
         "offgrid_work_enabled": bool(value(registers, 0)),
         "output_voltage_v": scaled(registers, 1, 0.1),
         "output_frequency_hz": scaled(registers, 2, 0.01),
         "search_mode_enabled": bool(value(registers, 3)),
         "discharge_to_grid_enabled": bool(value(registers, 7)),
-        "energy_use_mode_code": value(registers, 8),
-        "grid_protect_standard_code": value(registers, 10),
+        "energy_use_mode_code": energy_use_mode_code,
+        "energy_use_mode_label": ENERGY_USE_MODES.get(energy_use_mode_code) if energy_use_mode_code is not None else None,
+        "grid_protect_standard_code": grid_protect_standard_code,
+        "grid_protect_standard_label": (
+            GRID_PROTECT_STANDARDS.get(grid_protect_standard_code) if grid_protect_standard_code is not None else None
+        ),
         "solar_use_aim_code": value(registers, 11),
         "max_discharger_current_a": scaled(registers, 12, 0.1),
         "normal_voltage_point_v": scaled(registers, 17, 0.1),
@@ -191,10 +343,72 @@ def decode_inverter_config(registers: list[int] | None) -> dict[str, Any] | None
         "battery_low_voltage_v": scaled(registers, 26, 0.1),
         "battery_high_voltage_v": scaled(registers, 27, 0.1),
         "max_combine_charger_current_a": scaled(registers, 31, 0.1),
-        "system_setting_code": value(registers, 41),
-        "charger_source_priority_code": value(registers, 42),
+        "system_setting_code": system_setting_code,
+        "system_setting_flags": decode_system_setting_flags(system_setting_code),
+        "charger_source_priority_code": charger_source_priority_code,
+        "charger_source_priority_label": (
+            CHARGER_SOURCE_PRIORITIES.get(charger_source_priority_code)
+            if charger_source_priority_code is not None
+            else None
+        ),
         "solar_power_balance_code": value(registers, 43),
         "raw_register_count": len(registers),
+    }
+
+
+def compute_autonomy_estimate(
+    *,
+    metrics: dict[str, Any],
+    inverter: dict[str, Any] | None,
+    charger_config: dict[str, Any] | None,
+    inverter_config: dict[str, Any] | None,
+) -> dict[str, Any]:
+    battery_voltage_v = metrics.get("battery_voltage_v")
+    battery_power_w = metrics.get("battery_power_w")
+    grid_voltage_v = metrics.get("grid_voltage_v")
+    load_power_w = metrics.get("load_power_w")
+
+    cutoff = (
+        (inverter_config or {}).get("battery_low_voltage_v")
+        or (charger_config or {}).get("battery_low_voltage_v")
+        or 24.0
+    )
+    full_v = (charger_config or {}).get("float_voltage_v") or 27.0
+    capacity_ah = (charger_config or {}).get("battery_capacity_ah") or 200
+    grade_v = (inverter or {}).get("battery_voltage_grade_code") or 24
+
+    discharging = bool(
+        (battery_power_w is not None and battery_power_w > 20)
+        or (grid_voltage_v is not None and grid_voltage_v < 50 and load_power_w is not None and load_power_w > 0)
+    )
+
+    remaining_percent: float | None = None
+    if battery_voltage_v is not None:
+        span = max(0.5, float(full_v) - float(cutoff))
+        fraction = max(0.0, min(1.0, (float(battery_voltage_v) - float(cutoff)) / span))
+        remaining_percent = round(fraction * 100.0, 1)
+    else:
+        fraction = None
+
+    draw_w: float | None = None
+    if battery_power_w is not None and battery_power_w > 20:
+        draw_w = float(battery_power_w)
+    elif discharging and load_power_w is not None and load_power_w > 0:
+        draw_w = float(load_power_w) * 1.15
+
+    estimated_minutes: int | None = None
+    if discharging and fraction is not None and draw_w is not None and draw_w > 0:
+        usable_wh = float(capacity_ah) * float(grade_v) * 0.85 * fraction
+        estimated_minutes = max(0, int(round((usable_wh / draw_w) * 60.0)))
+
+    return {
+        "discharging": discharging,
+        "estimated_minutes": estimated_minutes,
+        "remaining_percent_estimate": remaining_percent,
+        "discharge_power_w": round(draw_w, 1) if draw_w is not None else None,
+        "cutoff_voltage_v": float(cutoff),
+        "capacity_ah": int(capacity_ah),
+        "method": "voltage_band_estimate",
     }
 
 
@@ -251,6 +465,13 @@ def decode_snapshot(
         ),
     }
 
+    autonomy = compute_autonomy_estimate(
+        metrics=metrics,
+        inverter=inverter,
+        charger_config=charger_config,
+        inverter_config=inverter_config,
+    )
+
     return {
         "captured_at": captured_at,
         "source": source,
@@ -265,6 +486,7 @@ def decode_snapshot(
             "inverter": inverter,
         },
         "metrics": metrics,
+        "autonomy": autonomy,
         "configuration": {
             "charger": charger_config,
             "inverter": inverter_config,

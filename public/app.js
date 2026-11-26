@@ -4,8 +4,9 @@
   const translations = {
     uk: {
       "page.title": "MUST Power Desk",
-      "page.description": "Локальний read-only моніторинг MUST PV18-3224 VPM II",
+      "page.description": "Локальний моніторинг та безпечне керування MUST PV18-3224 VPM II",
       "language.label": "Мова",
+      "theme.toggle": "Змінити тему",
       "common.refresh": "Оновити дані",
       "common.waiting": "очікування...",
       "common.source_usb": "USB serial",
@@ -19,10 +20,10 @@
       "hero.live": "LIVE TELEMETRY",
       "hero.title": "Енергія",
       "hero.title2": "під контролем.",
-      "hero.description": "Локальний read-only моніторинг інвертора. Жодних команд керування, лише точні дані з вашого USB Modbus-каналу.",
+      "hero.description": "Локальний моніторинг та захищене керування інвертором через ваш USB Modbus-канал.",
       "hero.last": "Останній знімок",
       "hero.source": "Джерело",
-      "hero.nominal": "VA NOMINAL",
+      "hero.mode": "Режим",
       "snapshot.note": "Дані оновлюються автоматично кожні 10 секунд",
       "section.now": "01 / ЗАРАЗ",
       "section.flow": "Потік енергії",
@@ -33,6 +34,8 @@
       "metric.load.unit": "поточне навантаження",
       "metric.grid.label": "Grid",
       "metric.grid.unit": "потік мережі",
+      "metric.grid.outage": "Мережа відсутня",
+      "metric.grid.outage_badge": "OUTAGE",
       "metric.battery.label": "Battery",
       "metric.battery.unit": "напруга батареї",
       "metric.live": "LIVE",
@@ -71,7 +74,7 @@
       "operations.battery.kicker": "BATTERY",
       "operations.battery.title": "Напруга батареї",
       "operations.battery.aria_label": "Графік напруги батареї",
-      "operations.battery.caption": "Порогові значення з read-only конфігурації",
+      "operations.battery.caption": "Порогові значення з конфігурації",
       "operations.battery.low": "MIN",
       "operations.battery.high": "MAX",
       "operations.thermal.kicker": "THERMAL",
@@ -147,8 +150,18 @@
       "system.starting_detail": "Перший poll ще не завершено",
       "system.stale": "Дані застаріли",
       "system.stale_detail": "Останній sample надто старий",
-      "health.active": "Read-only канал активний",
+      "health.active": "Канал активний",
       "health.stale_age": "Останній sample",
+      "outages.kicker": "04B / МЕРЕЖА",
+      "outages.title": "Відключення",
+      "outages.count": "Подій",
+      "outages.duration": "Без світла",
+      "outages.autonomy": "Автономність",
+      "outages.none": "Відключень мережі за період не зафіксовано",
+      "outages.ongoing": "Триває зараз",
+      "outages.min_batt": "мін АКБ",
+      "outages.peak": "пік",
+      "outages.est_prefix": "оцінка",
       "telemetry.kicker": "05 / TELEMETRY",
       "telemetry.title": "Деталі сигналу",
       "telemetry.ac": "AC output",
@@ -168,9 +181,11 @@
       "telemetry.charged": "Заряд батареї",
       "telemetry.discharged": "Розряд батареї",
       "telemetry.uptime": "Час роботи зарядного (д:г:хв)",
-      "config.kicker": "06 / CONFIG",
-      "config.title": "Параметри",
+      "config.kicker": "06 / CONFIG & CONTROL",
+      "config.title": "Параметри та керування",
       "config.readonly": "READ ONLY",
+      "config.locked": "ЗАБЛОКОВАНО",
+      "config.unlocked": "РОЗБЛОКОВАНО",
       "config.charger": "Зарядний контур",
       "config.inverter": "Інверторний контур",
       "config.charger_work": "Charger",
@@ -180,32 +195,82 @@
       "config.battery_high": "Battery high",
       "config.max_current": "Max current",
       "config.capacity": "Battery capacity",
+      "config.battery_type": "Тип батареї",
       "config.equalization": "Equalization",
       "config.offgrid": "Off-grid",
       "config.output": "Output",
       "config.frequency": "Frequency",
       "config.search_mode": "Search mode",
-      "config.energy_mode": "Energy mode",
+      "config.energy_mode": "Режим роботи",
+      "config.grid_standard": "Діапазон входу AC",
       "config.max_discharge": "Max discharge",
-      "config.grid_charge": "Grid charge",
-      "config.source_priority": "Source priority",
+      "config.grid_charge": "Струм зарядки від мережі",
+      "config.max_combine_current": "Макс. сумарний струм",
+      "config.source_priority": "Пріоритет зарядки",
+      "control.unlock": "Розблокувати",
+      "control.lock": "Заблокувати",
+      "control.presets": "Швидкі пресети",
+      "control.tier1_title": "Tier 1 · Оперативні налаштування",
+      "control.preview_tier1": "Перевірити зміни",
+      "control.tier2_title": "Tier 2 · Пороги напруг батареї 24V (підвищений ризик)",
+      "control.tier2_hint": "Інваріант 24V: відсічка < перехід на мережу < повернення на батарею <= float <= bulk <= high limit.",
+      "control.cutoff_v": "Відсічка розряду (20127)",
+      "control.back_to_grid_v": "Перехід на мережу (20118)",
+      "control.back_to_batt_v": "Повернення на АКБ (20119)",
+      "control.float_v": "Float напруга (10103)",
+      "control.bulk_v": "Bulk / Absorb (10104)",
+      "control.preview_tier2": "Перевірити пороги (Tier 2)",
+      "control.audit_title": "Журнал змін конфігурації",
+      "control.audit_empty": "Зміни конфігурації ще не виконувались",
+      "control.rollback": "Відкатити",
+      "control.banner_readonly": "Сервер у режимі Read-Only (MUST_ENABLE_WRITE=false). Керування заблоковано на рівні конфігурації.",
+      "control.banner_interlock": "Керування тимчасово заблоковано: телеметрія недоступна або застаріла.",
+      "control.banner_locked": "Запис дозволений на сервері. Натисніть «Розблокувати» для безпечного редагування (автоблокування через 5 хв).",
+      "control.banner_unlocked": "Режим редагування активний. Усі зміни проходять передперегляд та Hold-to-Confirm.",
+      "control.no_changes": "Значення не змінилися — запис в EEPROM не потрібен.",
+      "control.budget": "Ліміт записів",
+      "preset.fast_charge": "Швидка зарядка (30A)",
+      "preset.gentle_charge": "Щадна зарядка (15A)",
+      "preset.ups_utility": "UPS · Мережа (UTI)",
+      "preset.solar_first": "Пріоритет сонця (SBU)",
+      "flag.buzz": "Звуковий зумер",
+      "flag.grid_buzz": "Сигнал зникнення мережі",
+      "flag.lcd_light": "Підсвітка екрана LCD",
+      "flag.overload_restart": "Автоперезапуск (перевантаж.)",
+      "flag.overtemp_restart": "Автоперезапуск (перегрів)",
+      "flag.overload_bypass": "Байпас на мережу при перевантаж.",
+      "flag.auto_page": "Автопрокрутка сторінок LCD",
+      "modal.kicker": "SAFE WRITE INTERLOCK",
+      "modal.title": "Підтвердження запису в інвертор",
+      "modal.param": "Параметр",
+      "modal.before": "Було",
+      "modal.after": "Стане",
+      "modal.tier2_check": "Я перевірив(ла) специфікацію 24V батареї та розумію ризик зміни порогів.",
+      "modal.cancel": "Скасувати",
+      "modal.hold": "Утримуйте для запису",
+      "modal.hold_progress": "Утримуйте...",
+      "modal.sending": "Запис у Modbus...",
+      "modal.warn_tier2": "Увага: зміна порогів напруги батареї (Tier 2) впливає на захист та ресурс АКБ.",
+      "modal.warn_mode": "Зміна режиму роботи може перемкнути джерело живлення навантаження.",
       "diagnostics.kicker": "07 / DIAGNOSTICS",
       "diagnostics.title": "Діагностика",
       "diagnostics.nominal": "NOMINAL",
       "diagnostics.channel": "Serial channel",
       "diagnostics.latency": "Response latency",
-      "diagnostics.charger_error": "Charger error code",
-      "diagnostics.charger_warning": "Charger warning code",
+      "diagnostics.charger_error": "Помилки зарядного",
+      "diagnostics.charger_warning": "Попередження зарядного",
+      "diagnostics.telegram": "Telegram-сповіщення",
       "diagnostics.frames": "Frames",
       "diagnostics.section_errors": "Section errors",
       "diagnostics.raw": "Raw register frames",
       "diagnostics.expand": "розгорнути",
-      "footer": "Local service · read-only Modbus RTU · UTC storage",
+      "footer": "Local service · Modbus RTU · UTC storage",
     },
     en: {
       "page.title": "MUST Power Desk",
-      "page.description": "Local read-only monitoring for the MUST PV18-3224 VPM II",
+      "page.description": "Local monitoring and safe control for MUST PV18-3224 VPM II",
       "language.label": "Language",
+      "theme.toggle": "Toggle theme",
       "common.refresh": "Refresh data",
       "common.waiting": "waiting...",
       "common.source_usb": "USB serial",
@@ -219,10 +284,10 @@
       "hero.live": "LIVE TELEMETRY",
       "hero.title": "Energy",
       "hero.title2": "under control.",
-      "hero.description": "Local read-only inverter monitoring. No control commands, only precise data from your USB Modbus channel.",
+      "hero.description": "Local inverter monitoring and write-protected control over your USB Modbus channel.",
       "hero.last": "Last snapshot",
       "hero.source": "Source",
-      "hero.nominal": "VA NOMINAL",
+      "hero.mode": "Mode",
       "snapshot.note": "Data refresh automatically every 10 seconds",
       "section.now": "01 / NOW",
       "section.flow": "Energy flow",
@@ -233,6 +298,8 @@
       "metric.load.unit": "current demand",
       "metric.grid.label": "Grid",
       "metric.grid.unit": "grid flow",
+      "metric.grid.outage": "Grid unavailable",
+      "metric.grid.outage_badge": "OUTAGE",
       "metric.battery.label": "Battery",
       "metric.battery.unit": "battery voltage",
       "metric.live": "LIVE",
@@ -271,7 +338,7 @@
       "operations.battery.kicker": "BATTERY",
       "operations.battery.title": "Battery voltage",
       "operations.battery.aria_label": "Battery voltage chart",
-      "operations.battery.caption": "Thresholds from read-only configuration",
+      "operations.battery.caption": "Thresholds from configuration",
       "operations.battery.low": "LOW",
       "operations.battery.high": "HIGH",
       "operations.thermal.kicker": "THERMAL",
@@ -347,8 +414,18 @@
       "system.starting_detail": "First poll is not complete",
       "system.stale": "Data is stale",
       "system.stale_detail": "The last sample is too old",
-      "health.active": "Read-only channel active",
+      "health.active": "Channel active",
       "health.stale_age": "Last sample",
+      "outages.kicker": "04B / GRID",
+      "outages.title": "Outages",
+      "outages.count": "Events",
+      "outages.duration": "Downtime",
+      "outages.autonomy": "Autonomy",
+      "outages.none": "No grid outages recorded in this window",
+      "outages.ongoing": "Ongoing",
+      "outages.min_batt": "min batt",
+      "outages.peak": "peak",
+      "outages.est_prefix": "est.",
       "telemetry.kicker": "05 / TELEMETRY",
       "telemetry.title": "Signal details",
       "telemetry.ac": "AC output",
@@ -368,9 +445,11 @@
       "telemetry.charged": "Battery charged",
       "telemetry.discharged": "Battery discharged",
       "telemetry.uptime": "Charger uptime (D:H:M)",
-      "config.kicker": "06 / CONFIG",
-      "config.title": "Configuration",
+      "config.kicker": "06 / CONFIG & CONTROL",
+      "config.title": "Configuration & Control",
       "config.readonly": "READ ONLY",
+      "config.locked": "LOCKED",
+      "config.unlocked": "UNLOCKED",
       "config.charger": "Charger circuit",
       "config.inverter": "Inverter circuit",
       "config.charger_work": "Charger",
@@ -380,35 +459,121 @@
       "config.battery_high": "Battery high",
       "config.max_current": "Max current",
       "config.capacity": "Battery capacity",
+      "config.battery_type": "Battery type",
       "config.equalization": "Equalization",
       "config.offgrid": "Off-grid",
       "config.output": "Output",
       "config.frequency": "Frequency",
       "config.search_mode": "Search mode",
       "config.energy_mode": "Energy mode",
+      "config.grid_standard": "AC input range",
       "config.max_discharge": "Max discharge",
-      "config.grid_charge": "Grid charge",
-      "config.source_priority": "Source priority",
+      "config.grid_charge": "Grid charge current",
+      "config.max_combine_current": "Max combine current",
+      "config.source_priority": "Charger priority",
+      "control.unlock": "Unlock",
+      "control.lock": "Lock",
+      "control.presets": "Quick presets",
+      "control.tier1_title": "Tier 1 · Operational settings",
+      "control.preview_tier1": "Preview changes",
+      "control.tier2_title": "Tier 2 · 24V Battery thresholds (elevated risk)",
+      "control.tier2_hint": "24V invariant: cutoff < back-to-grid < back-to-battery <= float <= bulk <= high limit.",
+      "control.cutoff_v": "Cutoff voltage (20127)",
+      "control.back_to_grid_v": "Back to grid (20118)",
+      "control.back_to_batt_v": "Back to battery (20119)",
+      "control.float_v": "Float voltage (10103)",
+      "control.bulk_v": "Bulk / Absorb (10104)",
+      "control.preview_tier2": "Preview thresholds (Tier 2)",
+      "control.audit_title": "Configuration audit log",
+      "control.audit_empty": "No configuration changes recorded yet",
+      "control.rollback": "Rollback",
+      "control.banner_readonly": "Server is in Read-Only mode (MUST_ENABLE_WRITE=false). Inverter writes are disabled.",
+      "control.banner_interlock": "Control locked by safety interlock: telemetry unavailable or stale.",
+      "control.banner_locked": "Write access enabled on server. Click Unlock to stage changes (auto-locks in 5 min).",
+      "control.banner_unlocked": "Edit session unlocked. Changes require Before→After preview and Hold-to-Confirm.",
+      "control.no_changes": "No values changed — skipping EEPROM write.",
+      "control.budget": "Write budget",
+      "preset.fast_charge": "Fast charge (30A)",
+      "preset.gentle_charge": "Gentle charge (15A)",
+      "preset.ups_utility": "UPS · Utility (UTI)",
+      "preset.solar_first": "Solar first (SBU)",
+      "flag.buzz": "Audible buzzer",
+      "flag.grid_buzz": "Grid loss alarm beep",
+      "flag.lcd_light": "LCD backlight",
+      "flag.overload_restart": "Overload auto-restart",
+      "flag.overtemp_restart": "Overtemp auto-restart",
+      "flag.overload_bypass": "Overload bypass to grid",
+      "flag.auto_page": "Auto-cycle LCD pages",
+      "modal.kicker": "SAFE WRITE INTERLOCK",
+      "modal.title": "Confirm inverter write",
+      "modal.param": "Parameter",
+      "modal.before": "Before",
+      "modal.after": "After",
+      "modal.tier2_check": "I verified my 24V battery specification and accept the risk of modifying voltage thresholds.",
+      "modal.cancel": "Cancel",
+      "modal.hold": "Hold to write",
+      "modal.hold_progress": "Holding...",
+      "modal.sending": "Writing Modbus...",
+      "modal.warn_tier2": "Warning: Tier 2 battery voltage thresholds directly affect battery protection.",
+      "modal.warn_mode": "Changing energy mode may transfer the load power source.",
       "diagnostics.kicker": "07 / DIAGNOSTICS",
       "diagnostics.title": "Diagnostics",
       "diagnostics.nominal": "NOMINAL",
       "diagnostics.channel": "Serial channel",
       "diagnostics.latency": "Response latency",
-      "diagnostics.charger_error": "Charger error code",
-      "diagnostics.charger_warning": "Charger warning code",
+      "diagnostics.charger_error": "Charger errors",
+      "diagnostics.charger_warning": "Charger warnings",
+      "diagnostics.telegram": "Telegram alerts",
       "diagnostics.frames": "Frames",
       "diagnostics.section_errors": "Section errors",
       "diagnostics.raw": "Raw register frames",
       "diagnostics.expand": "expand",
-      "footer": "Local service · read-only Modbus RTU · UTC storage",
+      "footer": "Local service · Modbus RTU · UTC storage",
+    },
+  };
+
+  const flagLabels = {
+    uk: {
+      pv_voltage_low: "Низька напруга PV (немає сонця)",
+      pv_voltage_high: "Зависока напруга PV",
+      hardware_protection: "Апаратний захист зарядного",
+      over_current: "Перевищення струму",
+      current_sensor_error: "Помилка датчика струму",
+      over_temperature: "Перегрів",
+      battery_voltage_high: "Перевищення напруги АКБ",
+      battery_voltage_low: "Низька напруга АКБ",
+      current_uncontrollable: "Некерований струм",
+      parameter_error: "Помилка параметрів",
+      fan_locked: "Блокування вентилятора",
+      output_short: "Коротке замикання виходу",
+      overload_timeout: "Перевантаження (таймаут)",
+      bus_voltage_high: "Висока напруга шини DC",
+    },
+    en: {
+      pv_voltage_low: "PV voltage too low (no solar)",
+      pv_voltage_high: "PV voltage too high",
+      hardware_protection: "Charger hardware protection",
+      over_current: "Over-current",
+      current_sensor_error: "Current sensor error",
+      over_temperature: "Over-temperature",
+      battery_voltage_high: "Battery voltage too high",
+      battery_voltage_low: "Battery voltage too low",
+      current_uncontrollable: "Uncontrollable current",
+      parameter_error: "Parameter error",
+      fan_locked: "Fan locked",
+      output_short: "Output short circuit",
+      overload_timeout: "Overload timeout",
+      bus_voltage_high: "DC bus over-voltage",
     },
   };
 
   const state = {
     range: "24h",
     period: "30m",
+    outageRange: "7d",
     metric: "load_power_w",
     language: readLanguage(),
+    theme: readTheme(),
     current: null,
     health: null,
     history: null,
@@ -417,10 +582,18 @@
     summary: null,
     summaryRange: null,
     summaryRequest: 0,
+    outages: null,
     refreshTimer: null,
     chartModels: new Map(),
     chartPointers: new Map(),
     activeChartId: null,
+    controlStatus: null,
+    controlToken: readControlToken(),
+    controlFormPopulated: false,
+    auditEntries: [],
+    pendingModal: null,
+    holdTimer: null,
+    holdRaf: null,
   };
 
   const REFRESH_INTERVAL_MS = 10_000;
@@ -500,6 +673,38 @@
     }
   }
 
+  function readTheme() {
+    try {
+      return localStorage.getItem("must-power-desk-theme") === "light" ? "light" : "dark";
+    } catch (error) {
+      return "dark";
+    }
+  }
+
+  function readControlToken() {
+    try {
+      return sessionStorage.getItem("must-power-desk-control-token") || "";
+    } catch (error) {
+      return "";
+    }
+  }
+
+  function writeControlToken(token) {
+    state.controlToken = token || "";
+    try {
+      if (token) sessionStorage.setItem("must-power-desk-control-token", token);
+      else sessionStorage.removeItem("must-power-desk-control-token");
+    } catch (error) { /* ignore */ }
+  }
+
+  function applyTheme() {
+    if (state.theme === "light") document.documentElement.dataset.theme = "light";
+    else delete document.documentElement.dataset.theme;
+    setText("themeToggleLabel", state.theme === "light" ? "LIGHT" : "DARK");
+    renderChart();
+    renderOperationalCharts();
+  }
+
   function t(key) {
     return translations[state.language][key] || translations.uk[key] || key;
   }
@@ -522,6 +727,9 @@
     if (state.current) renderCurrent(state.current);
     if (state.history) renderHistory(state.history);
     if (state.summary) renderSummary(state.summary);
+    if (state.outages) renderOutages(state.outages);
+    if (state.controlStatus) renderControlStatus(state.controlStatus);
+    renderAuditList(state.auditEntries);
   }
 
   function locale() { return state.language === "en" ? "en-GB" : "uk-UA"; }
@@ -572,6 +780,32 @@
     return body;
   }
 
+  async function postJson(url, payload = {}) {
+    const headers = {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      "X-Requested-With": "MUSTPowerDesk",
+    };
+    if (state.controlToken) headers["X-Control-Token"] = state.controlToken;
+    const response = await fetch(url, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(payload),
+      cache: "no-store",
+    });
+    const body = await response.json();
+    if (!response.ok) throw new Error(body.error || `HTTP ${response.status}`);
+    return body;
+  }
+
+  function formatMinutes(minutes) {
+    if (!safeNumber(minutes)) return "--";
+    const hrs = Math.floor(minutes / 60);
+    const mins = Math.round(minutes % 60);
+    if (state.language === "en") return hrs ? `~${hrs}h ${mins}m` : `~${mins}m`;
+    return hrs ? `~${hrs}г ${mins}хв` : `~${mins}хв`;
+  }
+
   function renderHealth(health) {
     if (!health) return;
     state.health = health;
@@ -579,8 +813,8 @@
     const [badge, title, detail] = statusMeta(status);
     const badgeNode = $("connectionBadge");
     const systemNode = $("systemState");
-    if (badgeNode) { badgeNode.dataset.state = status; }
-    if (systemNode) { systemNode.dataset.state = status; }
+    if (badgeNode) badgeNode.dataset.state = status;
+    if (systemNode) systemNode.dataset.state = status;
     document.querySelectorAll(".operational-live").forEach((node) => { node.dataset.state = status; });
     setText("connectionLabel", badge);
     setText("systemStateTitle", title);
@@ -596,6 +830,58 @@
     }
   }
 
+  function renderPowerFlowSchematic(snapshot) {
+    const metrics = snapshot.metrics || {};
+    const config = snapshot.configuration || {};
+    const invCfg = config.inverter || {};
+    const autonomy = snapshot.autonomy || {};
+
+    const pvW = metrics.pv_power_w || 0;
+    const gridW = metrics.grid_power_w || 0;
+    const gridV = metrics.grid_voltage_v;
+    const loadW = metrics.load_power_w || 0;
+    const battW = metrics.battery_power_w || 0;
+    const gridDown = safeNumber(gridV) && gridV < 50;
+
+    setText("flowPvWatts", power(metrics.pv_power_w));
+    setText("flowPvMeta", valueWithUnit(metrics.pv_voltage_v, "V", 1));
+    setText("flowGridWatts", gridDown ? t("metric.grid.outage_badge") : power(metrics.grid_power_w));
+    setText("flowGridMeta", valueWithUnit(metrics.grid_voltage_v, "V", 0));
+    setText("flowLoadWatts", power(metrics.load_power_w));
+    setText("flowLoadMeta", safeNumber(metrics.load_percent) ? `${number(metrics.load_percent, 0)}%` : "--%");
+    setText("flowBattWatts", power(metrics.battery_power_w));
+    setText("flowBattMeta", valueWithUnit(metrics.battery_voltage_v, "V", 2));
+
+    const modeLabel = invCfg.energy_use_mode_label || "PV1800";
+    setText("flowInvMode", modeLabel);
+    setText("heroModeBadge", modeLabel);
+    const invSub = autonomy.discharging && safeNumber(autonomy.estimated_minutes)
+      ? formatMinutes(autonomy.estimated_minutes)
+      : stateLabel(snapshot.status && snapshot.status.inverter && snapshot.status.inverter.work_state_code);
+    setText("flowInvState", invSub);
+
+    const setLineClass = (id, stateClass) => {
+      const el = $(id);
+      if (!el) return;
+      el.classList.remove("is-forward", "is-reverse", "is-idle", "is-outage");
+      el.classList.add(stateClass);
+    };
+
+    setLineClass("flowLinePv", pvW > 15 ? "is-forward" : "is-idle");
+    setLineClass("flowLineLoad", loadW > 5 ? "is-forward" : "is-idle");
+    if (gridDown) setLineClass("flowLineGrid", "is-outage");
+    else if (gridW < -15) setLineClass("flowLineGrid", "is-forward");
+    else if (gridW > 15) setLineClass("flowLineGrid", "is-reverse");
+    else setLineClass("flowLineGrid", "is-idle");
+
+    if (battW < -15) setLineClass("flowLineBatt", "is-forward");
+    else if (battW > 15) setLineClass("flowLineBatt", "is-reverse");
+    else setLineClass("flowLineBatt", "is-idle");
+
+    const gridNode = $("flowGridNode");
+    if (gridNode) gridNode.classList.toggle("is-outage", Boolean(gridDown));
+  }
+
   function renderCurrent(snapshot) {
     if (!snapshot) return;
     state.current = snapshot;
@@ -604,6 +890,8 @@
     const identity = snapshot.identity || {};
     const inverter = (snapshot.status && snapshot.status.inverter) || {};
     const charger = (snapshot.status && snapshot.status.charger) || {};
+    const autonomy = snapshot.autonomy || {};
+
     setText("lastUpdated", timeLabel(snapshot.captured_at));
     setText("sourcePort", snapshot.source ? `${snapshot.source.port} · ID ${snapshot.source.slave_id}` : t("common.source_usb"));
     setText("pvPower", power(metrics.pv_power_w));
@@ -612,12 +900,40 @@
     setText("loadPower", power(metrics.load_power_w));
     setText("loadPercent", `${number(metrics.load_percent, 0)}%`);
     setText("loadCurrent", valueWithUnit(metrics.load_current_a, "A", 1));
+
+    const gridDown = safeNumber(metrics.grid_voltage_v) && metrics.grid_voltage_v < 50;
+    const gridCard = $("gridMetricCard");
+    if (gridCard) gridCard.classList.toggle("is-outage", Boolean(gridDown));
+    const gridBadge = $("gridLiveBadge");
+    if (gridBadge) {
+      gridBadge.classList.toggle("is-outage", Boolean(gridDown));
+      gridBadge.textContent = gridDown ? t("metric.grid.outage_badge") : t("metric.live");
+    }
+    setText("gridStatusText", gridDown ? t("metric.grid.outage") : t("metric.grid.unit"));
     setText("gridPower", power(metrics.grid_power_w));
     setText("gridVoltage", valueWithUnit(metrics.grid_voltage_v, "V", 1));
     setText("gridFrequency", valueWithUnit(metrics.grid_frequency_hz, "Hz", 2));
+
     setText("batteryVoltage", valueWithUnit(metrics.battery_voltage_v, "V", 2));
     setText("batteryPower", valueWithUnit(metrics.battery_power_w, "W", 0));
     setText("batteryState", `${t("common.state")} ${stateLabel(inverter.work_state_code)}`);
+
+    let autonomyTxt = "--";
+    if (autonomy.discharging && safeNumber(autonomy.estimated_minutes)) {
+      autonomyTxt = `${formatMinutes(autonomy.estimated_minutes)}`;
+    } else if (safeNumber(autonomy.remaining_percent_estimate)) {
+      autonomyTxt = `${number(autonomy.remaining_percent_estimate, 0)}% ${t("outages.est_prefix")}`;
+    }
+    setText("batteryAutonomy", autonomyTxt);
+    setText(
+      "outageAutonomy",
+      autonomy.discharging && safeNumber(autonomy.estimated_minutes)
+        ? `${formatMinutes(autonomy.estimated_minutes)}`
+        : safeNumber(autonomy.remaining_percent_estimate)
+          ? `${number(autonomy.remaining_percent_estimate, 0)}%`
+          : "--"
+    );
+
     const loadBar = $("loadBar");
     if (loadBar) loadBar.style.width = `${Math.max(0, Math.min(100, metrics.load_percent || 0))}%`;
     const batteryBar = $("batteryBar");
@@ -644,7 +960,10 @@
     setText("accumulatedCharge", energy(inverter.accumulated_charger_power_wh));
     setText("accumulatedDischarge", energy(inverter.accumulated_discharger_power_wh));
     setText("chargerUptime", charger.accumulated_time || "--");
+
+    renderPowerFlowSchematic(snapshot);
     renderConfiguration(snapshot.configuration);
+    syncControlForm(snapshot.configuration, false);
     renderDiagnostics(snapshot);
     renderRaw(snapshot.raw);
     renderOperationalCharts();
@@ -697,8 +1016,8 @@
     const hours = Math.floor(remaining / 3600);
     remaining %= 3600;
     const minutes = Math.floor(remaining / 60);
-    if (state.language === "en") return `${days}d ${hours}h ${minutes}m`;
-    return `${days}д ${hours}г ${minutes}хв`;
+    if (state.language === "en") return days ? `${days}d ${hours}h ${minutes}m` : `${hours}h ${minutes}m`;
+    return days ? `${days}д ${hours}г ${minutes}хв` : `${hours}г ${minutes}хв`;
   }
 
   function renderConfiguration(configuration) {
@@ -706,7 +1025,8 @@
     const inverter = configuration && configuration.inverter;
     const chargerRows = [
       [t("config.charger_work"), yesNo(charger && charger.charger_work_enabled)],
-      [t("config.absorb_voltage"), valueWithUnit(charger && charger.absorb_voltage_v, "V", 1)],
+      [t("config.battery_type"), labelWithCode(charger && charger.battery_type_label, charger && charger.battery_type_code)],
+      [t("config.absorb_voltage"), valueWithUnit(charger && charger.absorption_voltage_v, "V", 1)],
       [t("config.float_voltage"), valueWithUnit(charger && charger.float_voltage_v, "V", 1)],
       [t("config.battery_low"), valueWithUnit(charger && charger.battery_low_voltage_v, "V", 1)],
       [t("config.battery_high"), valueWithUnit(charger && charger.battery_high_voltage_v, "V", 1)],
@@ -718,14 +1038,21 @@
       [t("config.offgrid"), yesNo(inverter && inverter.offgrid_work_enabled)],
       [t("config.output"), valueWithUnit(inverter && inverter.output_voltage_v, "V", 1)],
       [t("config.frequency"), valueWithUnit(inverter && inverter.output_frequency_hz, "Hz", 2)],
-      [t("config.search_mode"), yesNo(inverter && inverter.search_mode_enabled)],
-      [t("config.energy_mode"), code(inverter && inverter.energy_use_mode_code)],
-      [t("config.max_discharge"), valueWithUnit(inverter && inverter.max_discharger_current_a, "A", 1)],
+      [t("config.energy_mode"), labelWithCode(inverter && inverter.energy_use_mode_label, inverter && inverter.energy_use_mode_code)],
+      [t("config.source_priority"), labelWithCode(inverter && inverter.charger_source_priority_label, inverter && inverter.charger_source_priority_code)],
+      [t("config.grid_standard"), labelWithCode(inverter && inverter.grid_protect_standard_label, inverter && inverter.grid_protect_standard_code)],
       [t("config.grid_charge"), valueWithUnit(inverter && inverter.grid_max_charger_current_a, "A", 1)],
-      [t("config.source_priority"), code(inverter && inverter.charger_source_priority_code)],
+      [t("config.max_combine_current"), valueWithUnit(inverter && inverter.max_combine_charger_current_a, "A", 1)],
+      [t("config.max_discharge"), valueWithUnit(inverter && inverter.max_discharger_current_a, "A", 1)],
     ];
     renderKeyValues("chargerConfig", chargerRows);
     renderKeyValues("inverterConfig", inverterRows);
+  }
+
+  function labelWithCode(label, rawCode) {
+    if (label && rawCode != null) return `${label} (${rawCode})`;
+    if (label) return label;
+    return code(rawCode);
   }
 
   function yesNo(value) {
@@ -751,17 +1078,36 @@
     });
   }
 
+  function flagText(flag) {
+    const dict = flagLabels[state.language] || flagLabels.uk;
+    return dict[flag.code] || flag.code;
+  }
+
   function renderDiagnostics(snapshot) {
     const root = $("diagnosticsList");
     if (!root) return;
     const connection = snapshot.connection || {};
     const errors = connection.section_errors || {};
     const raw = snapshot.raw || {};
+    const charger = (snapshot.status && snapshot.status.charger) || {};
+    const inverter = (snapshot.status && snapshot.status.inverter) || {};
+    const alerts = (state.health && state.health.alerts) || {};
+
+    const chargerFlags = charger.error_flags || [];
+    const chargerErrSummary = chargerFlags.length
+      ? chargerFlags.map((f) => flagText(f)).join("; ")
+      : code(charger.error_code);
+
+    const telegramStatus = alerts.enabled
+      ? (alerts.configured ? (alerts.last_error ? `${t("common.error")}: ${alerts.last_error}` : "ON") : "NO TOKEN")
+      : "OFF";
+
     const rows = [
       [t("diagnostics.channel"), connection.status || t("common.not_available")],
       [t("diagnostics.latency"), valueWithUnit(connection.latency_ms, "ms", 0)],
-      [t("diagnostics.charger_error"), code(snapshot.status && snapshot.status.charger && snapshot.status.charger.error_code)],
-      [t("diagnostics.charger_warning"), code(snapshot.status && snapshot.status.charger && snapshot.status.charger.warning_code)],
+      [t("diagnostics.charger_error"), chargerErrSummary],
+      [t("diagnostics.charger_warning"), code(charger.warning_code)],
+      [t("diagnostics.telegram"), telegramStatus],
       [t("diagnostics.frames"), `${Object.keys(raw).length} / ${Object.keys(raw).length + Object.keys(errors).length}`],
       [t("diagnostics.section_errors"), Object.keys(errors).length ? Object.keys(errors).join(", ") : t("common.none")],
     ];
@@ -775,6 +1121,24 @@
       row.append(name, result);
       root.append(row);
     });
+
+    const flagsRoot = $("diagnosticFlags");
+    if (flagsRoot) {
+      flagsRoot.replaceChildren();
+      const allFlags = [
+        ...(charger.error_flags || []),
+        ...(charger.warning_flags || []),
+        ...(inverter.error_flags || []),
+        ...(inverter.warning_flags || []),
+      ];
+      allFlags.forEach((flag) => {
+        const chip = document.createElement("span");
+        chip.className = "diag-chip";
+        chip.dataset.severity = flag.severity || "info";
+        chip.textContent = flagText(flag);
+        flagsRoot.append(chip);
+      });
+    }
   }
 
   function renderRaw(raw) {
@@ -803,6 +1167,454 @@
       root.append(wrapper);
     });
   }
+
+  /* ── Safe Control UI ──────────────────────────────────────────── */
+
+  function syncControlForm(configuration, force) {
+    if (!configuration) return;
+    const isUnlocked = Boolean(state.controlStatus && state.controlStatus.unlocked);
+    if (!force && state.controlFormPopulated && isUnlocked) return;
+    const inv = configuration.inverter || {};
+    const chg = configuration.charger || {};
+    const flags = inv.system_setting_flags || {};
+
+    if ($("ctrlEnergyMode") && inv.energy_use_mode_code != null) $("ctrlEnergyMode").value = String(inv.energy_use_mode_code);
+    if ($("ctrlChargerPriority") && inv.charger_source_priority_code != null) $("ctrlChargerPriority").value = String(inv.charger_source_priority_code);
+    if ($("ctrlGridStandard") && inv.grid_protect_standard_code != null) $("ctrlGridStandard").value = String(inv.grid_protect_standard_code);
+    if ($("ctrlGridChargeCurrent") && safeNumber(inv.grid_max_charger_current_a)) $("ctrlGridChargeCurrent").value = String(inv.grid_max_charger_current_a);
+    if ($("ctrlCombineChargeCurrent") && safeNumber(inv.max_combine_charger_current_a)) $("ctrlCombineChargeCurrent").value = String(inv.max_combine_charger_current_a);
+
+    if ($("flagBuzzEnabled")) $("flagBuzzEnabled").checked = !Boolean(flags.buzz_forbid);
+    if ($("flagGridBuzz")) $("flagGridBuzz").checked = Boolean(flags.grid_buzz_enable);
+    if ($("flagLcdLight")) $("flagLcdLight").checked = Boolean(flags.lcd_light_enable);
+    if ($("flagOverloadRestart")) $("flagOverloadRestart").checked = !Boolean(flags.overload_restart_forbid);
+    if ($("flagOvertempRestart")) $("flagOvertempRestart").checked = !Boolean(flags.overtemp_restart_forbid);
+    if ($("flagOverloadBypass")) $("flagOverloadBypass").checked = !Boolean(flags.overload_bypass_forbid);
+    if ($("flagAutoTurnPage")) $("flagAutoTurnPage").checked = !Boolean(flags.auto_turn_page_forbid);
+
+    if ($("ctrlBattLowV") && safeNumber(inv.battery_low_voltage_v)) $("ctrlBattLowV").value = String(inv.battery_low_voltage_v);
+    if ($("ctrlNormalV") && safeNumber(inv.normal_voltage_point_v)) $("ctrlNormalV").value = String(inv.normal_voltage_point_v);
+    if ($("ctrlSellV") && safeNumber(inv.start_sell_voltage_point_v)) $("ctrlSellV").value = String(inv.start_sell_voltage_point_v);
+    if ($("ctrlFloatV") && safeNumber(chg.float_voltage_v)) $("ctrlFloatV").value = String(chg.float_voltage_v);
+    if ($("ctrlAbsorbV") && safeNumber(chg.absorption_voltage_v)) $("ctrlAbsorbV").value = String(chg.absorption_voltage_v);
+
+    state.controlFormPopulated = true;
+  }
+
+  function renderControlStatus(status) {
+    if (!status) return;
+    state.controlStatus = status;
+    const badge = $("controlModeBadge");
+    const unlockBtn = $("unlockControlBtn");
+    const banner = $("controlInterlockBanner");
+    const deck = $("controlDeck");
+    const budget = $("controlBudgetNote");
+
+    const writeEnabled = Boolean(status.write_enabled);
+    const unlocked = Boolean(status.unlocked) && Boolean(state.controlToken);
+    const interlock = status.interlock_reason;
+
+    if (badge) {
+      if (!writeEnabled) {
+        badge.textContent = t("config.readonly");
+        delete badge.dataset.mode;
+      } else if (unlocked) {
+        const mins = Math.floor((status.expires_in_seconds || 0) / 60);
+        const secs = (status.expires_in_seconds || 0) % 60;
+        badge.textContent = `${t("config.unlocked")} · ${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+        badge.dataset.mode = "unlocked";
+      } else {
+        badge.textContent = t("config.locked");
+        badge.dataset.mode = "locked";
+      }
+    }
+
+    if (unlockBtn) {
+      unlockBtn.classList.toggle("hidden", !writeEnabled);
+      unlockBtn.disabled = !writeEnabled || (interlock && interlock !== "write_disabled");
+      unlockBtn.textContent = unlocked ? t("control.lock") : t("control.unlock");
+    }
+
+    if (banner) {
+      banner.classList.remove("is-warn", "is-ok");
+      if (!writeEnabled) {
+        banner.textContent = t("control.banner_readonly");
+      } else if (interlock) {
+        banner.classList.add("is-warn");
+        banner.textContent = t("control.banner_interlock");
+      } else if (unlocked) {
+        banner.classList.add("is-ok");
+        banner.textContent = t("control.banner_unlocked");
+      } else {
+        banner.classList.add("is-warn");
+        banner.textContent = t("control.banner_locked");
+      }
+    }
+
+    const canEdit = writeEnabled && unlocked && !interlock;
+    if (deck) {
+      deck.classList.toggle("is-disabled", !canEdit);
+      deck.querySelectorAll("input, select, button").forEach((el) => {
+        if (el.classList.contains("audit-rollback-btn")) {
+          el.disabled = !canEdit;
+        } else {
+          el.disabled = !canEdit;
+        }
+      });
+    }
+
+    if (budget) {
+      budget.textContent = writeEnabled
+        ? `${t("control.budget")}: ${status.writes_last_hour || 0}/${status.max_writes_per_hour || 30}/h`
+        : "";
+    }
+  }
+
+  function collectTier1Changes() {
+    const cfg = (state.current && state.current.configuration) || {};
+    const inv = cfg.inverter || {};
+    const flags = inv.system_setting_flags || {};
+    const candidate = {
+      energy_use_mode: Number($("ctrlEnergyMode").value),
+      charger_source_priority: Number($("ctrlChargerPriority").value),
+      grid_protect_standard: Number($("ctrlGridStandard").value),
+      grid_max_charger_current_a: Number($("ctrlGridChargeCurrent").value),
+      max_combine_charger_current_a: Number($("ctrlCombineChargeCurrent").value),
+      system_buzz_forbid: !$("flagBuzzEnabled").checked,
+      system_grid_buzz_enable: $("flagGridBuzz").checked,
+      system_lcd_light_enable: $("flagLcdLight").checked,
+      system_overload_restart_forbid: !$("flagOverloadRestart").checked,
+      system_overtemp_restart_forbid: !$("flagOvertempRestart").checked,
+      system_overload_bypass_forbid: !$("flagOverloadBypass").checked,
+      system_auto_turn_page_forbid: !$("flagAutoTurnPage").checked,
+    };
+    const current = {
+      energy_use_mode: inv.energy_use_mode_code,
+      charger_source_priority: inv.charger_source_priority_code,
+      grid_protect_standard: inv.grid_protect_standard_code,
+      grid_max_charger_current_a: inv.grid_max_charger_current_a,
+      max_combine_charger_current_a: inv.max_combine_charger_current_a,
+      system_buzz_forbid: Boolean(flags.buzz_forbid),
+      system_grid_buzz_enable: Boolean(flags.grid_buzz_enable),
+      system_lcd_light_enable: Boolean(flags.lcd_light_enable),
+      system_overload_restart_forbid: Boolean(flags.overload_restart_forbid),
+      system_overtemp_restart_forbid: Boolean(flags.overtemp_restart_forbid),
+      system_overload_bypass_forbid: Boolean(flags.overload_bypass_forbid),
+      system_auto_turn_page_forbid: Boolean(flags.auto_turn_page_forbid),
+    };
+    const diff = {};
+    Object.entries(candidate).forEach(([k, v]) => {
+      if (current[k] !== v) diff[k] = v;
+    });
+    return diff;
+  }
+
+  function collectTier2Changes() {
+    const cfg = (state.current && state.current.configuration) || {};
+    const inv = cfg.inverter || {};
+    const chg = cfg.charger || {};
+    const candidate = {
+      battery_low_voltage_v: Number($("ctrlBattLowV").value),
+      normal_voltage_point_v: Number($("ctrlNormalV").value),
+      start_sell_voltage_point_v: Number($("ctrlSellV").value),
+      float_voltage_v: Number($("ctrlFloatV").value),
+      absorption_voltage_v: Number($("ctrlAbsorbV").value),
+    };
+    const current = {
+      battery_low_voltage_v: inv.battery_low_voltage_v,
+      normal_voltage_point_v: inv.normal_voltage_point_v,
+      start_sell_voltage_point_v: inv.start_sell_voltage_point_v,
+      float_voltage_v: chg.float_voltage_v,
+      absorption_voltage_v: chg.absorption_voltage_v,
+    };
+    const diff = {};
+    Object.entries(candidate).forEach(([k, v]) => {
+      if (current[k] !== v) diff[k] = v;
+    });
+    return diff;
+  }
+
+  function formatControlValue(item, val) {
+    if (typeof val === "boolean") return yesNo(val);
+    if (item.unit) return `${val} ${item.unit}`;
+    const paramMeta = state.controlStatus && state.controlStatus.parameters && state.controlStatus.parameters[item.param_key];
+    if (paramMeta && paramMeta.enum && paramMeta.enum[String(val)]) {
+      return `${paramMeta.enum[String(val)]} (${val})`;
+    }
+    return String(val);
+  }
+
+  async function openControlPreview(changes, { presetName = null, rollbackId = null } = {}) {
+    if (!changes || !Object.keys(changes).length) {
+      window.alert(t("control.no_changes"));
+      return;
+    }
+    try {
+      const preview = await postJson("/api/control/preview", { changes });
+      if (!preview.has_changes) {
+        window.alert(t("control.no_changes"));
+        return;
+      }
+      state.pendingModal = { changes, presetName, rollbackId, preview };
+      renderControlModal(preview);
+    } catch (error) {
+      window.alert(`${t("common.error")}: ${error.message}`);
+    }
+  }
+
+  function renderControlModal(preview) {
+    const modal = $("controlModal");
+    const body = $("modalDiffBody");
+    const warnings = $("modalWarnings");
+    const tier2Row = $("tier2ConfirmRow");
+    const tier2Check = $("tier2ConfirmCheck");
+    const errNode = $("modalError");
+    if (!modal || !body) return;
+
+    body.replaceChildren();
+    preview.items.filter((i) => !i.is_noop).forEach((item) => {
+      const tr = document.createElement("tr");
+      const nameTd = document.createElement("td");
+      const beforeTd = document.createElement("td");
+      const afterTd = document.createElement("td");
+      nameTd.textContent = `${item.param_key} (reg ${item.address})`;
+      beforeTd.textContent = formatControlValue(item, item.current_value);
+      afterTd.textContent = formatControlValue(item, item.target_value);
+      tr.append(nameTd, beforeTd, afterTd);
+      body.append(tr);
+    });
+
+    if (warnings) {
+      warnings.replaceChildren();
+      (preview.warnings || []).forEach((w) => {
+        const pill = document.createElement("div");
+        pill.className = "modal-warning-pill";
+        pill.textContent = w === "tier2_battery_thresholds" ? t("modal.warn_tier2") : t("modal.warn_mode");
+        warnings.append(pill);
+      });
+    }
+
+    if (tier2Row && tier2Check) {
+      tier2Check.checked = false;
+      tier2Row.classList.toggle("hidden", !preview.requires_tier2_confirm);
+    }
+    if (errNode) {
+      errNode.textContent = "";
+      errNode.classList.add("hidden");
+    }
+    resetHoldButton();
+    modal.classList.remove("hidden");
+  }
+
+  function closeControlModal() {
+    resetHoldButton();
+    state.pendingModal = null;
+    const modal = $("controlModal");
+    if (modal) modal.classList.add("hidden");
+  }
+
+  function resetHoldButton() {
+    if (state.holdRaf) cancelAnimationFrame(state.holdRaf);
+    state.holdRaf = null;
+    const fill = $("holdConfirmFill");
+    if (fill) fill.style.width = "0%";
+    setText("holdConfirmLabel", t("modal.hold"));
+  }
+
+  function startHoldConfirm() {
+    if (!state.pendingModal || state.holdRaf) return;
+    const preview = state.pendingModal.preview;
+    const errNode = $("modalError");
+    if (preview.requires_tier2_confirm && !$("tier2ConfirmCheck").checked) {
+      if (errNode) {
+        errNode.textContent = t("modal.tier2_check");
+        errNode.classList.remove("hidden");
+      }
+      return;
+    }
+    if (errNode) errNode.classList.add("hidden");
+    const holdMs = preview.requires_tier2_confirm ? 2500 : 1500;
+    const started = performance.now();
+    const fill = $("holdConfirmFill");
+    setText("holdConfirmLabel", t("modal.hold_progress"));
+
+    const tick = (now) => {
+      const pct = Math.min(100, ((now - started) / holdMs) * 100);
+      if (fill) fill.style.width = `${pct}%`;
+      if (pct >= 100) {
+        state.holdRaf = null;
+        executePendingWrite();
+        return;
+      }
+      state.holdRaf = requestAnimationFrame(tick);
+    };
+    state.holdRaf = requestAnimationFrame(tick);
+  }
+
+  async function executePendingWrite() {
+    if (!state.pendingModal) return;
+    const { changes, presetName, rollbackId, preview } = state.pendingModal;
+    const confirmTier2 = Boolean(preview.requires_tier2_confirm && $("tier2ConfirmCheck").checked);
+    const errNode = $("modalError");
+    setText("holdConfirmLabel", t("modal.sending"));
+    try {
+      let resp;
+      if (rollbackId != null) {
+        resp = await postJson("/api/control/rollback", { audit_id: rollbackId, confirm_tier2: confirmTier2 });
+      } else if (presetName) {
+        resp = await postJson("/api/control/preset", { preset: presetName, confirm_tier2: confirmTier2 });
+      } else {
+        resp = await postJson("/api/control/write", { changes, confirm_tier2: confirmTier2 });
+      }
+      closeControlModal();
+      if (resp.status) renderControlStatus(resp.status);
+      if (resp.snapshot) {
+        renderCurrent(resp.snapshot);
+        syncControlForm(resp.snapshot.configuration, true);
+      }
+      loadControlAudit();
+    } catch (error) {
+      resetHoldButton();
+      if (errNode) {
+        errNode.textContent = error.message;
+        errNode.classList.remove("hidden");
+      }
+    }
+  }
+
+  async function toggleUnlock() {
+    if (!state.controlStatus) return;
+    const unlocked = Boolean(state.controlStatus.unlocked) && Boolean(state.controlToken);
+    try {
+      if (unlocked) {
+        const resp = await postJson("/api/control/lock", {});
+        writeControlToken("");
+        if (resp.status) renderControlStatus(resp.status);
+      } else {
+        const resp = await postJson("/api/control/unlock", {});
+        writeControlToken(resp.token);
+        if (resp.status) renderControlStatus(resp.status);
+        if (state.current && state.current.configuration) syncControlForm(state.current.configuration, true);
+      }
+    } catch (error) {
+      window.alert(`${t("common.error")}: ${error.message}`);
+    }
+  }
+
+  async function loadControlStatus() {
+    try {
+      const status = await getJson("/api/control/status");
+      if (!status.unlocked && state.controlToken) writeControlToken("");
+      renderControlStatus(status);
+    } catch (error) { /* silent */ }
+  }
+
+  async function loadControlAudit() {
+    try {
+      const data = await getJson("/api/control/audit?limit=30");
+      state.auditEntries = data.entries || [];
+      renderAuditList(state.auditEntries);
+    } catch (error) { /* silent */ }
+  }
+
+  function renderAuditList(entries) {
+    const root = $("controlAuditList");
+    if (!root) return;
+    root.replaceChildren();
+    if (!entries || !entries.length) {
+      const empty = document.createElement("div");
+      empty.className = "outage-empty";
+      empty.textContent = t("control.audit_empty");
+      root.append(empty);
+      return;
+    }
+    const canEdit = Boolean(
+      state.controlStatus && state.controlStatus.write_enabled && state.controlStatus.unlocked
+      && state.controlToken && !state.controlStatus.interlock_reason
+    );
+    entries.forEach((entry) => {
+      const row = document.createElement("div");
+      row.className = "audit-row";
+      const main = document.createElement("div");
+      main.className = "audit-main";
+      const title = document.createElement("strong");
+      title.textContent = `${entry.param_key}: ${entry.old_value} → ${entry.new_value}`;
+      const meta = document.createElement("span");
+      meta.textContent = `${timeLabel(entry.created_at)} · reg ${entry.register_address} · ${entry.reason}`;
+      main.append(title, meta);
+
+      const actions = document.createElement("div");
+      actions.className = "audit-actions";
+      const st = document.createElement("span");
+      st.className = "audit-status";
+      st.dataset.status = entry.status;
+      st.textContent = entry.status;
+      actions.append(st);
+
+      if (entry.status === "verified" && entry.old_value != null) {
+        const rb = document.createElement("button");
+        rb.type = "button";
+        rb.className = "btn-secondary audit-rollback-btn";
+        rb.textContent = t("control.rollback");
+        rb.disabled = !canEdit;
+        rb.addEventListener("click", () => {
+          openControlPreview({ [entry.param_key]: entry.old_value }, { rollbackId: entry.id });
+        });
+        actions.append(rb);
+      }
+      row.append(main, actions);
+      root.append(row);
+    });
+  }
+
+  /* ── Outages ──────────────────────────────────────────────────── */
+
+  async function loadOutages() {
+    try {
+      const outages = await getJson(`/api/outages?range=${encodeURIComponent(state.outageRange)}`);
+      state.outages = outages;
+      renderOutages(outages);
+    } catch (error) { /* silent */ }
+  }
+
+  function renderOutages(outages) {
+    if (!outages) return;
+    setText("outageCount", String(outages.total_outages || 0));
+    setText("outageDuration", duration(outages.total_outage_seconds || 0));
+    const root = $("outagesList");
+    if (!root) return;
+    root.replaceChildren();
+    const events = outages.events || [];
+    if (!events.length) {
+      const empty = document.createElement("div");
+      empty.className = "outage-empty";
+      empty.textContent = t("outages.none");
+      root.append(empty);
+      return;
+    }
+    events.slice(0, 20).forEach((ev) => {
+      const item = document.createElement("div");
+      item.className = `outage-item${ev.ongoing ? " is-ongoing" : ""}`;
+      const head = document.createElement("div");
+      head.className = "outage-item-head";
+      const span = document.createElement("span");
+      span.textContent = ev.ongoing ? `${timeLabel(ev.started_at)} → ${t("outages.ongoing")}` : `${timeLabel(ev.started_at)} → ${shortTime(ev.ended_at, "minute")}`;
+      const dur = document.createElement("span");
+      dur.textContent = duration(ev.duration_seconds);
+      head.append(span, dur);
+
+      const meta = document.createElement("div");
+      meta.className = "outage-item-meta";
+      const minBatt = safeNumber(ev.min_battery_voltage_v) ? `${t("outages.min_batt")}: ${number(ev.min_battery_voltage_v, 1)} V` : "";
+      const peakLoad = safeNumber(ev.max_load_power_w) ? `${t("outages.peak")}: ${power(ev.max_load_power_w)}` : "";
+      meta.textContent = [minBatt, peakLoad].filter(Boolean).join(" · ");
+
+      item.append(head, meta);
+      root.append(item);
+    });
+  }
+
+  /* ── Data loading & Charts ────────────────────────────────────── */
 
   async function loadCurrent() {
     try {
@@ -943,6 +1755,21 @@
     return segments;
   }
 
+  function chartPalette() {
+    if (state.theme === "light") {
+      return {
+        grid: "rgba(24, 42, 58, .12)",
+        axis: "#4b5d6b",
+        zero: "rgba(20, 32, 43, .28)",
+      };
+    }
+    return {
+      grid: "rgba(173, 194, 208, .10)",
+      axis: "#647482",
+      zero: "rgba(232, 237, 240, .26)",
+    };
+  }
+
   function renderChart() {
     const canvas = $("historyChart");
     const empty = $("chartEmpty");
@@ -982,14 +1809,15 @@
     min -= pad; max += pad;
     const x = (index) => padding.left + (points.length === 1 ? chartWidth / 2 : index / (points.length - 1) * chartWidth);
     const y = (value) => padding.top + chartHeight - ((value - min) / (max - min)) * chartHeight;
+    const pal = chartPalette();
     ctx.clearRect(0, 0, width, height);
     ctx.font = "9px IBM Plex Mono, monospace";
     ctx.lineWidth = 1;
     for (let i = 0; i <= 4; i += 1) {
       const lineY = padding.top + chartHeight * i / 4;
-      ctx.strokeStyle = "rgba(173, 194, 208, .10)";
+      ctx.strokeStyle = pal.grid;
       ctx.beginPath(); ctx.moveTo(padding.left, lineY); ctx.lineTo(width - padding.right, lineY); ctx.stroke();
-      ctx.fillStyle = "#52616d";
+      ctx.fillStyle = pal.axis;
       ctx.fillText(formatAxis(max - (max - min) * i / 4, meta), 4, lineY + 3);
     }
     const segments = lineSegments(points, state.metric, x, y);
@@ -1007,7 +1835,7 @@
       segment.forEach(([pointX, pointY], index) => index ? ctx.lineTo(pointX, pointY) : ctx.moveTo(pointX, pointY));
       ctx.strokeStyle = meta.color; ctx.lineWidth = 2; ctx.lineJoin = "round"; ctx.lineCap = "round"; ctx.stroke();
     });
-    ctx.fillStyle = "#52616d";
+    ctx.fillStyle = pal.axis;
     const labels = Math.min(5, points.length);
     for (let i = 0; i < labels; i += 1) {
       const index = Math.round(i * (points.length - 1) / Math.max(1, labels - 1));
@@ -1124,23 +1952,24 @@
       ? chartWidth / 2
       : index / (points.length - 1) * chartWidth);
     const y = (value) => padding.top + chartHeight - ((value - min) / (max - min)) * chartHeight;
+    const pal = chartPalette();
 
     ctx.font = "9px IBM Plex Mono, monospace";
     ctx.lineWidth = 1;
     for (let index = 0; index <= 3; index += 1) {
       const lineY = padding.top + chartHeight * index / 3;
-      ctx.strokeStyle = "rgba(173, 194, 208, .10)";
+      ctx.strokeStyle = pal.grid;
       ctx.beginPath();
       ctx.moveTo(padding.left, lineY);
       ctx.lineTo(width - padding.right, lineY);
       ctx.stroke();
-      ctx.fillStyle = "#52616d";
+      ctx.fillStyle = pal.axis;
       ctx.fillText(formatAxis(max - (max - min) * index / 3, spec), 4, lineY + 3);
     }
 
     if (spec.zeroLine && min < 0 && max > 0) {
       const zeroY = y(0);
-      ctx.strokeStyle = "rgba(232, 237, 240, .26)";
+      ctx.strokeStyle = pal.zero;
       ctx.beginPath();
       ctx.moveTo(padding.left, zeroY);
       ctx.lineTo(width - padding.right, zeroY);
@@ -1182,7 +2011,7 @@
       }
     });
 
-    ctx.fillStyle = "#52616d";
+    ctx.fillStyle = pal.axis;
     const labels = Math.min(4, points.length);
     for (let index = 0; index < labels; index += 1) {
       const pointIndex = Math.round(index * (points.length - 1) / Math.max(1, labels - 1));
@@ -1222,11 +2051,14 @@
 
   function bindChartHover() {
     document.querySelectorAll("#historyChart, .operational-chart-wrap canvas").forEach((canvas) => {
-      canvas.addEventListener("mousemove", handleChartMove);
-      canvas.addEventListener("mouseleave", () => {
+      canvas.addEventListener("pointerdown", handleChartMove);
+      canvas.addEventListener("pointermove", handleChartMove);
+      const clearPointer = () => {
         state.chartPointers.delete(canvas.id);
         hideChartTooltip(canvas.id);
-      });
+      };
+      canvas.addEventListener("pointerleave", clearPointer);
+      canvas.addEventListener("pointercancel", clearPointer);
     });
   }
 
@@ -1330,15 +2162,26 @@
     state.refreshTimer = window.setInterval(() => {
       loadCurrent();
       loadHistory();
+      loadControlStatus();
     }, REFRESH_INTERVAL_MS);
   }
 
   function bindControls() {
     document.querySelectorAll("[data-lang]").forEach((button) => button.addEventListener("click", () => {
       state.language = button.dataset.lang === "en" ? "en" : "uk";
-      try { localStorage.setItem("must-power-desk-language", state.language); } catch (error) { /* storage can be unavailable */ }
+      try { localStorage.setItem("must-power-desk-language", state.language); } catch (error) { /* ignore */ }
       applyLanguage();
     }));
+
+    const themeBtn = $("themeToggle");
+    if (themeBtn) {
+      themeBtn.addEventListener("click", () => {
+        state.theme = state.theme === "light" ? "dark" : "light";
+        try { localStorage.setItem("must-power-desk-theme", state.theme); } catch (error) { /* ignore */ }
+        applyTheme();
+      });
+    }
+
     const defaultPeriods = { "1h": "minute", "6h": "minute", "24h": "30m", "7d": "day", "30d": "day", "1y": "month", all: "month" };
     document.querySelectorAll("[data-range]").forEach((button) => button.addEventListener("click", () => {
       document.querySelectorAll("[data-range]").forEach((item) => item.classList.remove("is-active"));
@@ -1348,21 +2191,76 @@
       $("periodSelect").value = state.period;
       loadHistory({ refreshSummary: true });
     }));
+
+    document.querySelectorAll("[data-outage-range]").forEach((button) => button.addEventListener("click", () => {
+      document.querySelectorAll("[data-outage-range]").forEach((item) => item.classList.remove("is-active"));
+      button.classList.add("is-active");
+      state.outageRange = button.dataset.outageRange;
+      loadOutages();
+    }));
+
     $("metricSelect").addEventListener("change", (event) => {
       state.metric = event.target.value;
       renderHistory(state.history || { points: [], period: state.period });
     });
     $("periodSelect").addEventListener("change", (event) => { state.period = event.target.value; loadHistory(); });
-    $("refreshButton").addEventListener("click", () => { loadCurrent(); loadHistory({ refreshSummary: true }); });
+    $("refreshButton").addEventListener("click", () => {
+      loadCurrent();
+      loadHistory({ refreshSummary: true });
+      loadOutages();
+      loadControlStatus();
+      loadControlAudit();
+    });
+
+    // Safe Control bindings
+    const unlockBtn = $("unlockControlBtn");
+    if (unlockBtn) unlockBtn.addEventListener("click", toggleUnlock);
+
+    document.querySelectorAll("[data-preset]").forEach((button) => button.addEventListener("click", () => {
+      const presetKey = button.dataset.preset;
+      const presets = (state.controlStatus && state.controlStatus.presets) || {};
+      if (presets[presetKey]) openControlPreview(presets[presetKey], { presetName: presetKey });
+    }));
+
+    const tier1Btn = $("previewTier1Btn");
+    if (tier1Btn) tier1Btn.addEventListener("click", () => openControlPreview(collectTier1Changes()));
+
+    const tier2Btn = $("previewTier2Btn");
+    if (tier2Btn) tier2Btn.addEventListener("click", () => openControlPreview(collectTier2Changes()));
+
+    const modalClose = $("modalCloseBtn");
+    const modalCancel = $("modalCancelBtn");
+    if (modalClose) modalClose.addEventListener("click", closeControlModal);
+    if (modalCancel) modalCancel.addEventListener("click", closeControlModal);
+
+    const holdBtn = $("holdConfirmBtn");
+    if (holdBtn) {
+      holdBtn.addEventListener("pointerdown", (e) => { e.preventDefault(); startHoldConfirm(); });
+      holdBtn.addEventListener("pointerup", resetHoldButton);
+      holdBtn.addEventListener("pointerleave", resetHoldButton);
+      holdBtn.addEventListener("pointercancel", resetHoldButton);
+      holdBtn.addEventListener("keydown", (e) => {
+        if ((e.key === " " || e.key === "Enter") && !e.repeat) { e.preventDefault(); startHoldConfirm(); }
+      });
+      holdBtn.addEventListener("keyup", resetHoldButton);
+    }
+
     bindChartHover();
     window.addEventListener("resize", () => { renderChart(); renderOperationalCharts(); });
-    window.addEventListener("blur", () => hideChartTooltip());
+    window.addEventListener("blur", () => { hideChartTooltip(); resetHoldButton(); });
   }
 
   async function boot() {
+    applyTheme();
     applyLanguage();
     bindControls();
-    await Promise.all([loadCurrent(), loadHistory({ refreshSummary: true })]);
+    await Promise.all([
+      loadCurrent(),
+      loadHistory({ refreshSummary: true }),
+      loadOutages(),
+      loadControlStatus(),
+      loadControlAudit(),
+    ]);
     connectEvents();
     startRefreshLoop();
   }

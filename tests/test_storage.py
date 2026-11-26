@@ -122,6 +122,53 @@ class StorageTests(unittest.TestCase):
             self.assertEqual(summary["statistics"]["load_power_w"]["average"], 2000)
             self.assertEqual(summary["statistics"]["load_power_w"]["max"], 3000)
 
+    def test_config_audit_and_outages_detection(self):
+        with tempfile.TemporaryDirectory() as directory:
+            store = Storage(Path(directory) / "v030.sqlite3")
+            audit_id = store.insert_audit(
+                created_at="2026-11-26T10:00:00Z",
+                client_ip="100.100.42.10",
+                param_key="energy_use_mode",
+                tier=1,
+                register_address=20109,
+                old_raw=3,
+                new_raw=1,
+                verified_raw=1,
+                old_value=3,
+                new_value=1,
+                status="verified",
+                reason="manual",
+            )
+            entries = store.list_audit(limit=10)
+            self.assertEqual(len(entries), 1)
+            self.assertEqual(entries[0]["id"], audit_id)
+            self.assertEqual(store.get_audit(audit_id)["new_value"], 1)
+
+            # Outage 1 (closed), gap, Outage 2 (ongoing)
+            rows = [
+                ("2026-11-26T10:00:00Z", 230.0, 27.0, 200),
+                ("2026-11-26T10:01:00Z", 0.0, 26.5, 300),
+                ("2026-11-26T10:03:00Z", 0.0, 26.2, 450),
+                ("2026-11-26T10:04:00Z", 231.0, 26.8, 220),
+                ("2026-11-26T11:00:00Z", 0.0, 26.4, 250),
+                ("2026-11-26T11:02:00Z", 0.0, 26.1, 260),
+            ]
+            for ts, gv, bv, lw in rows:
+                item = snapshot(ts, lw)
+                item["metrics"].update({"grid_voltage_v": gv, "battery_voltage_v": bv})
+                store.insert_sample(item)
+
+            from datetime import datetime, timezone
+            start_ts = int(datetime.fromisoformat("2026-11-26T09:55:00+00:00").timestamp())
+            end_ts = int(datetime.fromisoformat("2026-11-26T11:03:00+00:00").timestamp())
+            outages = store.outages(start_ts, end_ts, sample_interval_seconds=60)
+            self.assertEqual(outages["total_outages"], 2)
+            self.assertTrue(outages["ongoing"])
+            self.assertEqual(outages["events"][0]["ongoing"], True)
+            self.assertEqual(outages["events"][1]["min_battery_voltage_v"], 26.2)
+            self.assertEqual(outages["events"][1]["max_load_power_w"], 450)
+            self.assertEqual(outages["events"][1]["duration_seconds"], 180)
+
 
 if __name__ == "__main__":
     unittest.main()

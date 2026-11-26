@@ -95,6 +95,25 @@ class Storage:
                 );
                 CREATE INDEX IF NOT EXISTS idx_samples_captured_ts
                     ON samples(captured_ts);
+                CREATE TABLE IF NOT EXISTS config_audit (
+                    id INTEGER PRIMARY KEY,
+                    created_at TEXT NOT NULL,
+                    created_ts INTEGER NOT NULL,
+                    client_ip TEXT NOT NULL,
+                    param_key TEXT NOT NULL,
+                    tier INTEGER NOT NULL,
+                    register_address INTEGER NOT NULL,
+                    old_raw INTEGER,
+                    new_raw INTEGER NOT NULL,
+                    verified_raw INTEGER,
+                    old_value_json TEXT,
+                    new_value_json TEXT,
+                    status TEXT NOT NULL,
+                    reason TEXT NOT NULL,
+                    error_message TEXT
+                );
+                CREATE INDEX IF NOT EXISTS idx_config_audit_created_ts
+                    ON config_audit(created_ts);
                 """
             )
             existing_columns = {
@@ -383,6 +402,186 @@ class Storage:
             "truncated": truncated,
             "points": points,
         }
+
+    def insert_audit(
+        self,
+        *,
+        created_at: str,
+        client_ip: str,
+        param_key: str,
+        tier: int,
+        register_address: int,
+        old_raw: int | None,
+        new_raw: int,
+        verified_raw: int | None,
+        old_value: Any,
+        new_value: Any,
+        status: str,
+        reason: str,
+        error_message: str | None = None,
+    ) -> int:
+        created_ts = int(datetime.fromisoformat(created_at.replace("Z", "+00:00")).timestamp())
+        with self._lock, self._connection() as connection:
+            cursor = connection.execute(
+                """
+                INSERT INTO config_audit (
+                    created_at, created_ts, client_ip, param_key, tier, register_address,
+                    old_raw, new_raw, verified_raw, old_value_json, new_value_json,
+                    status, reason, error_message
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    created_at,
+                    created_ts,
+                    client_ip,
+                    param_key,
+                    tier,
+                    register_address,
+                    old_raw,
+                    new_raw,
+                    verified_raw,
+                    json.dumps(old_value, ensure_ascii=False) if old_value is not None else None,
+                    json.dumps(new_value, ensure_ascii=False) if new_value is not None else None,
+                    status,
+                    reason,
+                    error_message,
+                ),
+            )
+            return int(cursor.lastrowid)
+
+    def list_audit(self, limit: int = 50) -> list[dict[str, Any]]:
+        clamped = max(1, min(int(limit), 200))
+        with self._lock, self._connection() as connection:
+            rows = connection.execute(
+                "SELECT * FROM config_audit ORDER BY created_ts DESC, id DESC LIMIT ?",
+                (clamped,),
+            ).fetchall()
+        return [_audit_row_to_dict(row) for row in rows]
+
+    def get_audit(self, audit_id: int) -> dict[str, Any] | None:
+        with self._lock, self._connection() as connection:
+            row = connection.execute(
+                "SELECT * FROM config_audit WHERE id = ?",
+                (int(audit_id),),
+            ).fetchone()
+        return _audit_row_to_dict(row) if row else None
+
+    def outages(
+        self,
+        start_ts: int,
+        end_ts: int,
+        *,
+        grid_threshold_v: float = 50.0,
+        sample_interval_seconds: float = 60.0,
+    ) -> dict[str, Any]:
+        with self._lock, self._connection() as connection:
+            rows = connection.execute(
+                "SELECT captured_at, captured_ts, grid_voltage_v, battery_voltage_v, load_power_w "
+                "FROM samples WHERE captured_ts >= ? AND captured_ts <= ? ORDER BY captured_ts",
+                (start_ts, end_ts),
+            ).fetchall()
+
+        interval = max(float(sample_interval_seconds), 1.0)
+        max_gap = max(900.0, interval * 15)
+        ongoing_grace = max(600.0, interval * 5)
+
+        events: list[dict[str, Any]] = []
+        current: dict[str, Any] | None = None
+
+        def close_current(ended_at: str | None = None, ended_ts: int | None = None, *, ongoing: bool = False) -> None:
+            nonlocal current
+            if current is None:
+                return
+            stop_ts = ended_ts if ended_ts is not None else current["last_ts"]
+            stop_at = ended_at if ended_at is not None else current["last_at"]
+            duration = max(0, int(stop_ts - current["started_ts"]))
+            if not ongoing and duration == 0:
+                duration = int(interval)
+            events.append({
+                "started_at": current["started_at"],
+                "ended_at": None if ongoing else stop_at,
+                "ongoing": ongoing,
+                "duration_seconds": duration,
+                "sample_count": current["sample_count"],
+                "min_battery_voltage_v": _number(current["min_battery_v"]),
+                "max_load_power_w": _number(current["max_load_w"]),
+            })
+            current = None
+
+        for row in rows:
+            ts = int(row["captured_ts"])
+            at = str(row["captured_at"])
+            grid_v = row["grid_voltage_v"]
+            batt_v = row["battery_voltage_v"]
+            load_w = row["load_power_w"]
+
+            if current is not None and ts - current["last_ts"] > max_gap:
+                close_current()
+
+            is_outage = grid_v is not None and float(grid_v) < grid_threshold_v
+            if is_outage:
+                if current is None:
+                    current = {
+                        "started_at": at,
+                        "started_ts": ts,
+                        "last_at": at,
+                        "last_ts": ts,
+                        "sample_count": 1,
+                        "min_battery_v": float(batt_v) if batt_v is not None else None,
+                        "max_load_w": float(load_w) if load_w is not None else None,
+                    }
+                else:
+                    current["last_at"] = at
+                    current["last_ts"] = ts
+                    current["sample_count"] += 1
+                    if batt_v is not None:
+                        val = float(batt_v)
+                        current["min_battery_v"] = val if current["min_battery_v"] is None else min(current["min_battery_v"], val)
+                    if load_w is not None:
+                        val = float(load_w)
+                        current["max_load_w"] = val if current["max_load_w"] is None else max(current["max_load_w"], val)
+            elif current is not None:
+                close_current(ended_at=at, ended_ts=ts, ongoing=False)
+
+        if current is not None:
+            is_ongoing = (end_ts - current["last_ts"]) <= ongoing_grace
+            close_current(
+                ended_at=_iso_from_ts(end_ts) if is_ongoing else current["last_at"],
+                ended_ts=end_ts if is_ongoing else current["last_ts"],
+                ongoing=is_ongoing,
+            )
+
+        total_outage_seconds = sum(event["duration_seconds"] for event in events)
+        ongoing_flag = any(event["ongoing"] for event in events)
+        events.reverse()
+        return {
+            "from": _iso_from_ts(start_ts),
+            "to": _iso_from_ts(end_ts),
+            "total_outages": len(events),
+            "total_outage_seconds": int(total_outage_seconds),
+            "ongoing": ongoing_flag,
+            "events": events,
+        }
+
+
+def _audit_row_to_dict(row: sqlite3.Row) -> dict[str, Any]:
+    return {
+        "id": int(row["id"]),
+        "created_at": row["created_at"],
+        "created_ts": int(row["created_ts"]),
+        "client_ip": row["client_ip"],
+        "param_key": row["param_key"],
+        "tier": int(row["tier"]),
+        "register_address": int(row["register_address"]),
+        "old_raw": row["old_raw"],
+        "new_raw": int(row["new_raw"]),
+        "verified_raw": row["verified_raw"],
+        "old_value": json.loads(row["old_value_json"]) if row["old_value_json"] is not None else None,
+        "new_value": json.loads(row["new_value_json"]) if row["new_value_json"] is not None else None,
+        "status": row["status"],
+        "reason": row["reason"],
+        "error_message": row["error_message"],
+    }
 
 
 def _number(value: Any) -> int | float | None:

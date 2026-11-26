@@ -5,7 +5,9 @@ import signal
 import sys
 import threading
 
+from must_dashboard.alerts import AlertManager
 from must_dashboard.config import Settings
+from must_dashboard.control import ControlManager
 from must_dashboard.http import AppContext, DashboardServer
 from must_dashboard.poller import EventHub, InverterPoller
 from must_dashboard.storage import Storage
@@ -19,8 +21,10 @@ def main() -> int:
     )
     storage = Storage(settings.db_path)
     events = EventHub()
-    poller = InverterPoller(settings, storage, events)
-    context = AppContext(settings=settings, storage=storage, poller=poller)
+    alerts = AlertManager(settings)
+    poller = InverterPoller(settings, storage, events, alerts=alerts)
+    control = ControlManager(settings, poller, storage)
+    context = AppContext(settings=settings, storage=storage, poller=poller, control=control)
     server = DashboardServer((settings.host, settings.port), context)
 
     def stop(*_args: object) -> None:

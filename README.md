@@ -1,12 +1,12 @@
-# MUST Power Desk | Read-Only Solar Inverter Dashboard
+# MUST Power Desk | Solar Inverter Dashboard
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white)
-![Modbus](https://img.shields.io/badge/Modbus-RTU%20read--only-00A8A8?style=flat-square)
+![Modbus](https://img.shields.io/badge/Modbus-RTU%20Safe%20Control-00A8A8?style=flat-square)
 ![Status](https://img.shields.io/badge/status-local%20production%20service-FF6B6B?style=flat-square)
 
-MUST Power Desk is a self-hosted, local-first solar inverter monitoring dashboard for MUST inverter families that expose the supported Modbus RTU register map. It reads live PV, battery, grid, AC output, load, temperature, and accumulated-energy telemetry through a USB serial adapter, stores time-series history in SQLite, and streams live updates over Server-Sent Events (SSE). The responsive UI supports Ukrainian and English (`UKR | ENG`).
+MUST Power Desk is a self-hosted, local-first solar inverter monitoring and opt-in safe control dashboard for MUST inverter families that expose the supported Modbus RTU register map. It reads live PV, battery, grid, AC output, load, temperature, and accumulated-energy telemetry through a USB serial adapter, stores time-series history and configuration audit trails in SQLite, streams live updates over Server-Sent Events (SSE), and supports optional Telegram alerts. The responsive UI supports Ukrainian and English (`UKR | ENG`) as well as Dark/Light themes.
 
-It is built for home energy monitoring, solar PV visibility, off-grid and backup-power diagnostics, and safe observation of MUST inverter systems. The application is strictly read-only: it has no inverter write commands, remote controls, or configuration mutations.
+It is built for home energy monitoring, solar PV visibility, off-grid and backup-power diagnostics, and safe operation of MUST inverter systems. By default (`MUST_ENABLE_WRITE=false`), the application remains strictly read-only. When write control is explicitly enabled in `.env`, changes are restricted to an allowlisted parameter table with UI unlock timers, Before→After diff previews, Hold-to-Confirm interlocks, EEPROM no-op/cooldown protection, and read-after-write verification.
 
 The live-validated device for this release is a **MUST PV18-3224 VPM II**, identified by the firmware as **PV1800**.
 
@@ -166,6 +166,15 @@ All runtime settings are optional and are documented in `.env.example`:
 | `MUST_INTER_REQUEST_DELAY` | `0.5` | Delay between Modbus requests |
 | `MUST_RETENTION_DAYS` | `730` | SQLite retention window |
 | `MUST_DB_PATH` | `data/inverter.sqlite3` | SQLite database path |
+| `MUST_ENABLE_WRITE` | `false` | Opt-in allowlisted Modbus Function `06` parameter writes |
+| `MUST_WRITE_UNLOCK_TTL` | `300` | UI control unlock timeout in seconds |
+| `MUST_WRITE_COOLDOWN` | `3.0` | Minimum delay between EEPROM register writes |
+| `MUST_MAX_WRITES_PER_HOUR` | `30` | Hourly write budget ceiling |
+| `MUST_TELEGRAM_ENABLED` | `false` | Opt-in Telegram alerts for outages, low battery, faults |
+| `MUST_TELEGRAM_BOT_TOKEN` | - | Telegram bot token (keep only in server `.env`) |
+| `MUST_TELEGRAM_CHAT_ID` | - | Target Telegram chat ID |
+| `MUST_ALERT_LOW_BATTERY_V` | `24.6` | Low battery alert threshold (V) |
+| `MUST_ALERT_COOLDOWN_SECONDS` | `900` | Minimum interval between repeat alerts |
 
 The poller reads the inverter every 10 seconds, while persistence remains rate-limited to one sample per minute. The dashboard receives every successful snapshot over SSE and keeps a six-hour in-browser live buffer for operational charts; the SQLite history remains compact and durable.
 
@@ -218,7 +227,16 @@ The dashboard exposes one-hour and six-hour history ranges in addition to the lo
 | `GET /api/history?range=1y&period=month` | Monthly aggregation |
 | `GET /api/history?range=24h&period=raw` | Newest raw samples |
 | `GET /api/summary?range=24h` | Quality, extrema, and estimated energy for raw samples |
+| `GET /api/outages?range=7d` | Grid outage timeline and total outage duration |
 | `GET /api/export.csv?range=30d&period=day` | CSV export for the same history query |
+| `GET /api/control/status` | Safe write enablement, unlock state, interlocks, allowlist |
+| `GET /api/control/audit?limit=50` | Configuration write audit trail |
+| `POST /api/control/unlock` | Unlock write session for `MUST_WRITE_UNLOCK_TTL` seconds |
+| `POST /api/control/lock` | Immediately re-lock write session |
+| `POST /api/control/preview` | Validate and compute Before→After diff without writing |
+| `POST /api/control/write` | Apply allowlisted changes with Function `06` + verification |
+| `POST /api/control/preset` | Apply a named safe preset (`fast_charge`, `gentle_charge`, `ups_utility`, `solar_first`) |
+| `POST /api/control/rollback` | Restore a previous configuration value from audit history |
 | `GET /api/events` | Server-Sent Events for snapshots and health changes |
 
 Example requests:
@@ -263,10 +281,10 @@ The environment file must be readable by the service account. Do not replace the
 
 ## Security Model
 
-- The Modbus client issues function `03` reads only.
-- There is no write API and no UI control surface.
-- The HTTP server defaults to loopback binding.
-- Tailscale exposure is opt-in and binds to the node's Tailscale address, not all interfaces.
+- Write control is opt-in and disabled by default (`MUST_ENABLE_WRITE=false`).
+- Only allowlisted `101xx`/`201xx` configuration registers can be written via Function `06`, with range bounds, 24V threshold ordering invariants, no-op skipping, cooldown throttling, and read-after-write verification.
+- Control endpoints require same-origin / `X-Requested-With` CSRF protection, an active unlock session, and live telemetry interlocks (`offline`/`stale` blocks writes).
+- The HTTP server defaults to loopback binding; Tailscale exposure binds to the node's Tailscale address, never `0.0.0.0`.
 - Responses include CSP, frame, MIME-sniffing, referrer, permissions, and cross-origin policy headers.
 - `.env`, SQLite databases, logs, and Python caches are excluded by `.gitignore`.
 - Keep credentials outside the repository and never place tokens in README, source, issues, or release notes.
@@ -281,6 +299,14 @@ curl -fsS http://127.0.0.1:8090/healthz
 ```
 
 The test suite covers signed register decoding, CRC and Modbus exception handling, HTTP readiness/security headers, SQLite migration, raw history limits, automatic period selection, and minute/30-minute bucket aggregation. Browser verification should also move the pointer over each chart and confirm the timestamp and series values in the tooltip.
+
+## v0.3.0 Release Notes
+
+- Added opt-in safe inverter control (`MUST_ENABLE_WRITE=false` by default) using Modbus Function `06` with allowlisted Tier 1/Tier 2 parameters, 24V threshold cross-validation, EEPROM no-op skipping, cooldown/hourly limits, and read-after-write verification.
+- Added control safety UX: session unlock timer, Before→After diff preview, Hold-to-Confirm interlock, quick presets, and SQLite configuration audit trail with one-click rollback.
+- Added animated SVG power flow schematic, human-readable `UKR | ENG` decoding of modes and error/warning bitmasks, battery autonomy estimate, and grid outage timeline (`/api/outages`).
+- Added pointer/touch chart tooltips for mobile devices and Dark/Light theme toggle.
+- Added opt-in Telegram alerts (`MUST_TELEGRAM_ENABLED`) for grid outages/restoration, low battery voltage, critical faults, and telemetry loss.
 
 ## v0.2.1 Release Notes
 
