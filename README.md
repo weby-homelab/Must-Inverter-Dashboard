@@ -323,36 +323,9 @@ curl -fsS http://127.0.0.1:8090/healthz
 
 The test suite (29 mocked unit tests) covers signed register decoding, decimal energy counters, enum/bitmask flag decoding, battery autonomy estimation, CRC and Modbus Function `03`/`06` handling, Tier 1/Tier 2 control validation, bitmask RMW and rollback, SQLite migration, history/summary/outage/audit queries, Telegram alert debounce/hysteresis, and HTTP CSRF/unlock/readiness/security headers. Browser verification should also check the live power-flow schematic, pointer/touch chart tooltips, Dark/Light theme toggle, and Hold-to-Confirm preview modal.
 
-## v0.3.0 Release Notes
+## Changelog
 
-- Added opt-in safe inverter control (`MUST_ENABLE_WRITE=false` by default) using Modbus Function `06` with allowlisted Tier 1/Tier 2 parameters, 24V threshold cross-validation, EEPROM no-op skipping, cooldown/hourly limits, and read-after-write verification.
-- Added control safety UX: session unlock timer, Before→After diff preview, Hold-to-Confirm interlock, quick presets, and SQLite configuration audit trail with one-click rollback.
-- Added animated SVG power flow schematic, human-readable `UKR | ENG` decoding of modes and error/warning bitmasks, battery autonomy estimate, and grid outage timeline (`/api/outages`).
-- Added pointer/touch chart tooltips for mobile devices and Dark/Light theme toggle.
-- Added opt-in Telegram alerts (`MUST_TELEGRAM_ENABLED`) for grid outages/restoration, low battery voltage, critical faults, and telemetry loss.
-
-## v0.2.1 Release Notes
-
-- Added pointer tooltips to the history, power-flow, battery-voltage, and temperature charts.
-- Added nearest-sample timestamps, localized series labels, units, and unavailable-value handling to chart tooltips.
-- Documented and deployed an opt-in Tailscale-only bind without exposing the dashboard on `0.0.0.0`.
-- Updated the installer and health/server version metadata for the release.
-
-## v0.2.0 Release Notes
-
-- Added one-hour and six-hour dashboard history ranges with minute defaults.
-- Added live operational charts for power flow, battery voltage thresholds, and temperatures.
-- Reduced the default telemetry cycle and dashboard refresh cadence from 15 seconds to 10 seconds.
-- Kept SQLite persistence at one sample per minute to avoid unnecessary database growth.
-
-## v0.1.1 Release Notes
-
-- Added one-minute and 30-minute history aggregation.
-- Added automatic fine-resolution selection for short ranges.
-- Added `UKR | ENG` language switching with browser persistence.
-- Extended localization across current, history, diagnostics, and configuration views.
-- Added version reporting to health responses.
-- Documented the supported decoder model families and the read-only security boundary.
+See [CHANGELOG.md](CHANGELOG.md) for the release history (`v0.3.0`, `v0.2.1`, `v0.2.0`, `v0.1.1`).
 
 ## Contributing
 
