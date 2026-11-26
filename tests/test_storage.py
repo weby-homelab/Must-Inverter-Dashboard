@@ -89,6 +89,39 @@ class StorageTests(unittest.TestCase):
             ])
             self.assertEqual(minute["points"][0]["load_power_w"], 150)
 
+    def test_summary_reports_quality_and_estimated_energy(self):
+        with tempfile.TemporaryDirectory() as directory:
+            store = Storage(Path(directory) / "summary.sqlite3")
+            samples = []
+            for timestamp, load, grid, battery in (
+                ("2026-09-02T10:00:00Z", 1000, -800, 500),
+                ("2026-09-02T10:01:00Z", 2000, -1600, 1000),
+                ("2026-09-02T10:21:00Z", 3000, -2400, 1500),
+            ):
+                item = snapshot(timestamp, load)
+                item["metrics"].update({
+                    "grid_power_w": grid,
+                    "battery_power_w": battery,
+                })
+                samples.append(item)
+                store.insert_sample(item)
+
+            summary = store.summary(
+                1788343200,
+                1788344460,
+                sample_interval_seconds=60,
+            )
+
+            self.assertEqual(summary["sample_count"], len(samples))
+            self.assertEqual(summary["gap_count"], 1)
+            self.assertEqual(summary["largest_gap_seconds"], 1200)
+            self.assertEqual(summary["integrated_seconds"], 60)
+            self.assertAlmostEqual(summary["energy"]["load_kwh"], 0.025)
+            self.assertAlmostEqual(summary["energy"]["grid_import_kwh"], 0.02)
+            self.assertAlmostEqual(summary["energy"]["battery_discharge_kwh"], 0.013)
+            self.assertEqual(summary["statistics"]["load_power_w"]["average"], 2000)
+            self.assertEqual(summary["statistics"]["load_power_w"]["max"], 3000)
+
 
 if __name__ == "__main__":
     unittest.main()

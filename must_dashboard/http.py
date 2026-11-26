@@ -62,6 +62,8 @@ class DashboardHandler(BaseHTTPRequestHandler):
                     else HTTPStatus.SERVICE_UNAVAILABLE
                 )
                 self._json_response(health, status)
+            elif path == "/api/summary":
+                self._summary(query)
             elif path == "/api/history":
                 self._history(query)
             elif path == "/api/export.csv":
@@ -103,6 +105,21 @@ class DashboardHandler(BaseHTTPRequestHandler):
         if period == "auto":
             period = _auto_period(end_ts - start_value)
         result = self.server.context.storage.history(start_value, end_ts, period)
+        self._json_response(result)
+
+    def _summary(self, query: dict[str, list[str]]) -> None:
+        end_ts = _query_timestamp(query, "to") or int(time.time())
+        range_value = query.get("range", ["24h"])[0]
+        start_ts = _query_timestamp(query, "from")
+        if start_ts is None:
+            start_ts = _range_start(range_value, end_ts, self.server.context.storage)
+        if start_ts > end_ts:
+            raise ValueError("from must be before to")
+        result = self.server.context.storage.summary(
+            start_ts,
+            end_ts,
+            self.server.context.settings.sample_interval,
+        )
         self._json_response(result)
 
     def _export_csv(self, query: dict[str, list[str]]) -> None:

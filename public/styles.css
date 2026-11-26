@@ -131,6 +131,7 @@ h1 em { color: var(--cyan); font-style: normal; }
 .operational-legend i { display: block; width: 13px; height: 2px; border-radius: 2px; }
 .legend-pv { background: var(--cyan); }
 .legend-load { background: var(--amber); }
+.legend-inverter { background: #c18bff; }
 .legend-grid { background: #91a8ff; }
 .legend-battery { background: var(--green); }
 .legend-ac { background: var(--amber); }
@@ -168,6 +169,16 @@ select:focus { border-color: var(--cyan); }
 .chart-footer { display: flex; justify-content: space-between; margin-top: 9px; color: var(--faint); font-family: var(--mono); font-size: 9px; }
 .chart-legend { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); }
 .chart-legend i { width: 14px; height: 2px; background: var(--cyan); }
+.history-insight { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+.history-insight-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.history-insight-heading .section-kicker { margin: 0; font-size: 9px; }
+.history-quality { color: var(--green); font-family: var(--mono); font-size: 9px; }
+.history-quality[data-state="warning"] { color: var(--amber); }
+.history-stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 14px; }
+.history-stat { min-width: 0; padding: 11px 12px; border: 1px solid var(--line); border-radius: 9px; background: rgba(8, 11, 15, .28); }
+.history-stat span { display: block; overflow: hidden; color: var(--faint); font-family: var(--mono); font-size: 8px; letter-spacing: .04em; text-overflow: ellipsis; text-transform: uppercase; white-space: nowrap; }
+.history-stat strong { display: block; margin-top: 8px; color: var(--text); font-size: 17px; font-weight: 400; letter-spacing: -.04em; white-space: nowrap; }
+.history-insight-note { margin: 13px 0 0; color: var(--muted); font-family: var(--mono); font-size: 9px; line-height: 1.55; }
 .status-code { color: var(--faint); font-family: var(--mono); font-size: 10px; }
 .system-state { display: flex; align-items: center; gap: 13px; margin: 27px 0 25px; padding: 16px; border: 1px solid rgba(113, 211, 154, .18); border-radius: 10px; background: rgba(113, 211, 154, .06); }
 .state-orb { width: 11px; height: 11px; flex: none; border-radius: 50%; background: var(--green); box-shadow: 0 0 17px var(--green); }
@@ -261,6 +272,7 @@ dd { color: var(--muted); }
   .chart-toolbar select { width: 100%; }
   .export-link { width: 100%; margin: 0; }
   .chart-wrap { height: 235px; }
+  .history-stat-grid { grid-template-columns: repeat(2, 1fr); }
   .operational-grid { grid-template-columns: 1fr; }
   .operational-power { grid-column: auto; }
   .operational-chart-wrap, .operational-power .operational-chart-wrap { height: 205px; }

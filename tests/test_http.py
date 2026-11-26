@@ -1,3 +1,4 @@
+import json
 import tempfile
 import threading
 import unittest
@@ -71,6 +72,57 @@ class HttpTests(unittest.TestCase):
                     urllib.request.urlopen(f"{url}/healthz", timeout=3)
                 self.assertEqual(raised.exception.code, 503)
                 raised.exception.close()
+            finally:
+                server.shutdown()
+                server.server_close()
+                thread.join(timeout=3)
+
+    def test_summary_endpoint_returns_raw_sample_analysis(self):
+        with tempfile.TemporaryDirectory() as directory:
+            base_dir = Path(__file__).resolve().parents[1]
+            settings = Settings(
+                base_dir=base_dir,
+                public_dir=base_dir / "public",
+                db_path=Path(directory) / "summary.sqlite3",
+                host="127.0.0.1",
+                port=0,
+                serial_port="fake",
+                slave_id=4,
+                baudrate=19200,
+                poll_interval=15,
+                sample_interval=60,
+                config_interval=300,
+                serial_timeout=0.2,
+                inter_request_delay=0,
+                retention_days=1,
+            )
+            storage = Storage(settings.db_path)
+            metrics = {
+                "load_power_w": 100,
+                "grid_power_w": -100,
+                "battery_power_w": 0,
+                "battery_voltage_v": 26.8,
+                "grid_voltage_v": 230,
+            }
+            for timestamp in ("2026-09-02T10:00:00Z", "2026-09-02T10:01:00Z"):
+                storage.insert_sample({
+                    "captured_at": timestamp,
+                    "connection": {"status": "online"},
+                    "metrics": metrics,
+                })
+            server = DashboardServer(("127.0.0.1", 0), AppContext(settings, storage, FakePoller()))
+            thread = threading.Thread(target=server.serve_forever, daemon=True)
+            thread.start()
+            url = f"http://127.0.0.1:{server.server_address[1]}"
+            try:
+                with urllib.request.urlopen(
+                    f"{url}/api/summary?from=1788343200&to=1788343260",
+                    timeout=3,
+                ) as response:
+                    payload = json.loads(response.read())
+                self.assertEqual(payload["sample_count"], 2)
+                self.assertEqual(payload["connection_status_counts"], {"online": 2})
+                self.assertEqual(payload["statistics"]["load_power_w"]["max"], 100)
             finally:
                 server.shutdown()
                 server.server_close()

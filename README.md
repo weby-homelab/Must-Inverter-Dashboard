@@ -57,6 +57,7 @@ The gallery shows the live-validated MUST PV18-3224 VPM II / PV1800 dashboard. V
 - History resolutions: 1 minute, 30 minutes, hour, day, week, month, and raw samples.
 - History ranges include 1 hour and 6 hours for short operational checks, plus 24 hours, 7 days, 30 days, 1 year, and all retained data.
 - Operational power-flow, battery-voltage, and temperature charts with a six-hour live browser buffer and pointer tooltips.
+- Selected-range summary with estimated energy, extrema, grid availability, and data-gap visibility.
 - CSV export and a streaming `/api/events` endpoint.
 - Bright, responsive dashboard with `UKR | ENG` language switching.
 - SQLite WAL persistence with a 730-day default retention policy.
@@ -175,12 +176,14 @@ The application reads only the following verified holding-register blocks. Addre
 | Section | Start | Count | Data |
 | --- | ---: | ---: | --- |
 | `identity` | `20001` | `16` | Model, serial, hardware/software versions |
-| `charger_status` | `15201` | `21` | PV voltage/current/power, charger state, temperatures |
-| `inverter_status` | `25201` | `79` | AC, grid, load, battery, power, temperatures, counters |
+| `charger_status` | `15201` | `21` | PV voltage/current/power, charger state, temperatures, accumulated PV energy/time |
+| `inverter_status` | `25201` | `79` | AC, grid, load, battery, power, temperatures, accumulated energy counters |
 | `charger_config` | `10101` | `24` | Read-only charging parameters |
 | `inverter_config` | `20101` | `44` | Read-only inverter parameters |
 
 Every response is framed and CRC-validated before decoding. A failed section is reported as degraded data instead of being silently treated as valid.
+
+PV1800 accumulated counters use decimal high/low words, not a binary 32-bit value: `high * 1000 kWh + low * 0.1 kWh`. The API keeps the existing `*_power_wh` field names and exposes the normalized result in Wh, which the dashboard renders in kWh. Charger registers `15219-15221` are accumulated `day:hour:minute` and are displayed as `D:H:M`.
 
 ## History Resolutions
 
@@ -198,6 +201,8 @@ Every response is framed and CRC-validated before decoding. A failed section is 
 
 When `period=auto` or no period is supplied, the server selects `minute` for ranges up to 6 hours, `30m` up to 3 days, `day` up to 45 days, `week` up to 180 days, and `month` for longer ranges.
 
+`/api/summary?range=24h` analyzes the raw samples in the selected range. It returns per-metric min/average/max values, sample coverage, gaps, unavailable-grid intervals, and estimated energy. Energy is trapezoid-integrated from persisted power samples; intervals longer than 15 minutes are excluded. The decoded MUST sign convention is used for estimates: negative grid power is import, positive battery power is discharge, and negative battery power is charge. These are estimates and should not replace the inverter's accumulated counters.
+
 The dashboard exposes one-hour and six-hour history ranges in addition to the longer views. Operational charts combine the selected persisted range with the latest six hours of live snapshots and are refreshed every 10 seconds.
 
 ## API
@@ -212,6 +217,7 @@ The dashboard exposes one-hour and six-hour history ranges in addition to the lo
 | `GET /api/history?range=30d&period=day` | Daily aggregation |
 | `GET /api/history?range=1y&period=month` | Monthly aggregation |
 | `GET /api/history?range=24h&period=raw` | Newest raw samples |
+| `GET /api/summary?range=24h` | Quality, extrema, and estimated energy for raw samples |
 | `GET /api/export.csv?range=30d&period=day` | CSV export for the same history query |
 | `GET /api/events` | Server-Sent Events for snapshots and health changes |
 

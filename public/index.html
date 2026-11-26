@@ -105,9 +105,10 @@
            </div>
            <div class="operational-chart-wrap"><canvas id="powerChart" data-i18n-aria-label="operations.power.aria_label" aria-label="Графік потоку потужності"></canvas><div class="chart-empty" id="powerChartEmpty" data-i18n="history.empty">Історія з'явиться після перших збережених samples</div></div>
            <div class="operational-legend">
-             <span><i class="legend-pv"></i><span data-i18n="operations.legend.pv">PV</span></span>
-             <span><i class="legend-load"></i><span data-i18n="operations.legend.load">Навантаження</span></span>
-             <span><i class="legend-grid"></i><span data-i18n="operations.legend.grid">Grid</span></span>
+              <span><i class="legend-pv"></i><span data-i18n="operations.legend.pv">PV</span></span>
+              <span><i class="legend-load"></i><span data-i18n="operations.legend.load">Навантаження</span></span>
+              <span><i class="legend-inverter"></i><span data-i18n="operations.legend.inverter">Інвертор</span></span>
+              <span><i class="legend-grid"></i><span data-i18n="operations.legend.grid">Grid</span></span>
              <span><i class="legend-battery"></i><span data-i18n="operations.legend.battery">Battery</span></span>
            </div>
          </article>
@@ -151,9 +152,10 @@
             <label><span data-i18n="history.metric">Показник</span>
               <select id="metricSelect">
                 <optgroup label="Power flow" data-i18n-label="metric.group_power">
-                  <option value="load_power_w" data-i18n="metric.option_load_power">Навантаження, W</option>
-                  <option value="pv_power_w" data-i18n="metric.option_pv_power">PV генерація, W</option>
-                  <option value="grid_power_w" data-i18n="metric.option_grid_power">Потік мережі, W</option>
+                 <option value="load_power_w" data-i18n="metric.option_load_power">Навантаження, W</option>
+                 <option value="pv_power_w" data-i18n="metric.option_pv_power">PV генерація, W</option>
+                  <option value="inverter_power_w" data-i18n="metric.option_inverter_power">Потужність інвертора, W</option>
+                 <option value="grid_power_w" data-i18n="metric.option_grid_power">Потік мережі, W</option>
                   <option value="battery_power_w" data-i18n="metric.option_battery_power">Потужність батареї, W</option>
                   <option value="load_percent" data-i18n="metric.option_load_percent">Навантаження, %</option>
                 </optgroup>
@@ -195,9 +197,19 @@
           <div class="chart-wrap">
             <canvas id="historyChart" data-i18n-aria-label="history.chart_aria" aria-label="Графік історичних показників"></canvas>
             <div class="chart-empty" id="chartEmpty" data-i18n="history.empty">Історія з'явиться після перших збережених samples</div>
-          </div>
-          <div class="chart-footer"><span id="historySummary" data-i18n="history.no_data">Немає збережених даних</span><span class="chart-legend"><i></i><span id="legendLabel">Навантаження</span></span></div>
-        </article>
+           </div>
+           <div class="chart-footer"><span id="historySummary" data-i18n="history.no_data">Немає збережених даних</span><span class="chart-legend"><i></i><span id="legendLabel">Навантаження</span></span></div>
+           <div class="history-insight" aria-live="polite">
+             <div class="history-insight-heading"><span class="section-kicker" data-i18n="history.summary_kicker">ПІДСУМОК ПЕРІОДУ</span><span class="history-quality" id="historyQuality">--</span></div>
+             <div class="history-stat-grid">
+               <div class="history-stat"><span data-i18n="history.load_energy">Спожито (оцінка)</span><strong id="summaryLoadEnergy">--</strong></div>
+               <div class="history-stat"><span data-i18n="history.grid_import">Мережа (оцінка)</span><strong id="summaryGridImport">--</strong></div>
+               <div class="history-stat"><span data-i18n="history.peak_load">Пік навантаження</span><strong id="summaryPeakLoad">--</strong></div>
+               <div class="history-stat"><span data-i18n="history.battery_range">Батарея</span><strong id="summaryBatteryRange">--</strong></div>
+             </div>
+             <p class="history-insight-note" id="historyInsightNote" data-i18n="history.summary_waiting">Аналіз діапазону...</p>
+           </div>
+         </article>
 
         <aside class="panel status-panel">
            <div class="panel-heading"><div><p class="section-kicker" data-i18n="status.kicker">04 / СТАН</p><h2 data-i18n="status.title">Система</h2></div><span class="status-code" id="workState">--</span></div>

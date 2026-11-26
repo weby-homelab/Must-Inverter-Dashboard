@@ -28,6 +28,7 @@
       "section.flow": "Потік енергії",
       "metric.pv.label": "PV input",
       "metric.pv.unit": "сонячна генерація",
+      "metric.inverter.label": "Інвертор",
       "metric.load.label": "Навантаження",
       "metric.load.unit": "поточне навантаження",
       "metric.grid.label": "Grid",
@@ -41,6 +42,7 @@
       "metric.group_temperature": "Температура",
       "metric.option_load_power": "Навантаження, W",
       "metric.option_pv_power": "PV генерація, W",
+      "metric.option_inverter_power": "Потужність інвертора, W",
       "metric.option_grid_power": "Потік мережі, W",
       "metric.option_battery_power": "Потужність батареї, W",
       "metric.option_load_percent": "Навантаження, %",
@@ -77,6 +79,7 @@
       "operations.thermal.aria_label": "Графік температур",
       "operations.legend.pv": "PV",
       "operations.legend.load": "Навантаження",
+      "operations.legend.inverter": "Інвертор",
       "operations.legend.grid": "Grid",
       "operations.legend.battery": "Battery",
       "operations.legend.ac": "AC radiator",
@@ -108,6 +111,21 @@
       "history.points_one": "точка",
       "history.points_many": "точок",
       "history.shown_limit": "показано ліміт raw points",
+      "history.summary_kicker": "ПІДСУМОК ПЕРІОДУ",
+      "history.load_energy": "Спожито (оцінка)",
+      "history.grid_import": "Мережа (оцінка)",
+      "history.peak_load": "Пік навантаження",
+      "history.battery_range": "Діапазон батареї",
+      "history.summary_waiting": "Аналіз діапазону...",
+      "history.summary_no_data": "Немає даних для цього діапазону",
+      "history.data_quality": "Якість даних",
+      "history.samples": "записів",
+      "history.gaps": "розривів",
+      "history.longest_gap": "найдовший",
+      "history.no_pv": "PV-сигнал відсутній у вибраному періоді",
+      "history.grid_unavailable": "Мережа недоступна у",
+      "history.intervals": "інтервалах",
+      "history.energy_estimate": "Енергія оцінена за потужністю; довгі розриви виключені.",
       "status.kicker": "04 / СТАН",
       "status.title": "Система",
       "status.model": "Модель",
@@ -136,7 +154,7 @@
       "telemetry.ac": "AC output",
       "telemetry.dc": "DC / bus",
       "telemetry.temperatures": "Температури",
-      "telemetry.accumulated": "Накопичені показники",
+      "telemetry.accumulated": "Накопичене навантаження",
       "telemetry.current": "Струм",
       "telemetry.frequency": "Частота",
       "telemetry.reactive": "Reactive",
@@ -147,9 +165,9 @@
       "telemetry.dc_radiator": "DC radiator",
       "telemetry.transformer": "Transformer",
       "telemetry.charger_radiator": "Charger radiator",
-      "telemetry.charged": "Charged",
-      "telemetry.discharged": "Discharged",
-      "telemetry.uptime": "Charger uptime",
+      "telemetry.charged": "Заряд батареї",
+      "telemetry.discharged": "Розряд батареї",
+      "telemetry.uptime": "Час роботи зарядного (д:г:хв)",
       "config.kicker": "06 / CONFIG",
       "config.title": "Параметри",
       "config.readonly": "READ ONLY",
@@ -210,6 +228,7 @@
       "section.flow": "Energy flow",
       "metric.pv.label": "PV input",
       "metric.pv.unit": "solar generation",
+      "metric.inverter.label": "Inverter",
       "metric.load.label": "Load",
       "metric.load.unit": "current demand",
       "metric.grid.label": "Grid",
@@ -223,6 +242,7 @@
       "metric.group_temperature": "Temperature",
       "metric.option_load_power": "Load, W",
       "metric.option_pv_power": "PV generation, W",
+      "metric.option_inverter_power": "Inverter power, W",
       "metric.option_grid_power": "Grid flow, W",
       "metric.option_battery_power": "Battery power, W",
       "metric.option_load_percent": "Load, %",
@@ -259,6 +279,7 @@
       "operations.thermal.aria_label": "Temperature chart",
       "operations.legend.pv": "PV",
       "operations.legend.load": "Load",
+      "operations.legend.inverter": "Inverter",
       "operations.legend.grid": "Grid",
       "operations.legend.battery": "Battery",
       "operations.legend.ac": "AC radiator",
@@ -290,6 +311,21 @@
       "history.points_one": "point",
       "history.points_many": "points",
       "history.shown_limit": "raw point limit shown",
+      "history.summary_kicker": "RANGE SUMMARY",
+      "history.load_energy": "Load energy (estimate)",
+      "history.grid_import": "Grid draw (estimate)",
+      "history.peak_load": "Peak load",
+      "history.battery_range": "Battery range",
+      "history.summary_waiting": "Analyzing range...",
+      "history.summary_no_data": "No data for this range",
+      "history.data_quality": "Data quality",
+      "history.samples": "samples",
+      "history.gaps": "gaps",
+      "history.longest_gap": "longest",
+      "history.no_pv": "No PV signal in the selected range",
+      "history.grid_unavailable": "Grid unavailable in",
+      "history.intervals": "intervals",
+      "history.energy_estimate": "Energy is estimated from power; long gaps are excluded.",
       "status.kicker": "04 / STATUS",
       "status.title": "System",
       "status.model": "Model",
@@ -318,7 +354,7 @@
       "telemetry.ac": "AC output",
       "telemetry.dc": "DC / bus",
       "telemetry.temperatures": "Temperatures",
-      "telemetry.accumulated": "Accumulated",
+      "telemetry.accumulated": "Accumulated load",
       "telemetry.current": "Current",
       "telemetry.frequency": "Frequency",
       "telemetry.reactive": "Reactive",
@@ -329,9 +365,9 @@
       "telemetry.dc_radiator": "DC radiator",
       "telemetry.transformer": "Transformer",
       "telemetry.charger_radiator": "Charger radiator",
-      "telemetry.charged": "Charged",
-      "telemetry.discharged": "Discharged",
-      "telemetry.uptime": "Charger uptime",
+      "telemetry.charged": "Battery charged",
+      "telemetry.discharged": "Battery discharged",
+      "telemetry.uptime": "Charger uptime (D:H:M)",
       "config.kicker": "06 / CONFIG",
       "config.title": "Configuration",
       "config.readonly": "READ ONLY",
@@ -378,6 +414,9 @@
     history: null,
     historyRequest: 0,
     livePoints: [],
+    summary: null,
+    summaryRange: null,
+    summaryRequest: 0,
     refreshTimer: null,
     chartModels: new Map(),
     chartPointers: new Map(),
@@ -391,6 +430,7 @@
   const metricMeta = {
     load_power_w: { labelKey: "metric.load.label", unit: "W", color: "#efb35b", decimals: 0 },
     pv_power_w: { labelKey: "metric.pv.label", unit: "W", color: "#56d8db", decimals: 0 },
+    inverter_power_w: { labelKey: "metric.inverter.label", unit: "W", color: "#c18bff", decimals: 0 },
     grid_power_w: { labelKey: "metric.grid.label", unit: "W", color: "#91a8ff", decimals: 0 },
     battery_power_w: { labelKey: "metric.battery.label", unit: "W", color: "#71d39a", decimals: 0 },
     pv_voltage_v: { labelKey: "telemetry.pv_voltage", unit: "V", color: "#56d8db", decimals: 1 },
@@ -420,6 +460,7 @@
       series: [
         { metric: "pv_power_w", labelKey: "operations.legend.pv", color: "#56d8db" },
         { metric: "load_power_w", labelKey: "operations.legend.load", color: "#efb35b" },
+        { metric: "inverter_power_w", labelKey: "operations.legend.inverter", color: "#c18bff" },
         { metric: "grid_power_w", labelKey: "operations.legend.grid", color: "#91a8ff" },
         { metric: "battery_power_w", labelKey: "operations.legend.battery", color: "#71d39a" },
       ],
@@ -480,6 +521,7 @@
     if (state.health) renderHealth(state.health);
     if (state.current) renderCurrent(state.current);
     if (state.history) renderHistory(state.history);
+    if (state.summary) renderSummary(state.summary);
   }
 
   function locale() { return state.language === "en" ? "en-GB" : "uk-UA"; }
@@ -631,6 +673,34 @@
     return safeNumber(wh) ? `${number(wh / 1000, 2)} kWh` : "-- kWh";
   }
 
+  function energyKwh(value) {
+    return safeNumber(value) ? `${number(value, 2)} kWh` : "-- kWh";
+  }
+
+  function countWord(count, kind) {
+    const forms = state.language === "en"
+      ? { gaps: ["gap", "gaps"], intervals: ["interval", "intervals"], samples: ["sample", "samples"] }
+      : { gaps: ["розрив", "розриви", "розривів"], intervals: ["інтервалі", "інтервали", "інтервалів"], samples: ["запис", "записи", "записів"] };
+    if (state.language === "en") return count === 1 ? forms[kind][0] : forms[kind][1];
+    const last = count % 10;
+    const lastTwo = count % 100;
+    if (last === 1 && lastTwo !== 11) return forms[kind][0];
+    if (last >= 2 && last <= 4 && (lastTwo < 12 || lastTwo > 14)) return forms[kind][1];
+    return forms[kind][2];
+  }
+
+  function duration(seconds) {
+    if (!safeNumber(seconds)) return "--";
+    let remaining = Math.max(0, Math.round(seconds));
+    const days = Math.floor(remaining / 86400);
+    remaining %= 86400;
+    const hours = Math.floor(remaining / 3600);
+    remaining %= 3600;
+    const minutes = Math.floor(remaining / 60);
+    if (state.language === "en") return `${days}d ${hours}h ${minutes}m`;
+    return `${days}д ${hours}г ${minutes}хв`;
+  }
+
   function renderConfiguration(configuration) {
     const charger = configuration && configuration.charger;
     const inverter = configuration && configuration.inverter;
@@ -744,7 +814,32 @@
     }
   }
 
-  async function loadHistory() {
+  async function loadSummary() {
+    const requestId = ++state.summaryRequest;
+    const range = state.range;
+    state.summaryRange = range;
+    state.summary = null;
+    const quality = $("historyQuality");
+    setText("historyQuality", "--");
+    if (quality) delete quality.dataset.state;
+    ["summaryLoadEnergy", "summaryGridImport", "summaryPeakLoad", "summaryBatteryRange"].forEach((id) => setText(id, "--"));
+    setText("historyInsightNote", t("history.summary_waiting"));
+    try {
+      const summary = await getJson(`/api/summary?range=${encodeURIComponent(range)}`);
+      if (requestId !== state.summaryRequest || range !== state.range) return;
+      state.summary = summary;
+      renderSummary(summary);
+    } catch (error) {
+      if (requestId !== state.summaryRequest || range !== state.range) return;
+      state.summary = null;
+      setText("historyQuality", "--");
+      setText("historyInsightNote", `${t("common.error")}: ${error.message}`);
+      ["summaryLoadEnergy", "summaryGridImport", "summaryPeakLoad", "summaryBatteryRange"].forEach((id) => setText(id, "--"));
+    }
+  }
+
+  async function loadHistory({ refreshSummary = false } = {}) {
+    if (refreshSummary || state.summaryRange !== state.range) loadSummary();
     const requestId = ++state.historyRequest;
     const url = `/api/history?range=${encodeURIComponent(state.range)}&period=${encodeURIComponent(state.period)}`;
     const exportUrl = `/api/export.csv?range=${encodeURIComponent(state.range)}&period=${encodeURIComponent(state.period)}`;
@@ -764,6 +859,46 @@
     }
   }
 
+  function renderSummary(summary) {
+    if (!summary || !summary.sample_count) {
+      setText("historyQuality", "--");
+      setText("historyInsightNote", t("history.summary_no_data"));
+      ["summaryLoadEnergy", "summaryGridImport", "summaryPeakLoad", "summaryBatteryRange"].forEach((id) => setText(id, "--"));
+      return;
+    }
+    const statistics = summary.statistics || {};
+    const load = statistics.load_power_w || {};
+    const battery = statistics.battery_voltage_v || {};
+    const energySummary = summary.energy || {};
+    const quality = $("historyQuality");
+    const qualityParts = [
+      `${number(summary.coverage_percent, 0)}%`,
+      `${number(summary.gap_count || 0, 0)} ${countWord(summary.gap_count || 0, "gaps")}`,
+    ];
+    setText("historyQuality", qualityParts.join(" · "));
+    if (quality) quality.dataset.state = summary.gap_count || summary.coverage_percent < 95 ? "warning" : "nominal";
+    setText("summaryLoadEnergy", energyKwh(energySummary.load_kwh));
+    setText("summaryGridImport", energyKwh(energySummary.grid_import_kwh));
+    setText("summaryPeakLoad", power(load.max));
+    setText(
+      "summaryBatteryRange",
+      safeNumber(battery.min) && safeNumber(battery.max)
+        ? `${number(battery.min, 1)} - ${number(battery.max, 1)} V`
+        : "--",
+    );
+
+    const notes = [`${number(summary.sample_count, 0)} ${countWord(summary.sample_count, "samples")}`];
+    if (summary.gap_count) {
+      notes.push(`${number(summary.gap_count, 0)} ${countWord(summary.gap_count, "gaps")} · ${t("history.longest_gap")} ${duration(summary.largest_gap_seconds)}`);
+    }
+    if (summary.pv_active_samples === 0) notes.push(t("history.no_pv"));
+    if (summary.grid_unavailable_runs) {
+      notes.push(`${t("history.grid_unavailable")} ${number(summary.grid_unavailable_runs, 0)} ${countWord(summary.grid_unavailable_runs, "intervals")}`);
+    }
+    if (summary.energy_coverage_percent < 95) notes.push(t("history.energy_estimate"));
+    setText("historyInsightNote", notes.join(" · "));
+  }
+
   function renderHistory(history) {
     const count = history.points ? history.points.length : 0;
     const suffix = history.truncated ? ` · ${t("history.shown_limit")}` : "";
@@ -773,6 +908,39 @@
     setText("legendLabel", t((metricMeta[state.metric] || metricMeta.load_power_w).labelKey));
     renderChart();
     renderOperationalCharts();
+  }
+
+  function chartGapThreshold(period) {
+    return {
+      raw: 180,
+      minute: 180,
+      "30m": 3600,
+      hour: 7200,
+      day: 172800,
+      week: 1209600,
+      month: 5356800,
+    }[period] || 900;
+  }
+
+  function lineSegments(points, metric, x, y) {
+    const threshold = chartGapThreshold(state.history && state.history.period);
+    const segments = [];
+    let segment = [];
+    let previousTimestamp = null;
+    points.forEach((point, index) => {
+      const timestamp = Date.parse(point.captured_at);
+      const value = point[metric];
+      const hasGap = previousTimestamp !== null && Number.isFinite(timestamp)
+        && timestamp - previousTimestamp > threshold * 1000;
+      if (!safeNumber(value) || hasGap) {
+        if (segment.length) segments.push(segment);
+        segment = [];
+      }
+      if (safeNumber(value)) segment.push([x(index), y(value)]);
+      previousTimestamp = Number.isFinite(timestamp) ? timestamp : null;
+    });
+    if (segment.length) segments.push(segment);
+    return segments;
   }
 
   function renderChart() {
@@ -824,19 +992,21 @@
       ctx.fillStyle = "#52616d";
       ctx.fillText(formatAxis(max - (max - min) * i / 4, meta), 4, lineY + 3);
     }
-    const valid = points.map((point, index) => safeNumber(point[state.metric]) ? [x(index), y(point[state.metric])] : null).filter(Boolean);
-    if (!valid.length) return;
+    const segments = lineSegments(points, state.metric, x, y);
+    if (!segments.length) return;
     const gradient = ctx.createLinearGradient(0, padding.top, 0, height - padding.bottom);
     gradient.addColorStop(0, hexToRgba(meta.color, .24));
     gradient.addColorStop(1, hexToRgba(meta.color, 0));
-    ctx.beginPath();
-    ctx.moveTo(valid[0][0], height - padding.bottom);
-    valid.forEach(([pointX, pointY]) => ctx.lineTo(pointX, pointY));
-    ctx.lineTo(valid[valid.length - 1][0], height - padding.bottom);
-    ctx.closePath(); ctx.fillStyle = gradient; ctx.fill();
-    ctx.beginPath();
-    valid.forEach(([pointX, pointY], index) => index ? ctx.lineTo(pointX, pointY) : ctx.moveTo(pointX, pointY));
-    ctx.strokeStyle = meta.color; ctx.lineWidth = 2; ctx.lineJoin = "round"; ctx.lineCap = "round"; ctx.stroke();
+    segments.forEach((segment) => {
+      ctx.beginPath();
+      ctx.moveTo(segment[0][0], height - padding.bottom);
+      segment.forEach(([pointX, pointY]) => ctx.lineTo(pointX, pointY));
+      ctx.lineTo(segment[segment.length - 1][0], height - padding.bottom);
+      ctx.closePath(); ctx.fillStyle = gradient; ctx.fill();
+      ctx.beginPath();
+      segment.forEach(([pointX, pointY], index) => index ? ctx.lineTo(pointX, pointY) : ctx.moveTo(pointX, pointY));
+      ctx.strokeStyle = meta.color; ctx.lineWidth = 2; ctx.lineJoin = "round"; ctx.lineCap = "round"; ctx.stroke();
+    });
     ctx.fillStyle = "#52616d";
     const labels = Math.min(5, points.length);
     for (let i = 0; i < labels; i += 1) {
@@ -994,26 +1164,16 @@
 
     spec.series.forEach((series) => {
       let lastPoint = null;
-      let drawing = false;
-      ctx.beginPath();
-      points.forEach((point, index) => {
-        const value = point[series.metric];
-        if (!safeNumber(value)) {
-          drawing = false;
-          return;
-        }
-        const pointX = x(index);
-        const pointY = y(value);
-        if (drawing) ctx.lineTo(pointX, pointY);
-        else ctx.moveTo(pointX, pointY);
-        drawing = true;
-        lastPoint = [pointX, pointY];
+      lineSegments(points, series.metric, x, y).forEach((segment) => {
+        ctx.beginPath();
+        segment.forEach(([pointX, pointY], index) => index ? ctx.lineTo(pointX, pointY) : ctx.moveTo(pointX, pointY));
+        ctx.strokeStyle = series.color;
+        ctx.lineWidth = 1.7;
+        ctx.lineJoin = "round";
+        ctx.lineCap = "round";
+        ctx.stroke();
+        lastPoint = segment[segment.length - 1];
       });
-      ctx.strokeStyle = series.color;
-      ctx.lineWidth = 1.7;
-      ctx.lineJoin = "round";
-      ctx.lineCap = "round";
-      ctx.stroke();
       if (lastPoint) {
         ctx.fillStyle = series.color;
         ctx.beginPath();
@@ -1186,14 +1346,14 @@
       state.range = button.dataset.range;
       state.period = defaultPeriods[state.range] || state.period;
       $("periodSelect").value = state.period;
-      loadHistory();
+      loadHistory({ refreshSummary: true });
     }));
     $("metricSelect").addEventListener("change", (event) => {
       state.metric = event.target.value;
       renderHistory(state.history || { points: [], period: state.period });
     });
     $("periodSelect").addEventListener("change", (event) => { state.period = event.target.value; loadHistory(); });
-    $("refreshButton").addEventListener("click", () => { loadCurrent(); loadHistory(); });
+    $("refreshButton").addEventListener("click", () => { loadCurrent(); loadHistory({ refreshSummary: true }); });
     bindChartHover();
     window.addEventListener("resize", () => { renderChart(); renderOperationalCharts(); });
     window.addEventListener("blur", () => hideChartTooltip());
@@ -1202,7 +1362,7 @@
   async function boot() {
     applyLanguage();
     bindControls();
-    await Promise.all([loadCurrent(), loadHistory()]);
+    await Promise.all([loadCurrent(), loadHistory({ refreshSummary: true })]);
     connectEvents();
     startRefreshLoop();
   }

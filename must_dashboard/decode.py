@@ -84,7 +84,7 @@ def decode_charger_status(registers: list[int] | None) -> dict[str, Any] | None:
         "warning_code": value(registers, 13),
         "battery_voltage_grade_code": value(registers, 14),
         "rated_current_a": scaled(registers, 15, 0.1),
-        "accumulated_power_wh": _u32_tenths(registers, 16),
+        "accumulated_power_wh": _accumulated_energy_wh(registers, 16),
         "accumulated_time": _time_value(registers, 18),
     }
 
@@ -128,14 +128,14 @@ def decode_inverter_status(registers: list[int] | None) -> dict[str, Any] | None
         "n_line_relay_code": value(registers, 39),
         "dc_relay_code": value(registers, 40),
         "earth_relay_code": value(registers, 41),
-        "accumulated_charger_power_wh": _u32_tenths(registers, 44),
-        "accumulated_discharger_power_wh": _u32_tenths(registers, 46),
-        "accumulated_buy_power_wh": _u32_tenths(registers, 48),
-        "accumulated_sell_power_wh": _u32_tenths(registers, 50),
-        "accumulated_load_power_wh": _u32_tenths(registers, 52),
-        "accumulated_self_use_power_wh": _u32_tenths(registers, 54),
-        "accumulated_pv_sell_power_wh": _u32_tenths(registers, 56),
-        "accumulated_grid_charger_power_wh": _u32_tenths(registers, 58),
+        "accumulated_charger_power_wh": _accumulated_energy_wh(registers, 44),
+        "accumulated_discharger_power_wh": _accumulated_energy_wh(registers, 46),
+        "accumulated_buy_power_wh": _accumulated_energy_wh(registers, 48),
+        "accumulated_sell_power_wh": _accumulated_energy_wh(registers, 50),
+        "accumulated_load_power_wh": _accumulated_energy_wh(registers, 52),
+        "accumulated_self_use_power_wh": _accumulated_energy_wh(registers, 54),
+        "accumulated_pv_sell_power_wh": _accumulated_energy_wh(registers, 56),
+        "accumulated_grid_charger_power_wh": _accumulated_energy_wh(registers, 58),
         "serial_number": _register_pair_hex(registers, 68),
         "hardware_version": version(registers, 70),
         "software_version": version(registers, 71),
@@ -283,13 +283,16 @@ def _register_pair_hex(registers: list[int] | None, index: int) -> str | None:
     return f"{registers[index]:04X}{registers[index + 1]:04X}"
 
 
-def _u32_tenths(registers: list[int] | None, index: int) -> float | None:
+def _accumulated_energy_wh(registers: list[int] | None, index: int) -> float | None:
+    """Decode PV1800 accumulated energy words and normalize them to Wh."""
     if registers is None or index + 1 >= len(registers):
         return None
-    return round(((registers[index] << 16) | registers[index + 1]) * 0.1, 1)
+    # The device stores decimal high/low words: 1000 kWh for high and 0.1 kWh for low.
+    return float(registers[index] * 1_000_000 + registers[index + 1] * 100)
 
 
 def _time_value(registers: list[int] | None, index: int) -> str | None:
+    """Format PV charger accumulated time as days:hours:minutes."""
     if registers is None or index + 2 >= len(registers):
         return None
     return f"{registers[index]:02}:{registers[index + 1]:02}:{registers[index + 2]:02}"

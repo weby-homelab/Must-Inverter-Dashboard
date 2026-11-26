@@ -50,6 +50,35 @@ class DecodeTests(unittest.TestCase):
         self.assertEqual(snapshot["metrics"]["grid_frequency_hz"], 49.95)
         self.assertEqual(snapshot["raw"]["inverter_status"], inverter)
 
+    def test_pv1800_accumulated_counters_use_decimal_words(self):
+        charger = [0] * 21
+        charger[16] = 2
+        charger[17] = 3456
+        charger[18] = 7
+        charger[19] = 8
+        charger[20] = 9
+        inverter = [0] * 79
+        inverter[44] = 1
+        inverter[45] = 2345
+        inverter[46] = 0
+        inverter[47] = 5104
+        inverter[52] = 1
+        inverter[53] = 6975
+
+        snapshot = decode_snapshot(
+            sections={"charger_status": charger, "inverter_status": inverter},
+            captured_at="2026-09-11T12:00:00Z",
+            source={"port": "test", "slave_id": 4, "baudrate": 19200},
+            errors={},
+            latency_ms=1.0,
+        )
+
+        self.assertEqual(snapshot["status"]["charger"]["accumulated_power_wh"], 2_345_600.0)
+        self.assertEqual(snapshot["status"]["charger"]["accumulated_time"], "07:08:09")
+        self.assertEqual(snapshot["status"]["inverter"]["accumulated_charger_power_wh"], 1_234_500.0)
+        self.assertEqual(snapshot["status"]["inverter"]["accumulated_discharger_power_wh"], 510_400.0)
+        self.assertEqual(snapshot["status"]["inverter"]["accumulated_load_power_wh"], 1_697_500.0)
+
 
 if __name__ == "__main__":
     unittest.main()
