@@ -1,3 +1,3 @@
-"""Read-only MUST inverter dashboard service."""
+"""MUST inverter dashboard service with opt-in safe control."""
 
-__version__ = "0.1.1"
+__version__ = "0.3.0"

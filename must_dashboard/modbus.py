@@ -52,8 +52,13 @@ def _frame(slave_id: int, start: int, count: int) -> bytes:
     return body + crc16(body)
 
 
+def _write_single_frame(slave_id: int, address: int, value: int) -> bytes:
+    body = bytes((slave_id, 0x06, address >> 8, address & 0xFF, value >> 8, value & 0xFF))
+    return body + crc16(body)
+
+
 class ModbusRTU:
-    """Minimal read-only Modbus RTU client for the MUST serial protocol."""
+    """Modbus RTU client for the MUST serial protocol with optional safe single-register writes."""
 
     RANGES = {
         "identity": (20001, 16),
@@ -177,6 +182,91 @@ class ModbusRTU:
 
             payload = response[3:-2]
             return [int.from_bytes(payload[index:index + 2], "big") for index in range(0, len(payload), 2)]
+
+    def invalidate_config_cache(self) -> None:
+        """Clear cached configuration sections so the next poll refreshes them from the device."""
+        with self._lock:
+            self._cached_configuration = None
+            self._cached_sections.pop("charger_config", None)
+            self._cached_sections.pop("inverter_config", None)
+
+    def write_single_register(self, address: int, value: int, *, verify: bool = True) -> dict:
+        """Safely write a single holding register (Function 06) with no-op skip and verification."""
+        if not 0 <= address <= 0xFFFF or not 0 <= value <= 0xFFFF:
+            raise ValueError("invalid Modbus register address or value")
+
+        with self._lock:
+            before = self.read_holding(address, 1)[0]
+            if before == value:
+                return {
+                    "address": address,
+                    "before": before,
+                    "requested": value,
+                    "after": before,
+                    "status": "noop",
+                    "written": False,
+                }
+
+            ser = self._open()
+            elapsed = time.monotonic() - self._last_request_at
+            if elapsed < self.settings.inter_request_delay:
+                time.sleep(self.settings.inter_request_delay - elapsed)
+
+            request = _write_single_frame(self.settings.slave_id, address, value)
+            try:
+                ser.reset_input_buffer()
+                ser.write(request)
+                ser.flush()
+                self._last_request_at = time.monotonic()
+
+                header = self._read_exact(ser, 3)
+                if header[0] != self.settings.slave_id:
+                    raise ModbusError(f"unexpected slave id: {header[0]}")
+                if header[1] == 0x86:
+                    tail = self._read_exact(ser, 2)
+                    response = header + tail
+                    if response[-2:] != crc16(response[:-2]):
+                        raise ModbusError("invalid Modbus exception CRC")
+                    raise ModbusError(f"device exception code: {response[2]}")
+                if header[1] != 0x06:
+                    raise ModbusError(f"unexpected function: {header[1]}")
+
+                response = header + self._read_exact(ser, 5)
+            except ModbusError:
+                raise
+            except Exception as exc:
+                raise ModbusError(f"serial write failed: {exc}") from exc
+
+            if response[-2:] != crc16(response[:-2]):
+                raise ModbusError("invalid Modbus response CRC")
+
+            echoed_address = int.from_bytes(response[2:4], "big")
+            echoed_value = int.from_bytes(response[4:6], "big")
+            if echoed_address != address or echoed_value != value:
+                raise ModbusError(
+                    f"write echo mismatch: expected ({address}, {value}), got ({echoed_address}, {echoed_value})"
+                )
+
+            self.invalidate_config_cache()
+            if verify:
+                after = self.read_holding(address, 1)[0]
+                return {
+                    "address": address,
+                    "before": before,
+                    "requested": value,
+                    "after": after,
+                    "status": "verified" if after == value else "mismatch",
+                    "written": True,
+                }
+
+            return {
+                "address": address,
+                "before": before,
+                "requested": value,
+                "after": value,
+                "status": "written",
+                "written": True,
+            }
 
     def poll_once(self, include_config: bool) -> dict:
         """Read the known safe ranges and decode a complete snapshot."""

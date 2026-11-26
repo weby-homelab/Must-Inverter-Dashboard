@@ -41,6 +41,18 @@ def _int_env(name: str, default: int, minimum: int) -> int:
     return max(value, minimum)
 
 
+def _bool_env(name: str, default: bool) -> bool:
+    raw = os.environ.get(name)
+    if raw is None:
+        return default
+    normalized = raw.strip().lower()
+    if normalized in {"1", "true", "yes", "on"}:
+        return True
+    if normalized in {"0", "false", "no", "off"}:
+        return False
+    return default
+
+
 @dataclass(frozen=True)
 class Settings:
     base_dir: Path
@@ -57,6 +69,15 @@ class Settings:
     serial_timeout: float
     inter_request_delay: float
     retention_days: int
+    enable_write: bool = False
+    write_unlock_ttl: int = 300
+    write_cooldown: float = 3.0
+    max_writes_per_hour: int = 30
+    telegram_enabled: bool = False
+    telegram_bot_token: str = ""
+    telegram_chat_id: str = ""
+    alert_low_battery_v: float = 24.6
+    alert_cooldown_seconds: int = 900
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -75,10 +96,19 @@ class Settings:
             serial_port=os.environ.get("MUST_SERIAL_PORT", DEFAULT_SERIAL_PORT),
             slave_id=_int_env("MUST_SLAVE_ID", 4, 1),
             baudrate=_int_env("MUST_BAUDRATE", 19200, 1200),
-            poll_interval=_float_env("MUST_POLL_INTERVAL", 15.0, 2.0),
+            poll_interval=_float_env("MUST_POLL_INTERVAL", 10.0, 2.0),
             sample_interval=_float_env("MUST_SAMPLE_INTERVAL", 60.0, 1.0),
             config_interval=_float_env("MUST_CONFIG_INTERVAL", 300.0, 30.0),
             serial_timeout=_float_env("MUST_SERIAL_TIMEOUT", 2.5, 0.2),
             inter_request_delay=_float_env("MUST_INTER_REQUEST_DELAY", 0.5, 0.0),
             retention_days=_int_env("MUST_RETENTION_DAYS", 730, 1),
+            enable_write=_bool_env("MUST_ENABLE_WRITE", False),
+            write_unlock_ttl=_int_env("MUST_WRITE_UNLOCK_TTL", 300, 30),
+            write_cooldown=_float_env("MUST_WRITE_COOLDOWN", 3.0, 0.5),
+            max_writes_per_hour=_int_env("MUST_MAX_WRITES_PER_HOUR", 30, 1),
+            telegram_enabled=_bool_env("MUST_TELEGRAM_ENABLED", False),
+            telegram_bot_token=os.environ.get("MUST_TELEGRAM_BOT_TOKEN", "").strip(),
+            telegram_chat_id=os.environ.get("MUST_TELEGRAM_CHAT_ID", "").strip(),
+            alert_low_battery_v=_float_env("MUST_ALERT_LOW_BATTERY_V", 24.6, 10.0),
+            alert_cooldown_seconds=_int_env("MUST_ALERT_COOLDOWN_SECONDS", 900, 30),
         )

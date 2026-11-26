@@ -13,12 +13,15 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from urllib.parse import parse_qs, unquote, urlparse
 
+from . import __version__
 from .config import Settings
+from .control import ControlError, ControlManager
 from .poller import InverterPoller
 from .storage import Storage
 
 
 LOGGER = logging.getLogger(__name__)
+MAX_POST_BODY_BYTES = 16 * 1024
 
 
 @dataclass(frozen=True)
@@ -26,6 +29,7 @@ class AppContext:
     settings: Settings
     storage: Storage
     poller: InverterPoller
+    control: ControlManager | None = None
 
 
 class DashboardServer(ThreadingHTTPServer):
@@ -40,7 +44,7 @@ class DashboardServer(ThreadingHTTPServer):
 class DashboardHandler(BaseHTTPRequestHandler):
     server: DashboardServer
     protocol_version = "HTTP/1.1"
-    server_version = "MUSTPowerDesk/0.1"
+    server_version = f"MUSTPowerDesk/{__version__}"
     sys_version = ""
 
     def do_GET(self) -> None:
@@ -62,22 +66,112 @@ class DashboardHandler(BaseHTTPRequestHandler):
                     else HTTPStatus.SERVICE_UNAVAILABLE
                 )
                 self._json_response(health, status)
+            elif path == "/api/summary":
+                self._summary(query)
+            elif path == "/api/outages":
+                self._outages(query)
             elif path == "/api/history":
                 self._history(query)
             elif path == "/api/export.csv":
                 self._export_csv(query)
+            elif path == "/api/control/status":
+                control = self.server.context.control
+                if control is None:
+                    self._json_response({
+                        "write_enabled": False,
+                        "unlocked": False,
+                        "interlock_reason": "write_disabled",
+                        "parameters": {},
+                        "presets": {},
+                    })
+                else:
+                    self._json_response(control.status())
+            elif path == "/api/control/audit":
+                self._control_audit(query)
             elif path == "/api/events":
                 self._events()
             elif path.startswith("/assets/"):
                 self._serve_static(path.removeprefix("/assets/"))
             else:
                 self._json_response({"error": "not found"}, HTTPStatus.NOT_FOUND)
+        except ControlError as exc:
+            self._json_response({"error": str(exc)}, HTTPStatus(exc.status_code))
         except ValueError as exc:
             self._json_response({"error": str(exc)}, HTTPStatus.BAD_REQUEST)
         except BrokenPipeError:
             pass
         except Exception:
             LOGGER.exception("request failed: %s", self.path)
+            if not self.wfile.closed:
+                self._json_response({"error": "internal server error"}, HTTPStatus.INTERNAL_SERVER_ERROR)
+
+    def do_POST(self) -> None:
+        parsed = urlparse(self.path)
+        path = unquote(parsed.path)
+        try:
+            self._verify_csrf_origin()
+            body = self._read_json_body()
+            control = self.server.context.control
+            if control is None:
+                raise ControlError("Control plane is not configured", 403)
+            token = (self.headers.get("X-Control-Token") or str(body.get("token") or "")).strip()
+            client_ip = self.client_address[0] if self.client_address else "unknown"
+
+            if path == "/api/control/unlock":
+                self._json_response(control.unlock())
+            elif path == "/api/control/lock":
+                self._json_response(control.lock())
+            elif path == "/api/control/preview":
+                changes = body.get("changes")
+                self._json_response(control.preview(changes))
+            elif path == "/api/control/write":
+                changes = body.get("changes")
+                reason = str(body.get("reason") or "manual")[:64]
+                confirm_tier2 = bool(body.get("confirm_tier2", False))
+                self._json_response(
+                    control.apply(
+                        changes,
+                        token=token,
+                        client_ip=client_ip,
+                        reason=reason,
+                        confirm_tier2=confirm_tier2,
+                    )
+                )
+            elif path == "/api/control/preset":
+                preset_name = str(body.get("preset") or "")
+                confirm_tier2 = bool(body.get("confirm_tier2", False))
+                self._json_response(
+                    control.apply_preset(
+                        preset_name,
+                        token=token,
+                        client_ip=client_ip,
+                        confirm_tier2=confirm_tier2,
+                    )
+                )
+            elif path == "/api/control/rollback":
+                raw_id = body.get("audit_id")
+                if raw_id is None or isinstance(raw_id, bool):
+                    raise ValueError("audit_id must be an integer")
+                audit_id = int(raw_id)
+                confirm_tier2 = bool(body.get("confirm_tier2", False))
+                self._json_response(
+                    control.rollback(
+                        audit_id,
+                        token=token,
+                        client_ip=client_ip,
+                        confirm_tier2=confirm_tier2,
+                    )
+                )
+            else:
+                self._json_response({"error": "not found"}, HTTPStatus.NOT_FOUND)
+        except ControlError as exc:
+            self._json_response({"error": str(exc)}, HTTPStatus(exc.status_code))
+        except ValueError as exc:
+            self._json_response({"error": str(exc)}, HTTPStatus.BAD_REQUEST)
+        except BrokenPipeError:
+            pass
+        except Exception:
+            LOGGER.exception("POST request failed: %s", self.path)
             if not self.wfile.closed:
                 self._json_response({"error": "internal server error"}, HTTPStatus.INTERNAL_SERVER_ERROR)
 
@@ -104,6 +198,80 @@ class DashboardHandler(BaseHTTPRequestHandler):
             period = _auto_period(end_ts - start_value)
         result = self.server.context.storage.history(start_value, end_ts, period)
         self._json_response(result)
+
+    def _summary(self, query: dict[str, list[str]]) -> None:
+        end_ts = _query_timestamp(query, "to") or int(time.time())
+        range_value = query.get("range", ["24h"])[0]
+        start_ts = _query_timestamp(query, "from")
+        if start_ts is None:
+            start_ts = _range_start(range_value, end_ts, self.server.context.storage)
+        if start_ts > end_ts:
+            raise ValueError("from must be before to")
+        result = self.server.context.storage.summary(
+            start_ts,
+            end_ts,
+            self.server.context.settings.sample_interval,
+        )
+        self._json_response(result)
+
+    def _outages(self, query: dict[str, list[str]]) -> None:
+        end_ts = _query_timestamp(query, "to") or int(time.time())
+        range_value = query.get("range", ["7d"])[0]
+        start_ts = _query_timestamp(query, "from")
+        if start_ts is None:
+            start_ts = _range_start(range_value, end_ts, self.server.context.storage)
+        if start_ts > end_ts:
+            raise ValueError("from must be before to")
+        result = self.server.context.storage.outages(
+            start_ts,
+            end_ts,
+            sample_interval_seconds=self.server.context.settings.sample_interval,
+        )
+        self._json_response(result)
+
+    def _control_audit(self, query: dict[str, list[str]]) -> None:
+        raw_limit = query.get("limit", ["50"])[0]
+        try:
+            limit = int(raw_limit)
+        except (TypeError, ValueError):
+            raise ValueError("limit must be an integer") from None
+        entries = self.server.context.storage.list_audit(limit=limit)
+        self._json_response({"entries": entries})
+
+    def _verify_csrf_origin(self) -> None:
+        if (self.headers.get("X-Requested-With") or "").strip() != "MUSTPowerDesk":
+            raise ControlError("Missing or invalid X-Requested-With header", 403)
+        origin = (self.headers.get("Origin") or "").strip()
+        if not origin:
+            return
+        parsed_origin = urlparse(origin)
+        if parsed_origin.scheme not in {"http", "https"} or not parsed_origin.netloc:
+            raise ControlError("Invalid Origin header", 403)
+        host_header = (self.headers.get("Host") or "").strip().lower()
+        origin_host = parsed_origin.netloc.lower()
+        if host_header and origin_host != host_header:
+            raise ControlError("Cross-origin POST rejected", 403)
+
+    def _read_json_body(self) -> dict:
+        raw_length = self.headers.get("Content-Length")
+        if raw_length is None:
+            return {}
+        try:
+            length = int(raw_length)
+        except ValueError:
+            raise ValueError("invalid Content-Length") from None
+        if length < 0 or length > MAX_POST_BODY_BYTES:
+            raise ValueError("request body too large")
+        if length == 0:
+            return {}
+        raw = self.rfile.read(length)
+        try:
+            payload = json.loads(raw.decode("utf-8"))
+        except (UnicodeDecodeError, json.JSONDecodeError):
+            raise ValueError("invalid JSON body") from None
+        if not isinstance(payload, dict):
+            raise ValueError("JSON body must be an object")
+        return payload
 
     def _export_csv(self, query: dict[str, list[str]]) -> None:
         end_ts = _query_timestamp(query, "to") or int(time.time())

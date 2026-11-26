@@ -1,12 +1,12 @@
 [Unit]
-Description=MUST PV18 inverter read-only dashboard
+Description=MUST PV18 inverter monitoring and safe control dashboard
 After=local-fs.target
 Wants=local-fs.target
 
 [Service]
 Type=simple
-# The one required device permission is supplied through dialout; the
-# application exposes no inverter write operation.
+# The one required device permission is supplied through dialout; inverter
+# writes remain disabled unless MUST_ENABLE_WRITE=true is configured.
 User=mustdash
 Group=mustdash
 SupplementaryGroups=dialout

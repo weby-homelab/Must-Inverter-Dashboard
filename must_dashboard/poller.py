@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 from typing import Any
 
 from . import __version__
+from .alerts import AlertManager
 from .config import Settings
 from .modbus import ModbusError, ModbusRTU
 from .storage import Storage
@@ -51,10 +52,17 @@ class EventHub:
 
 
 class InverterPoller:
-    def __init__(self, settings: Settings, storage: Storage, events: EventHub) -> None:
+    def __init__(
+        self,
+        settings: Settings,
+        storage: Storage,
+        events: EventHub,
+        alerts: AlertManager | None = None,
+    ) -> None:
         self.settings = settings
         self.storage = storage
         self.events = events
+        self.alerts = alerts
         self.client = ModbusRTU(settings)
         self._stop = threading.Event()
         self._thread: threading.Thread | None = None
@@ -106,7 +114,33 @@ class InverterPoller:
         else:
             health["sample_age_seconds"] = None
         health["storage"] = self.storage.stats()
+        if self.alerts is not None:
+            health["alerts"] = self.alerts.status()
         return health
+
+    def write_register(self, address: int, value: int, *, verify: bool = True) -> dict[str, Any]:
+        return self.client.write_single_register(address, value, verify=verify)
+
+    def refresh_now(self, *, include_config: bool = True) -> dict[str, Any]:
+        snapshot = self.client.poll_once(include_config=include_config)
+        if include_config and snapshot.get("configuration") is not None:
+            self._last_config_at = time.monotonic()
+        with self._lock:
+            self._latest = snapshot
+            section_errors = snapshot.get("connection", {}).get("section_errors", {})
+            degraded_error = "; ".join(f"{key}: {value}" for key, value in section_errors.items())
+            self._health.update(
+                {
+                    "status": snapshot.get("connection", {}).get("status", "online"),
+                    "last_success_at": snapshot["captured_at"],
+                    "last_error": degraded_error or None,
+                    "consecutive_failures": 0,
+                    "latency_ms": snapshot.get("connection", {}).get("latency_ms"),
+                }
+            )
+        health = self.health()
+        self.events.publish({"type": "snapshot", "data": snapshot, "health": health})
+        return snapshot
 
     def _run(self) -> None:
         LOGGER.info(
@@ -157,7 +191,11 @@ class InverterPoller:
                             "latency_ms": snapshot.get("connection", {}).get("latency_ms"),
                         }
                     )
-                self.events.publish({"type": "snapshot", "data": snapshot, "health": self.health()})
+                health = self.health()
+                self.events.publish({"type": "snapshot", "data": snapshot, "health": health})
+                if self.alerts is not None:
+                    self.alerts.evaluate_health(health)
+                    self.alerts.evaluate_snapshot(snapshot)
             except Exception as exc:
                 self.client.close()
                 with self._lock:
@@ -170,7 +208,10 @@ class InverterPoller:
                         }
                     )
                 LOGGER.error("poll cycle failed: %s", exc)
-                self.events.publish({"type": "health", "health": self.health()})
+                health = self.health()
+                self.events.publish({"type": "health", "health": health})
+                if self.alerts is not None:
+                    self.alerts.evaluate_health(health)
 
             elapsed = time.monotonic() - started
             self._stop.wait(max(0.0, self.settings.poll_interval - elapsed))
