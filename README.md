@@ -12,39 +12,39 @@ The live-validated device for this release is a **MUST PV18-3224 VPM II**, ident
 
 ## Dashboard Screenshots
 
-The gallery shows the live-validated MUST PV18-3224 VPM II / PV1800 dashboard in its default read-only mode (`MUST_ENABLE_WRITE=false`). Opt-in safe control panels activate only when `MUST_ENABLE_WRITE=true` is explicitly enabled. Values shown are example telemetry from a local test system.
+The gallery shows the live-validated MUST PV18-3224 VPM II / PV1800 dashboard (`v0.3.0`) with real-time power flow, grid outage tracking, diagnostics, and the locked-by-default opt-in safe control panel.
 
 <table>
   <tr>
     <td colspan="2" align="center">
-      <a href="screenshots/Screenshot_MUST_Power_Desk-1.png"><img src="screenshots/Screenshot_MUST_Power_Desk-1.png" alt="MUST Power Desk full dashboard with live telemetry, energy flow, history chart, and inverter status" width="100%"></a><br>
-      <sub><strong>Overview:</strong> live telemetry, energy flow, history, and system status</sub>
+      <a href="screenshots/Screenshot_MUST_Power_Desk-1.jpg"><img src="screenshots/Screenshot_MUST_Power_Desk-1.jpg" alt="MUST Power Desk v0.3.0 hero header and animated SVG power flow schematic" width="100%"></a><br>
+      <sub><strong>Hero &amp; Power Flow:</strong> live telemetry header and animated SVG power-flow schematic</sub>
     </td>
   </tr>
   <tr>
     <td align="center" width="50%">
-      <a href="screenshots/Screenshot_MUST_Power_Desk-2.png"><img src="screenshots/Screenshot_MUST_Power_Desk-2.png" alt="MUST Power Desk energy flow cards for PV input, load, grid flow, and battery voltage" width="100%"></a><br>
-      <sub><strong>Energy flow:</strong> PV input, load, grid, and battery cards</sub>
+      <a href="screenshots/Screenshot_MUST_Power_Desk-2.jpg"><img src="screenshots/Screenshot_MUST_Power_Desk-2.jpg" alt="MUST Power Desk energy flow cards and live operational charts with tooltip" width="100%"></a><br>
+      <sub><strong>Energy Flow &amp; Operations:</strong> PV, load, grid outage, battery cards and live charts with tooltip</sub>
     </td>
     <td align="center" width="50%">
-      <a href="screenshots/Screenshot_MUST_Power_Desk-3.png"><img src="screenshots/Screenshot_MUST_Power_Desk-3.png" alt="MUST Power Desk system behavior history chart and inverter status panel" width="100%"></a><br>
-      <sub><strong>History and status:</strong> charted behavior with inverter health</sub>
-    </td>
-  </tr>
-  <tr>
-    <td align="center" width="50%">
-      <a href="screenshots/Screenshot_MUST_Power_Desk-4.png"><img src="screenshots/Screenshot_MUST_Power_Desk-4.png" alt="MUST Power Desk telemetry details for AC output, DC bus, temperatures, and accumulated energy" width="100%"></a><br>
-      <sub><strong>Telemetry:</strong> AC, DC, temperature, and accumulated readings</sub>
-    </td>
-    <td align="center" width="50%">
-      <a href="screenshots/Screenshot_MUST_Power_Desk-5.png"><img src="screenshots/Screenshot_MUST_Power_Desk-5.png" alt="MUST Power Desk inverter configuration and diagnostics panels" width="100%"></a><br>
-      <sub><strong>Configuration and diagnostics:</strong> default read-only parameters (opt-in safe control when enabled) and health data</sub>
+      <a href="screenshots/Screenshot_MUST_Power_Desk-3.jpg"><img src="screenshots/Screenshot_MUST_Power_Desk-3.jpg" alt="MUST Power Desk system behavior history chart, range summary, status, and grid outages" width="100%"></a><br>
+      <sub><strong>History, Status &amp; Outages:</strong> charted behavior, range summary, system state, and grid outage log</sub>
     </td>
   </tr>
   <tr>
     <td colspan="2" align="center">
-      <a href="screenshots/Screenshot_MUST_Power_Desk-6.png"><img src="screenshots/Screenshot_MUST_Power_Desk-6.png" alt="MUST Power Desk hero header with live telemetry for a MUST PV18-3224 VPM II inverter" width="100%"></a><br>
-      <sub><strong>Live dashboard header:</strong> local-first MUST inverter monitoring</sub>
+      <a href="screenshots/Screenshot_MUST_Power_Desk-4.png"><img src="screenshots/Screenshot_MUST_Power_Desk-4.png" alt="MUST Power Desk AC/DC telemetry details, temperatures, and accumulated energy" width="100%"></a><br>
+      <sub><strong>Signal Details:</strong> AC output, DC bus, temperatures, and accumulated kWh counters</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <a href="screenshots/Screenshot_MUST_Power_Desk-5.jpg"><img src="screenshots/Screenshot_MUST_Power_Desk-5.jpg" alt="MUST Power Desk configuration and opt-in safe control with presets, Tier 1, Tier 2, and audit log" width="100%"></a><br>
+      <sub><strong>Configuration &amp; Safe Control:</strong> locked-by-default presets, Tier 1/Tier 2 controls, and audit log</sub>
+    </td>
+    <td align="center" width="50%">
+      <a href="screenshots/Screenshot_MUST_Power_Desk-6.jpg"><img src="screenshots/Screenshot_MUST_Power_Desk-6.jpg" alt="MUST Power Desk diagnostics with decoded charger flags and Telegram alert status" width="100%"></a><br>
+      <sub><strong>Diagnostics &amp; Alerts:</strong> serial health, decoded charger flags, Telegram status, and raw frames</sub>
     </td>
   </tr>
 </table>
